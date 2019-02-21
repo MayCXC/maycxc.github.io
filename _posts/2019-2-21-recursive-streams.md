@@ -35,7 +35,7 @@ public static File findFile(File f, String fname)
   }
   return null;
 }
-{% endhighlight % }
+{% endhighlight %}
 
 Cool, whatever, it passed the test cases. The Java 8 opportunities here are the
 for loop and the null check, which I can replace with `Stream` and `Optional`.
@@ -73,7 +73,7 @@ searching directories recursively feels like a pretty common task.
 Based on that assumption, we can peel this method apart. Let our problem be
 solved with two methods, one to create a recursive `Stream` of all of the files
 with the given parent directory, and one to find which of these files has a
-given name. This sounds like a much more appropriate use of a `Stream`.
+given name. This sounds like a much more familiar use of a `Stream`.
 
 {% highlight java %}
 static Stream<File> traversal(File f) {
@@ -124,7 +124,7 @@ public final Function<File,Stream<File>> traversal = f -> Optional
   ;
 {% endhighlight %}
 
-Which we call with `FindFile().traversal.apply(dir).filter...` similar to
+Which we call with `new FindFile().traversal.apply(dir).filter...` similar to
 before.
 
 Okay, I get it, the explicit type is a little cheesy. The chain of operations
