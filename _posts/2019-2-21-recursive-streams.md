@@ -161,3 +161,6 @@ importantly, we have hopefully demonstrated that stubbornly choosing to replace
 existing constructs with new ones for the hell of it is a viable learning path,
 and one that I encourage you to take. On that note, feel free to reach out to
 me with questions, complaints, or job offers... I have too much free time.
+
+[EDIT]({% post_url 2019-2-21-recursive-streams-addendum %}): The pretty
+traversal breaks :(
