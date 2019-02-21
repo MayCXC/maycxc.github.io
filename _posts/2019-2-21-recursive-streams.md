@@ -38,7 +38,7 @@ public static File findFile(File f, String fname)
 {% endhighlight %}
 
 Cool, whatever, it passed the test cases. The Java 8 opportunities here are the
-for loop and the null check, which I can replace with `Stream` and `Optional`.
+for loop and the null check, which we can replace with `Stream` and `Optional`.
 The tricky part I had not seen before was the recursion within the loop, which
 translates to recursion within the intermediate operations of `Stream`. With
 that in mind:
@@ -153,11 +153,11 @@ operations, favoring a singular Stream to a higher order Optional. And, we
 demonstrate the true power of functional programming: treating `Stream::of`
 and `traversal` as data, considering both their parameter and return types.
 
-So, what did I accomplish here? For one, I have a pretty little helper method
+So, what did we accomplish here? For one, we have a pretty little helper method
 that Streams all of the files that share a given parent directory, which could
-be useful. More importantly, I learned to look for opportunities to use ternary
+be useful. More importantly, we learned to look for opportunities to use ternary
 expressions with higher order functions, which could be even more useful. Most
-importantly, I have hopefully demonstrated that stubbornly choosing to replace
+importantly, we have hopefully demonstrated that stubbornly choosing to replace
 existing constructs with new ones for the hell of it is a viable learning path,
 and one that I encourage you to take. On that note, feel free to reach out to
 me with questions, complaints, or job offers... I have too much free time.
