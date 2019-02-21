@@ -78,13 +78,13 @@ given name. This sounds like a much more familiar use of a `Stream`.
 {% highlight java %}
 static Stream<File> traversal(File f) {
   return Optional
-  .ofNullable(f.listFiles())
-  .map( a -> Arrays
-    .stream(a)
-    .flatMap(FindFile::traversal)
-  )
-  .orElse(Stream.of(f))
-  ;
+    .ofNullable(f.listFiles())
+    .map( a -> Arrays
+      .stream(a)
+      .flatMap(FindFile::traversal)
+    )
+    .orElse(Stream.of(f))
+    ;
 }
 {% endhighlight %}
 
@@ -160,4 +160,4 @@ expressions with higher order functions, which could be even more useful. Most
 importantly, I have hopefully demonstrated that stubbornly choosing to replace
 existing constructs with new ones for the hell of it is a viable learning path,
 and one that I encourage you to take. On that note, feel free to reach out to
-me with questions, complaints, or job offers, I have too much free time.
+me with questions, complaints, or job offers... I have too much free time.
