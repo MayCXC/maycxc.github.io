@@ -142,25 +142,27 @@ public final Function<File,Stream<File>> traversal = f -> Optional
   ;
 {% endhighlight %}
 
-Ironically, the ternary operation from the first solution crawled its way back,
-but now it handles the recursive case instead of file name matching. Because of
-some lame target typing in Java 8, the explicit `<File>` is necessary when the
-`flatMap` takes a ternary expression as an argument. Other than all of the
-unfortunate hacks we picked up along the way, this is the ideal solution
-in my mind: one layer of consecutive intermediate operations, then a condition
-to provide the base case. We make use of the file argument in three of the
-operations, favoring a singular Stream to a higher order Optional. And, we
-demonstrate the true power of functional programming: treating `Stream::of`
+Ironically, the ternary operation from the first solution crawled its way back
+inside, but now it handles the recursive case instead of filename filtering.
+Because of some lame target typing in Java 8, the explicit `<File>` is
+necessary when the `flatMap` takes a ternary expression as an argument. Other
+than all of the unfortunate hacks we picked up along the way, this is the ideal
+solution in my mind; one layer of consecutive intermediate operations, then a
+condition to provide the base case. We make use of the file argument in three
+of the operations, favoring a singular Stream to a higher order Optional. And,
+we demonstrate the true power of functional programming: treating `Stream::of`
 and `traversal` as data, considering both their parameter and return types.
 
 So, what did we accomplish here? For one, we have a pretty little helper method
 that Streams all of the files that share a given parent directory, which could
-be useful. More importantly, we learned to look for opportunities to use ternary
-expressions with higher order functions, which could be even more useful. Most
-importantly, we have hopefully demonstrated that stubbornly choosing to replace
-existing constructs with new ones for the hell of it is a viable learning path,
-and one that I encourage you to take. On that note, feel free to reach out to
-me with questions, complaints, or job offers... I have too much free time.
+be useful. More importantly, we learned to look for opportunities to use
+ternary expressions with higher order functions, which could be even more
+useful. But most importantly, we have demonstrated that choosing to needlessly
+abandon constructs we are already comfortable with for the hell of it is a
+viable learning path, and one that I encourage you to take.
+
+On that note, feel free to reach out to me with questions, complaints, or
+job offers... I have too much free time.
 
 [EDIT]({% post_url 2019-2-21-recursive-streams-addendum %}): The pretty
 traversal breaks :(
