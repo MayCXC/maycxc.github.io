@@ -130,8 +130,9 @@ before.
 Okay, I get it, the explicit type is a little cheesy. The chain of operations
 is unrolled into a single layer, but it is longer. We transform the Optional
 into a Stream before the recursive case, and take advantage of the Optional
-result of the reduction to handle the singular file case instead. Unfortunately,
-that Optional comes after the recursion. What if we want it at the tail?
+result of the reduction to handle the singular file case instead. My only
+complaint is that the Optional comes after the recursion. What if we want
+the recursion at the tail of our operations?
 
 {% highlight java %}
 public final Function<File,Stream<File>> traversal = f -> Optional
