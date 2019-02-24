@@ -38,7 +38,7 @@ Before I make those mistakes, I should mention that we declared some `final`
 variables to make making mistakes more manageable:
 
 {% highlight java %}
-final char SOUTH 	= 'S',	EAST 	= 'E',	NORTH	= 'N',	WEST 	= 'W';
+final char SOUTH = 'S', EAST = 'E', NORTH = 'N', WEST = 'W';
 final String compass = new String(new char[] {SOUTH, EAST, NORTH, WEST});
 // no new String(char...) ;-;
 {% endhighlight %}
