@@ -1,6 +1,6 @@
 ---
 title:  "Can we zip it? (Yes, we can.)"
-date:   2019-2-24 5:00:00 -0500
+date:   2019-2-24 6:30:00 -0500
 categories: Java jdk8 streams zip replace collect reduce homework
 ---
 
@@ -117,5 +117,4 @@ methods that were so misguided, I decided they wouldn't be helpful to share,
 even as a learning experience. (hint: they involved `StringBuffer` and
 `collect`.) Nonetheless, I think I finally discovered the ultimate lesson I can
 learn from a maze project: that shortest path to your goal doesn't always lie
-straight ahead. In my next post I'll show that it lies behind a horde of cloned
-time travelers.
+straight ahead. In my next post, I'll show that it lies beneath `.parallel()`.
