@@ -59,8 +59,9 @@ traversal of `map` in all of my tests.
 
 This is still far from what I would consider a reliable result. I do not have
 a good enough understanding of the Java stream thread pool, or multithreading
-in general, to guarantee the result is of minimal length. There are a number of
-tasks I'll have to complete to better understand this -
+in general, to guarantee the result is of minimal length, and I have seen
+[recursive streams backfire before]({% post_url 2019-2-21-recursive-streams-addendum %}).
+There are a number of tasks I'll have to complete to better understand this -
 - implement a breadth first search
 - randomly generate solvable maps
 - compare the results of sequential DFS, parallel DFS, and sequential BFS
