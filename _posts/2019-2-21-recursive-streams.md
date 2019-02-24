@@ -1,7 +1,8 @@
 ---
 title:  "Recursive streams in Java 8 for the try-hard homework assignee"
 date:   2019-02-21 6:30:00 -0500
-categories: Java jdk8 streams recursion homework
+categories: Java homework
+tags: jdk8 streams recursion
 ---
 
 We were taught Scala in CSC110, and I quickly fell in love with the language.

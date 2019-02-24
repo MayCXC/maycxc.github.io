@@ -1,7 +1,8 @@
 ---
 title:  "Can we zip it? (Yes, we can.)"
 date:   2019-2-24 6:30:00 -0500
-categories: Java jdk8 streams zip replace collect reduce homework
+categories: Java homework
+tags: jdk8 streams zip replace collect reduce
 ---
 
 Another day, another assignment to overthink.

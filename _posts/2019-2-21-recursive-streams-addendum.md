@@ -1,7 +1,8 @@
 ---
 title:  "Recursive streams in Java 8 addendum"
 date:   2019-02-21 17:00 -0500
-categories: Java jdk8 streams recursion homework addendum stack overflow
+categories: Java homework
+tags: jdk8 streams recursion addendum stack_overflow
 ---
 
 The results are in. I rigged up a quick nanosecond timer to compare the five

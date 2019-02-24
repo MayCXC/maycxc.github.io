@@ -1,7 +1,8 @@
 ---
 title:  "Race to the bottom (of the parallel depth first search)"
 date:   2019-2-24 7:30:00 -0500
-categories: Java jdk8 streams parallel recursion depth first search
+categories: Java
+tags: jdk8 streams parallel recursion depth_first_search traversal
 ---
 
 In my [last post]({% post_url 2019-2-23-can-we-zip-it %}), I mentioned writing
