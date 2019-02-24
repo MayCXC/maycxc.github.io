@@ -68,11 +68,10 @@ each replacement as another step in the accumulation. The problem is that we
 are dealing with three different types of data; the `String` path, the `char`
 directions, and the `int` indices of our arrays. Java is very picky about its
 reductions, and wants the input and output data types to be the same:
-
-IntStream.java: `int reduce(int identity, IntBinaryOperator op)`
-
-Stream.java: `T reduce(T identity, BinaryOperator<T> accumulator)`
-
+```
+int reduce(int identity, IntBinaryOperator op)
+T reduce(T identity, BinaryOperator<T> accumulator)
+```
 so, we had to box and use the partial reduction meant for parallel streams:
 ```
 <U> U reduce(U identity,
@@ -81,7 +80,11 @@ so, we had to box and use the partial reduction meant for parallel streams:
 ```
 which left us with a combiner argument that doesn't really do anything, and a
 silly ternary expression to split and join each word. That seems like a lot of
-work for comma separation... wait a minute... __comma__, __separation__...
+work for comma separation...
+
+wait a minute...
+
+__comma__, __separation__...
 
 {% highlight java %}
 System.out.println( path.chars()
@@ -105,7 +108,9 @@ from a `String` to a `char` to an `int` and back again, functioning as a tiny,
 sad map. If our traversal was stored as a collection of `int` indices, or even
 cheesier, a `String` of indices as `char` digits, we could get away with only
 using one map. But c'mon, using the `+` operator to recursively accumulate the
-path is too slick to pass up.
+path is too slick to pass up!
+
+---
 
 This post came up a little lacking. That is because I excluded two of my other
 methods that were so misguided, I decided they wouldn't be helpful to share,
