@@ -6,8 +6,8 @@ categories: Java jdk8 streams recursion homework addendum stack overflow
 
 The results are in. I rigged up a quick nanosecond timer to compare the five
 recursive directory streams from
-[my last post]({% post_url 2019-2-21-recursive-streams %}),
-and You Won't Believe What Happened Next.
+[my last post]({% post_url 2019-2-21-recursive-streams %}), and You Won't
+Believe What Happened Next!
 
 ```
 Recursive method:           617245

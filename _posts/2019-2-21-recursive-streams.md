@@ -146,13 +146,15 @@ public final Function<File,Stream<File>> traversal = f -> Optional
 Ironically, the ternary operation from the first solution crawled its way back
 inside, but now it handles the recursive case instead of filename filtering.
 Because of some lame target typing in Java 8, the explicit `<File>` is
-necessary when the `flatMap` takes a ternary expression as an argument. Other
-than all of the unfortunate hacks we picked up along the way, this is the ideal
-solution in my mind; one layer of consecutive intermediate operations, then a
-condition to provide the base case. We make use of the file argument in three
-of the operations, favoring a singular Stream to a higher order Optional. And,
-we demonstrate the true power of functional programming: treating `Stream::of`
-and `traversal` as data, considering both their parameter and return types.
+necessary when the `flatMap` takes a ternary expression as an argument.
+
+Other than all of the unfortunate hacks we picked up along the way, this is the
+ideal solution in my mind; one layer of consecutive intermediate operations,
+then a condition to provide the base case. We make use of the file argument in
+three of the operations, favoring a singular Stream to a higher order Optional.
+And, we demonstrate the true power of functional programming: treating
+`Stream::of` and `traversal` as data, considering both their parameter and
+return types.
 
 So, what did we accomplish here? For one, we have a pretty little helper method
 that Streams all of the files that share a given parent directory, which could
