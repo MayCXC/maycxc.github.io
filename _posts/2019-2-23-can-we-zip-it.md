@@ -109,7 +109,7 @@ from a `String` to a `char` to an `int` and back again, functioning as a tiny,
 sad map. If our traversal was stored as a collection of `int` indices, or even
 cheesier, a `String` of indices as `char` digits, we could get away with only
 using one map. But c'mon, using the `+` operator to recursively accumulate the
-path is too slick to pass up!
+path is way too slick to pass up!
 
 ---
 
