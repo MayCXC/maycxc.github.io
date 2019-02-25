@@ -46,7 +46,7 @@ Ideally, they would be performed in an order more likely to find a path to
 `EXIT`, or they would be performed at the same time.
 ```
 return IntStream.range(0,compass.length())
-  .parallel()
+  .parallel() // big if true
   .mapToObj( s -> compass.charAt(s) + walk(y+senses[s][0],x+senses[s][1]) )
   .filter( s -> s.charAt(s.length()-1) == EXIT )
   .findAny()
