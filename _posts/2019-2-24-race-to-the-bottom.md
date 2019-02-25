@@ -1,5 +1,5 @@
 ---
-title:  "Race to the bottom (of the parallel depth first search)"
+title:  "The race to the bottom of the depth first search"
 date:   2019-2-24 7:30:00 -0500
 categories: Java
 tags: jdk8 streams parallel recursion depth_first_search traversal
@@ -54,7 +54,7 @@ return IntStream.range(0,compass.length())
 ```
 Enter the parallel DFS. Instead of finding paths in the arbitrary encounter
 order of the compass, we start a recursive race to the exit, and find paths in
-the encounter order of the time they take return. In general, longer paths
+the encounter order of the time they take to return. In general, longer paths
 take longer to find. As a result, the parallel DFS finds the shortest traversal
 of `map` in all of my tests.
 
@@ -74,8 +74,9 @@ which I may or may not be planning on pursuing.
 ---
 
 My understanding of the behavior of recursive parallel streams may be foggy,
-but the intuition behind it is clear and beautiful. We have transformed an
-ordered traversal of moves in memory space into an ordered traversal of threads
-in runtime. Considering this solution does not require a queue or extra data
-structure like a BFS, and seems to minimize *something* dependent on the length
-of its path, it may even be useful in its own right.
+but the intuition behind it is clear and beautiful. With a single intermediate
+operation, we have transformed an ordered traversal of moves in memory space
+into an ordered traversal of threads in runtime. Considering this solution does
+not require a queue or extra data structure like a BFS, and seems to minimize
+*something* dependent on the length of its path, it may very well be useful in
+its own right.
