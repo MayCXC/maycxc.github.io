@@ -44,15 +44,21 @@ Things get interesting when you look at that last recursive stream. All four
 of the possible moves in our traversal are performed in an arbitrary order.
 Ideally, they would be performed in an order more likely to find a path to
 `EXIT`, or they would be performed at the same time.
+
+This is a good time to indulge a bad habit. Every time I use streams, I end up
+adding `.parallel()` somewhere in the pipeline for gits and shiggles. Sometimes
+it breaks, sometimes it doesn't, and sometimes it ends up somewhere between...
+
 ```
 return IntStream.range(0,compass.length())
-  .parallel() // big if true
+  .parallel() // right here
   .mapToObj( s -> compass.charAt(s) + walk(y+senses[s][0],x+senses[s][1]) )
   .filter( s -> s.charAt(s.length()-1) == EXIT )
   .findAny()
   .orElse(Character.toString(map[y][x]));
 ```
-Enter the parallel DFS. Instead of finding paths in the arbitrary encounter
+
+...enter the parallel DFS. Instead of finding paths in the arbitrary encounter
 order of the compass, we start a recursive race to the exit, and find paths in
 the encounter order of the time they take to return. In general, longer paths
 take longer to find. As a result, the parallel DFS finds the shortest traversal
