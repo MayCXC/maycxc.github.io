@@ -18,7 +18,8 @@ Recursive traversal 3:      StackOverFlowError
 Recursive stream method:    910222
 ```
 
-| Times are reliable averages of the nanoseconds it took to find `calc.exe` in `System32` |
+|:--:|
+|Times are reliable averages of the nanoseconds it took to find `calc.exe` in `System32`.|
 
 The nested and unfolded maps brought us to the higher and lower ends of ten
 milliseconds. Still, the recursive method with no streams was around ten times

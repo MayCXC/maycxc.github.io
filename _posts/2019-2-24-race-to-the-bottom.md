@@ -45,6 +45,10 @@ of the possible moves in our traversal are performed in an arbitrary order.
 Ideally, they would be performed in an order more likely to find a path to
 `EXIT`, or they would be performed at the same time.
 
+|![](/assets/images/glass.gif){: .align-center}|
+|:--:|
+|Our stream recalls one lousy frame at a time, slowly floating up to the base case.|
+
 This is a good time to indulge a bad habit. Every time I use streams, I end up
 adding `.parallel()` somewhere in the pipeline for gits and shiggles. Sometimes
 it breaks, sometimes it doesn't, and sometimes it ends up somewhere between...
@@ -62,7 +66,11 @@ return IntStream.range(0,compass.length())
 order of the compass, we start a recursive race to the exit, and find paths in
 the encounter order of the time they take to return. In general, longer paths
 take longer to find. As a result, the parallel DFS finds the shortest traversal
-of `map` in all of my tests.
+of `map` in most of my tests.
+
+|![](/assets/images/galton.gif){: .align-center}|
+|:--:|
+|The race is on, our streams spread through ForkJoinPool to the base case.|
 
 This result is still far from what I would consider reliable. I do not have a
 good enough understanding of the Java stream thread pool, or multithreading in
@@ -75,7 +83,7 @@ There are a number of tasks I'll have to complete to better understand this:
 - compare the results of sequential DFS, parallel DFS, and sequential BFS
 - explore parallel BFS?
 
-which I may or may not be planning on pursuing.
+which I may or may not end up pursuing.
 
 ---
 
@@ -84,5 +92,5 @@ but the intuition behind it is clear and beautiful. With a single intermediate
 operation, we have transformed an ordered traversal of moves in memory space
 into an ordered traversal of threads in runtime. Considering this solution does
 not require a queue or extra data structure like a BFS, and seems to minimize
-*something* dependent on the length of its path, it may very well be useful in
+*something* dependent on the length of its path, it may as well be useful in
 its own right.
