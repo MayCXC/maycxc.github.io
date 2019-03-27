@@ -35,7 +35,7 @@ every number between one and one hundred misses a lot, wasting time. Time is
 money, and I get paid by the hour. Cool kids will point out that FizzBuzz
 prints out a pattern that repeats every fifteen iterations, which makes sense;
 incrementing the coefficients of a sum of three and five by one will not change
-the remainder of the dividing by either:
+the remainder of dividing by either:
 
 {% highlight scala %}
 lazy val fizz: Stream[String] = Stream.range(0,15)
