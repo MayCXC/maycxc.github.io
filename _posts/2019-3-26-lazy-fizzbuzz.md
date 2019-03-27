@@ -1,5 +1,5 @@
 ---
-title:  "The lazy FizzBuzz, an interlude"
+title:  "The lazy FizzBuzz: an interview interlude"
 date:   2019-3-26 00:00:00 -0500
 categories: Java
 tags: scala lazy stream circular FizzBuzz interview
