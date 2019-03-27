@@ -18,7 +18,7 @@ for(i <- 1 to 100) i match {
 }
 {% endhighlight %}
 
-Crikey, a pattern matcher! Look at the product on his head! My only complaint
+Crikey, a pattern matcher! Look at the product on her head! My only complaint
 is that those println statements aren't very functional, we can do better:
 
 {% highlight scala %}
