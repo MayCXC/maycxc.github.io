@@ -26,8 +26,8 @@ is that those println statements aren't very functional, we can do better:
 A bit longer, but almost identical. Is it worth the effort? Iterating over
 every number between one and one hundred misses a lot, wasting time. Time is
 money, and I get paid by the hour. Cool kids will point out that FizzBuzz
-prints out pattern that repeats every fifteen iterations, which makes sense;
-incrementing the coefficient of a sum of three and five by one will not change
+prints out a pattern that repeats every fifteen iterations, which makes sense;
+incrementing the coefficients of a sum of three and five by one will not change
 the remainder of the dividing by either:
 
 {% highlight scala %}
@@ -43,4 +43,4 @@ lazy val fizz: Stream[String] = Stream.range(0,15)
 fizz.drop(1).take(100).foreach(println)
 {% endhighlight %}
 
-Really though, was it worth it? I can only induce so. 
+Really though, was it worth it? I can only induce so.
