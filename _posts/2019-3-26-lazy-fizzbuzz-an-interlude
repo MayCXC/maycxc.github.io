@@ -1,3 +1,10 @@
+---
+title:  "The lazy FizzBuzz, an interlude"
+date:   2019-3-26 00:00:00 -0500
+categories: Java
+tags: scala lazy stream circular FizzBuzz interview
+---
+
 It's internship season, and I'm on the hunt. I better know my interview
 questions if I want to survive the winter. Let's start out with good old
 FizzBuzz:
