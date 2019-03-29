@@ -1,5 +1,5 @@
 ---
-title:  "The race to the bottom (of the depth first search)"
+title:  "The race to the bottom of the depth first search"
 date:   2019-2-24 7:30:00 -0500
 categories: Java
 tags: jdk8 streams parallel recursion depth_first_search traversal
