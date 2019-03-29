@@ -108,9 +108,9 @@ public class Queue<T> extends Stack<T> {
 Really a dequeue, but there is nothing a stack can do that a queue can't do, so
 why remove functionality when we can extend it? This could probably be a little
 bit prettier, but I see no way around the special cases where last is changed
-when the first node is added. Notice that last is not `final`; we would have to
-make it a `Box<Box<Node<T>>` to avoid changing the actual links between nodes,
-which seemed a little excessive.
+when the first node is added. Notice that `last` is not `final`; we would have
+to make it a `Box<Box<Node<T>>` to avoid changing the actual links between
+nodes, which seemed a little excessive.
 
 ---
 
