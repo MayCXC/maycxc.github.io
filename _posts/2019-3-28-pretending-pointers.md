@@ -39,11 +39,11 @@ More on that later. For now, what kind of useful things can we do with our new
 "pseudo-references"?
 
 In C, we can use pointers to pointers to simplify some operations on graph
-structures. Typically, those graphs are made of a bunch of nodes that point to
-each other. By using a pointer to a pointer to traverse graphs of these linked
-nodes, we can avoid storing a "last" or "next" node when inserting or deleting
-them from a graph, instead storing a pointer to the pointer to the next node in
-our graph. To bad we can't do something like that in Java...
+structures. Typically, those graphs are made of a bunch of nodes that store
+pointers to each other. By storing a pointer to a pointer to a node when
+traversing graphs of these linked nodes, we can avoid storing a "last" or
+"next" pointer to a node when inserting or deleting nodes in a graph. Too bad
+we can't do something like that in Java...
 
 {% highlight java %}
 class Node<T> extends Box<T> {
