@@ -34,9 +34,9 @@ A bit longer, but almost identical. Is it worth the effort? Iterating over
 every number between one and one hundred misses a lot, wasting time. Time is
 money, and I get paid by the hour. Cool kids will point out that FizzBuzz
 prints out a pattern that repeats every fifteen iterations, which makes sense;
-incrementing the coefficients of a sum of three and five by one will not change
-the remainder of dividing by either. I think my discreet teacher mumbled
-something about this last week, now I get to try it at home:
+increasing the coefficient of on part of a sum by of the value of other will
+not change the remainder of dividing by either. I think my discreet teacher
+mumbled something about this last week, now I get to try it at home:
 
 {% highlight scala %}
 lazy val fizz: Stream[String] = Stream.range(0,15)
