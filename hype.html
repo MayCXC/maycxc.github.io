@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+<head>
+    <meta charset="UTF-8"/>
+    <style>
+        body {
+            width: auto;
+            height: auto;
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+
+    <script id="cube" type="x-shader/x-vertex">
+        attribute vec4 position;
+        void main() {
+            gl_Position = position;
+        }
+    </script>
+
+    <script id="color" type="x-shader/x-fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #else
+        precision mediump float;
+        #endif
+        uniform vec4 color;
+        void main() {
+            gl_FragColor = color;
+        }
+    </script>
+
+    <script>
+        /*
+         *     2__________3
+         *     /|        /|
+         *    / |       / |
+         *  6/__|_____7/  |
+         *  |  0|______|_1|
+         *  |  /       |  /
+         *  | /        | /
+         * 4|/________5|/
+         *
+         */
+        function zorder(p, n) {
+            var v = [];
+            for(var i=0; i<n; i+=1) {
+                v[i] = (p&(1<<i))==0?1:-1;
+            }
+            return v;
+        }
+
+        function dot(v, u) {
+            var r = Math.max(v.length, u.length);
+            var p = 0;
+            for(var i=0; i<r; i+=1) {
+                p += (v[i]||0)*(u[i]||0);
+            }
+            return p;
+        }
+
+        function transpose(m) {
+            var r = Math.max(m.map(v => v.length));
+            var c = m.length;
+            var t = [];
+            for(var i=0; i<r; i+=1) {
+                for(var j=0; j<c; j+=1) {
+                    t[j][i] = m[i][j]||0;
+                }
+            }
+            return m;
+        }
+
+        function compose(l, r) {
+            var m = [];
+            var t = transpose(r);
+            for(var i=0; i<l.length; i+=1) {
+                for(var j=0; j<t.length; j+=1) {
+                    m[i] = m[i] || [];
+                    m[i][j] = dot(l[i],t[j]);
+                }
+            }
+            return m;
+        }
+
+        var gl, glcube, glcolor, program, position, color, buffer;
+        function start() {
+            gl = document.getElementById('scene').getContext('webgl');
+
+            glcube = gl.createShader(gl.VERTEX_SHADER);
+            gl.shaderSource(glcube, document.getElementById("cube").firstChild.nodeValue);
+            gl.compileShader(glcube);
+
+            glcolor = gl.createShader(gl.FRAGMENT_SHADER);
+            gl.shaderSource(glcolor, document.getElementById("color").firstChild.nodeValue);
+            gl.compileShader(glcolor);
+
+            program = gl.createProgram();
+            gl.attachShader(program, glcube);
+            gl.attachShader(program, glcolor);
+
+            console.log(gl.getShaderInfoLog(glcube));
+            console.log(gl.getShaderInfoLog(glcolor));
+
+            gl.linkProgram(program);
+
+            console.log(gl.getProgramInfoLog(program));
+
+            buffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+            var vertices = new Float32Array([
+                -.5,-.5, .5,-.5, .5,.5, -.5,-.5,
+                -.5,-.5, .5,.5, -.5,.5, -.5,-.5
+            ]);
+            gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+            gl.useProgram(program);
+
+            position = gl.getAttribLocation(program, 'position');
+            gl.enableVertexAttribArray(position);
+
+            color = gl.getUniformLocation(program, 'color');
+            gl.uniform4fv(color, [1.0,1.0,1.0,1.0]);
+
+            requestAnimationFrame(loop);
+        }
+
+        var step=1000/60, tick=0, delta=0;
+        function loop(tock) {
+            delta += tock-tick;
+            delta = Math.min(delta, 1000);
+
+            gl.canvas.width = window.innerWidth;
+            gl.canvas.height = window.innerHeight;
+            gl.viewport(0,0,gl.canvas.width,gl.canvas.height);
+
+            while(delta>=step) {
+                draw();
+                delta -= step;
+            }
+            requestAnimationFrame(loop);
+            tick = tock;
+        }
+
+        var t = 0.0;
+        function draw() {
+            gl.clearColor(0,0,0,1);
+            gl.clearDepth(1.0);
+            gl.enable(gl.DEPTH_TEST);
+            gl.depthFunc(gl.LEQUAL);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+            gl.vertexAttribPointer(
+                position,
+                2,
+                gl.FLOAT,
+                false,
+                0,
+                0
+            );
+            gl.enableVertexAttribArray(position);
+            gl.useProgram(program);
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+            t += 1;
+        }
+    </script>
+</head>
+<body onload="start();">
+    <canvas id="scene"></canvas>
+</body>
+</html>
