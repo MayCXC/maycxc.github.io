@@ -119,6 +119,6 @@ Well that's that. You don't get pointer arithmetic, but in the past I have done
 something similar with one length arrays. You do get a sane way to add mutable
 behaviors to classes, instead of the humiliating
 `private Foo f; public Foo getFoo(); public void setFoo(Foo f);`
-pattern they teach in school. Finally, you get the groundwork for reference
+pattern we all learn in school. Finally, you get the groundwork for reference
 based data type implementations, and a functioning stack and queue, in about
-twenty five sloc. Now gib internship pls, I know how to makes the codes :^)
+twenty five sloc. I really need a job.
