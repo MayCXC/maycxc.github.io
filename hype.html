@@ -76,11 +76,11 @@
         }
 
         mat4 project() {
-            return mat4( // projection
-            aspect.y/length(aspect),0,0,0,
-            0,aspect.x/length(aspect),0,0,
-            0,0,1.0,-1.0,
-            0,0,0.0,1.0
+            return mat4(
+                aspect.y/length(aspect),0,0,0,
+                0,aspect.x/length(aspect),0,0,
+                0,0,1.0,-1.0,
+                0,0,0.0,1.0
             );
         }
 
@@ -88,9 +88,10 @@
             float near = .1;
             float far = 1000.0;
 
-            gl_Position = project()
+            gl_Position = project() // P
             * rotate(orientation)
             * translate(position)
+            * translate(vec3(0,0,0)) // M
             * rotate(vec4(0,0,0,1.0))
             * scale(size)
             * vertex;
@@ -182,10 +183,10 @@
             document.addEventListener('keydown', (k) => wasdph[codes.indexOf(k.code)] = true);
             document.addEventListener('keyup', (k) => wasdph[codes.indexOf(k.code)] = false);
 
-            mouse = [0,0];
-            document.addEventListener('mousemove', (m) => {
-                mouse = [m.movementX, m.movementY]
-            });
+            mouse = [0,0,0,0];
+            document.addEventListener('mousemove', (m) => mouse = m.buttons == 0
+                ? [m.movementX*.25 + mouse[0]*.75, m.movementY*.25 + mouse[1]*.75] : [0,0]
+            );
 
             requestAnimationFrame(loop);
         }
@@ -227,10 +228,12 @@
 
             var look = gl.getUniform(program, orientation);
             var turn = [look,
-                eulerAA(rotate([1,0,0], conjugate(look)), mouse[1]/200),
-                eulerAA(rotate([0,1,0], conjugate(look)), mouse[0]/200)
+                eulerAA(rotate([1,0,0], conjugate(look)), mouse[1]/64),
+                eulerAA(rotate([0,1,0], conjugate(look)), mouse[0]/64)
             ].reduce(compose);
             gl.uniform4fv(orientation, turn);
+
+            mouse = [0,0];
 
             var move = gl.getUniform(program, position);
             var walk = rotate([
