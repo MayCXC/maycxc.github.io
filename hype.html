@@ -21,18 +21,18 @@
         uniform vec4 orientation;
         uniform vec3 size;
 
-        mat4 translate(vec3 position) {
+        mat4 translate(vec3 v) {
             return mat4(
                 1,0,0,0,
                 0,1,0,0,
                 0,0,1,0,
-                position,1
+                v,1
             );
         }
 
-        mat3 rotate(vec4 orientation) {
-            float scalar = orientation.w;
-            vec3 vector  = vec3(orientation);
+        mat4 rotate(vec4 v) {
+            float scalar = v.w;
+            vec3 vector  = vec3(v);
 
             mat3 identity = mat3(1.0);
             mat3 skew = mat3(
@@ -42,38 +42,59 @@
             );
 
             mat3 outer = mat3(0.0);
-            for(int i=0; i<3; i++) {
-                for(int j=0; j<3; j++) {
-                    outer[j][i] = vector[i] * vector[j];
+            for(int i=0; i<3; i+=1) {
+                for(int j=0; j<3; j+=1) {
+                    outer[i][j] =  vector[j] * vector[i];
                 }
             }
 
-            return scalar * (outer + mat3(scalar*scalar) + 2.0*scalar*skew + skew*skew);
+            return mat4(outer + mat3(scalar*scalar) + 2.0*scalar*skew + skew*skew);
         }
 
-        mat4 scale(vec3 size) {
+        mat4 rotate(float t, int a, int b) {
+            mat4 rodriguez = mat4(1.0);
+            for(int i=0; i<3; i+=1) {
+                for(int j=0; j<3; j+=1) {
+                    rodriguez[j][i] =
+                        i == a || i == b || j == a || j == b ? rodriguez[j][i]:
+                        i < j ? -sin(t):
+                        i == j ? cos(t):
+                        i > j ? sin(t):
+                        0.0;
+                }
+            }
+            return rodriguez;
+        }
+
+        mat4 scale(vec3 v) {
             return mat4(
-                size.x,0,0,0,
-                0,size.y,0,0,
-                0,0,size.z,0,
+                v.x,0,0,0,
+                0,v.y,0,0,
+                0,0,v.z,0,
                 0,0,0,1
             );
         }
 
+        mat4 project() {
+            return mat4( // projection
+            aspect.y/length(aspect),0,0,0,
+            0,aspect.x/length(aspect),0,0,
+            0,0,1.0,-1.0,
+            0,0,0.0,1.0
+            );
+        }
+
         void main() {
-            gl_Position =
-            mat4( // projection
-                1.0/aspect.x,0,0,0,
-                0,1.0/aspect.y,0,0,
-                0,0,0,-.01,
-                0,0,0,1
-            )
-            * translate(position) // model
-            * mat4(rotate(orientation))
+            float near = .1;
+            float far = 1000.0;
+
+            gl_Position = project()
+            * rotate(orientation)
+            * translate(position)
+            * rotate(vec4(0,0,0,1.0))
             * scale(size)
             * vertex;
         }
-
     </script>
 
     <script id="color" type="x-shader/x-fragment">
@@ -108,7 +129,7 @@
             return v;
         }
 
-        var gl, program, buffer, vertex, aspect, position, orientation, size, color;
+        var gl, program, buffer, vertex, aspect, position, orientation, size, color, wasd, mouse;
         function start() {
             gl = document.getElementById('scene').getContext('webgl');
 
@@ -156,18 +177,68 @@
             color = gl.getUniformLocation(program, 'color');
             gl.uniform4fv(color, [0.3,0.6,0.9,0.3]);
 
+            wasdph = [false,false,false,false];
+            var codes = ["KeyW", "KeyA", "KeyS", "KeyD", "Space", "ShiftLeft"];
+            document.addEventListener('keydown', (k) => wasdph[codes.indexOf(k.code)] = true);
+            document.addEventListener('keyup', (k) => wasdph[codes.indexOf(k.code)] = false);
+
+            mouse = [0,0];
+            document.addEventListener('mousemove', (m) => {
+                mouse = [m.movementX, m.movementY]
+            });
+
             requestAnimationFrame(loop);
+        }
+
+        function eulerAA(v, t) {
+            return [v[0]*Math.sin(t/2), v[1]*Math.sin(t/2), v[2]*Math.sin(t/2), Math.cos(t/2)];
+        }
+
+        function compose(q, p) {
+            return c = [
+              + q[0]*p[3] + q[1]*p[2] - q[2]*p[1] + q[3]*p[0],
+              - q[0]*p[2] + q[1]*p[3] + q[2]*p[0] + q[3]*p[1],
+              + q[0]*p[1] - q[1]*p[0] + q[2]*p[3] + q[3]*p[2],
+              - q[0]*p[0] - q[1]*p[1] - q[2]*p[2] + q[3]*p[3]
+            ];
+        }
+
+        function conjugate(q) {
+            return [-q[0], -q[1], -q[2], q[3]];
+        }
+
+        function rotate(v, q) {
+            return compose(compose(q, v.concat(0)), conjugate(q)).slice(0,3);
+        }
+
+        function normalize(q) {
+            var l = Math.sqrt(q.map(c => c*c).reduce((l,r) => l+r));
+            return q.map(c => c/l);
         }
 
         var step=1000/60, tick=0, delta=0;
         function loop(tock) {
-            delta += tock-tick;
-            delta = Math.min(delta, 1000);
+            delta = Math.min(delta+tock-tick, 1000);
 
             gl.canvas.width = window.innerWidth;
             gl.canvas.height = window.innerHeight;
-            gl.viewport(0,0,gl.canvas.width,gl.canvas.height);
+            gl.viewport(0,0, gl.canvas.width,gl.canvas.height);
             gl.uniform2fv(aspect, [gl.canvas.width,gl.canvas.height]);
+
+            var look = gl.getUniform(program, orientation);
+            var turn = [look,
+                eulerAA(rotate([1,0,0], conjugate(look)), mouse[1]/200),
+                eulerAA(rotate([0,1,0], conjugate(look)), mouse[0]/200)
+            ].reduce(compose);
+            gl.uniform4fv(orientation, turn);
+
+            var move = gl.getUniform(program, position);
+            var walk = rotate([
+                (wasdph[1]?10:0) - (wasdph[3]?10:0),
+                (wasdph[5]?10:0) - (wasdph[4]?10:0),
+                (wasdph[0]?10:0) - (wasdph[2]?10:0)
+            ], conjugate(turn));
+            gl.uniform3fv(position, [0,1,2].map(i => move[i]+walk[i]));
 
             while(delta>=step) {
                 draw();
@@ -177,7 +248,7 @@
             tick = tock;
         }
 
-        var t = 0.0, q = [0,0,0,1];
+        var t = 0.0;
         function draw() {
             gl.clearColor(0,0,0,1);
             gl.clearDepth(1.0);
