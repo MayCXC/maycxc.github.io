@@ -20,6 +20,7 @@
         uniform vec3 position;
         uniform vec4 orientation;
         uniform vec3 size;
+        uniform vec3 hyper;
 
         mat4 translate(vec3 v) {
             return mat4(
@@ -51,16 +52,14 @@
             return mat4(outer + mat3(scalar*scalar) + 2.0*scalar*skew + skew*skew);
         }
 
-        mat4 rotate(float t, int a, int b) {
+        mat4 rotatehyper(float t, int a) {
             mat4 rodriguez = mat4(1.0);
             for(int i=0; i<3; i+=1) {
-                for(int j=0; j<3; j+=1) {
-                    rodriguez[j][i] =
-                        i == a || i == b || j == a || j == b ? rodriguez[j][i]:
-                        i < j ? -sin(t):
-                        i == j ? cos(t):
-                        i > j ? sin(t):
-                        0.0;
+                if(i == a) {
+                    rodriguez[i][i] = cos(t);
+                    rodriguez[i][3] = sin(t);
+                    rodriguez[3][i] = -rodriguez[i][3];
+                    rodriguez[3][3] = rodriguez[i][i];
                 }
             }
             return rodriguez;
@@ -85,16 +84,22 @@
         }
 
         void main() {
-            float near = .1;
-            float far = 1000.0;
+            vec4 vertextwo =
+                translate(vec3(0,0,0))
+                * rotatehyper(hyper.x, 0)
+                * scale(size)
+                * vertex;
+
+//            vertextwo.w = clamp(abs(vertextwo.w), .8, 1.2);
+
 
             gl_Position = project() // P
+            // V
+            * scale(vec3(1.0,1.0,1.0))
             * rotate(orientation)
             * translate(position)
-            * translate(vec3(0,0,0)) // M
-            * rotate(vec4(0,0,0,1.0))
-            * scale(size)
-            * vertex;
+            // M
+            * vertextwo;
         }
     </script>
 
@@ -130,7 +135,7 @@
             return v;
         }
 
-        var gl, program, buffer, vertex, aspect, position, orientation, size, color, wasd, mouse;
+        var gl, program, buffer, vertex, aspect, position, orientation, size, color, keys, mouse, hyper;
         function start() {
             gl = document.getElementById('scene').getContext('webgl');
 
@@ -170,22 +175,25 @@
 
             aspect = gl.getUniformLocation(program, 'aspect');
             position = gl.getUniformLocation(program, 'position');
-            gl.uniform3fv(position, [0.0,0.0,-100.0]);
+            gl.uniform3fv(position, [0.0,0.0,-1.0]);
             orientation = gl.getUniformLocation(program, 'orientation');
             gl.uniform4fv(orientation, [0.0,0.0,0.0,1.0]);
             size = gl.getUniformLocation(program, 'size');
-            gl.uniform3fv(size, [100.0,100.0,100.0]);
+            gl.uniform3fv(size, [1.0,1.0,1.0]);
+            hyper = gl.getUniformLocation(program, 'hyper');
+            gl.uniform3fv(hyper, [0.0,0.0,0.0]);
             color = gl.getUniformLocation(program, 'color');
             gl.uniform4fv(color, [0.3,0.6,0.9,0.3]);
 
-            wasdph = [false,false,false,false];
-            var codes = ["KeyW", "KeyA", "KeyS", "KeyD", "Space", "ShiftLeft"];
-            document.addEventListener('keydown', (k) => wasdph[codes.indexOf(k.code)] = true);
-            document.addEventListener('keyup', (k) => wasdph[codes.indexOf(k.code)] = false);
+            keys = [false,false,false,false,false];
+            var codes = ["KeyW", "KeyA", "KeyS", "KeyD", "Space", "ShiftLeft", "KeyT"];
+            document.addEventListener('keydown', (k) => keys[codes.indexOf(k.code)] = true);
+            document.addEventListener('keyup', (k) => keys[codes.indexOf(k.code)] = false);
 
             mouse = [0,0,0,0];
             document.addEventListener('mousemove', (m) => mouse = m.buttons == 0
-                ? [m.movementX*.25 + mouse[0]*.75, m.movementY*.25 + mouse[1]*.75] : [0,0]
+                ? [m.movementX*.125 + mouse[0]*.875, m.movementY*.125 + mouse[1]*.875]
+                : [0,0]
             );
 
             requestAnimationFrame(loop);
@@ -221,32 +229,37 @@
         function loop(tock) {
             delta = Math.min(delta+tock-tick, 1000);
 
+            while(delta>=step) {
+                var look = gl.getUniform(program, orientation);
+                var turn = [look,
+                    eulerAA(rotate([1,0,0], conjugate(look)), mouse[1]/64),
+                    eulerAA(rotate([0,1,0], conjugate(look)), mouse[0]/64)
+                ].reduce(compose);
+                gl.uniform4fv(orientation, turn);
+
+                var move = gl.getUniform(program, position);
+                var walk = rotate([
+                    (keys[1]?.1:0) - (keys[3]?.1:0),
+                    (keys[5]?.1:0) - (keys[4]?.1:0),
+                    (keys[0]?.1:0) - (keys[2]?.1:0)
+                ], conjugate(turn));
+                gl.uniform3fv(position, [0,1,2].map(i => move[i]+walk[i]));
+
+                var twist = gl.getUniform(program, hyper);
+                twist[0] += keys[6]?.01:0;
+                gl.uniform3fv(hyper, twist);
+
+                delta -= step;
+            }
+
+            mouse = [0,0];
+
             gl.canvas.width = window.innerWidth;
             gl.canvas.height = window.innerHeight;
             gl.viewport(0,0, gl.canvas.width,gl.canvas.height);
             gl.uniform2fv(aspect, [gl.canvas.width,gl.canvas.height]);
 
-            var look = gl.getUniform(program, orientation);
-            var turn = [look,
-                eulerAA(rotate([1,0,0], conjugate(look)), mouse[1]/64),
-                eulerAA(rotate([0,1,0], conjugate(look)), mouse[0]/64)
-            ].reduce(compose);
-            gl.uniform4fv(orientation, turn);
-
-            mouse = [0,0];
-
-            var move = gl.getUniform(program, position);
-            var walk = rotate([
-                (wasdph[1]?10:0) - (wasdph[3]?10:0),
-                (wasdph[5]?10:0) - (wasdph[4]?10:0),
-                (wasdph[0]?10:0) - (wasdph[2]?10:0)
-            ], conjugate(turn));
-            gl.uniform3fv(position, [0,1,2].map(i => move[i]+walk[i]));
-
-            while(delta>=step) {
-                draw();
-                delta -= step;
-            }
+            draw();
             requestAnimationFrame(loop);
             tick = tock;
         }
