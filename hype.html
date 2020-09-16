@@ -229,30 +229,30 @@
         function loop(tock) {
             delta = Math.min(delta+tock-tick, 1000);
 
+            var look = normalize(gl.getUniform(program, orientation));
+            var move = gl.getUniform(program, position);
+            var twist = gl.getUniform(program, hyper);
             while(delta>=step) {
-                var look = gl.getUniform(program, orientation);
-                var turn = [look,
+                look = [look,
                     eulerAA(rotate([1,0,0], conjugate(look)), mouse[1]/64),
                     eulerAA(rotate([0,1,0], conjugate(look)), mouse[0]/64)
                 ].reduce(compose);
-                gl.uniform4fv(orientation, turn);
 
-                var move = gl.getUniform(program, position);
-                var walk = rotate([
+                move = [move, rotate([
                     (keys['KeyA']?.1:0) - (keys['KeyD']?.1:0),
                     (keys['ShiftLeft']?.1:0) - (keys['Space']?.1:0),
                     (keys['KeyW']?.1:0) - (keys["KeyS"]?.1:0)
-                ], conjugate(turn));
-                gl.uniform3fv(position, [0,1,2].map(i => move[i]+walk[i]));
+                ], conjugate(look))].reduce((l,r) => l.map((a,i) => a + r[i]));
 
-                var twist = gl.getUniform(program, hyper);
                 twist[0] += keys["KeyT"]?.01:0;
-                gl.uniform3fv(hyper, twist);
 
                 delta -= step;
             }
-
             mouse = [0,0];
+
+            gl.uniform4fv(orientation, look);
+            gl.uniform3fv(position, move);
+            gl.uniform3fv(hyper, twist);
 
             gl.canvas.width = window.innerWidth;
             gl.canvas.height = window.innerHeight;
@@ -277,14 +277,7 @@
             gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
             gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-            gl.vertexAttribPointer(
-                vertex,
-                3,
-                gl.FLOAT,
-                false,
-                0,
-                0
-            );
+            gl.vertexAttribPointer(vertex, 3, gl.FLOAT, false, 0, 0);
             gl.enableVertexAttribArray(vertex);
             gl.useProgram(program);
             gl.drawArrays(gl.LINE_STRIP, 0, 13);
