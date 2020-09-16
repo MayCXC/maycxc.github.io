@@ -136,7 +136,7 @@
             return v;
         }
 
-        var gl, program, buffer, vertex, aspect, position, orientation, size, color, keys, mouse, hyper;
+        var gl, program, buffer, vertex, aspect, position, orientation, size, hyper, color, keys, mouse, look, move, twist;
         function start() {
             gl = document.getElementById('scene').getContext('webgl');
 
@@ -196,6 +196,10 @@
                 : [0,0]
             );
 
+            look = normalize(gl.getUniform(program, orientation)),
+            move = gl.getUniform(program, position),
+            twist = gl.getUniform(program, hyper);
+
             requestAnimationFrame(loop);
         }
 
@@ -229,9 +233,6 @@
         function loop(tock) {
             delta = Math.min(delta+tock-tick, 1000);
 
-            var look = normalize(gl.getUniform(program, orientation));
-            var move = gl.getUniform(program, position);
-            var twist = gl.getUniform(program, hyper);
             while(delta>=step) {
                 look = [look,
                     eulerAA(rotate([1,0,0], conjugate(look)), mouse[1]/64),
