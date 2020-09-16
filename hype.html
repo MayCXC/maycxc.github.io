@@ -52,14 +52,16 @@
             return mat4(outer + mat3(scalar*scalar) + 2.0*scalar*skew + skew*skew);
         }
 
-        mat4 rotatehyper(float t, int a) {
+        mat4 rotatehyper(float t, int a, int b) {
             mat4 rodriguez = mat4(1.0);
-            for(int i=0; i<3; i+=1) {
-                if(i == a) {
-                    rodriguez[i][i] = cos(t);
-                    rodriguez[i][3] = sin(t);
-                    rodriguez[3][i] = -rodriguez[i][3];
-                    rodriguez[3][3] = rodriguez[i][i];
+            for(int i=0; i<4; i+=1) {
+                for(int j=0; j<4; j+=1) {
+                    if(i==a && j==b) {
+                        rodriguez[i][i] = cos(t);
+                        rodriguez[j][j] = rodriguez[i][i];
+                        rodriguez[i][j] = sin(t);
+                        rodriguez[j][i] = -rodriguez[i][j];
+                    } 
                 }
             }
             return rodriguez;
@@ -86,12 +88,11 @@
         void main() {
             vec4 vertextwo =
                 translate(vec3(0,0,0))
-                * rotatehyper(hyper.x, 0)
+                * rotatehyper(hyper.x, 0, 3)
                 * scale(size)
                 * vertex;
 
-//            vertextwo.w = clamp(abs(vertextwo.w), .8, 1.2);
-
+            vertextwo.w = 2.0-vertextwo.w;
 
             gl_Position = project() // P
             // V
