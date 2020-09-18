@@ -96,7 +96,7 @@
         }
 
         void main() {
-            color = translate(vec3(.5,.5,.5)) * scale(vec3(.5,.5,.5)) * vertex;
+            color = translate(vec3(.25,.25,.25)) * rotatehyper(hyper.x*5.0, 0, 2.0, scale(vec3(.25,.25,.25)) * vertex);
 
             gl_Position = project() // P
             * scale(vec3(1.0,1.0,1.0)) // V
@@ -104,8 +104,8 @@
             * translate(position)
             * translate(vec3(0,0,0)) // M
             * rotatehyper(hyper.x, 0, 2.0,
-              scale(size)
-              * vertex
+            // scale(size) *
+              vertex
             );
         }
     </script>
@@ -118,11 +118,15 @@
         #endif
         varying vec4 color;
         void main() {
+            vec4 normal = color;
             int edges = 0;
             for(int i=0; i<3; i+=1) {
-                edges += abs(color[i] - (color[i]<.5?0.0:1.0)) < .01 ? 1 : 0;
+//              edges += abs(normal[i] - (normal[i]<0.5?0.0:1.0)) < .01 ? 1 : 0;
+                if(normal[i] == 0.0) {
+
+                }
             }
-            gl_FragColor = edges < 2 ? color : vec4(1.0,1.0,1.0,1.0);
+            gl_FragColor = edges < 2 ? normal : vec4(1.0,1.0,1.0,1.0);
         }
     </script>
 
@@ -153,11 +157,11 @@
             vbocube = gl.createBuffer();
             gl.bindBuffer(gl.ARRAY_BUFFER, vbocube);
             var vertices = new Float32Array([
-                -1,-1,-1, +1,-1,-1, -1,+1,-1, +1,+1,-1,
-                -1,-1,+1, +1,-1,+1, -1,+1,+1, +1,+1,+1,
+                -1,-1,-1,+1, +1,-1,-1,+1, -1,+1,-1,+1, +1,+1,-1,+1,
+                -1,-1,+1,+1, +1,-1,+1,+1, -1,+1,+1,+1, +1,+1,+1,+1
             ]);
             gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-            
+
             /*
             *     6__________7
             *     /|        /|
@@ -256,7 +260,7 @@
                     (keys['KeyS']?.1:0) - (keys["KeyW"]?.1:0)
                 ], conjugate(look))].reduce((l,r) => l.map((a,i) => a + r[i]));
 
-                twist[0] += keys["KeyT"]?.01:0;
+                twist[0] += keys["KeyT"]?.025:0;
 
                 delta -= step;
             }
@@ -291,7 +295,7 @@
 //            gl.cullFace(gl.GL_FRONT);
 
             gl.useProgram(program);
-            gl.vertexAttribPointer(vertex, 3, gl.FLOAT, false, 0, 0);
+            gl.vertexAttribPointer(vertex, 4, gl.FLOAT, false, 0, 0);
             gl.enableVertexAttribArray(vertex);
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebocube);
             gl.drawElements(gl.TRIANGLE_STRIP, 14, gl.UNSIGNED_SHORT, 0);
