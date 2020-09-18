@@ -96,7 +96,8 @@
         }
 
         void main() {
-            color =  translate(vec3(.3,.3,.3)) * scale(vec3(.5,.5,.5)) * rotatehyper(hyper.x * 16.0, 0, 2.0, vertex);
+            color = translate(vec3(.5,.5,.5)) * scale(vec3(.5,.5,.5)) * vertex;
+
             gl_Position = project() // P
             * scale(vec3(1.0,1.0,1.0)) // V
             * rotate(orientation)
@@ -117,19 +118,15 @@
         #endif
         varying vec4 color;
         void main() {
-            gl_FragColor = vec4(color.xyz, 1.0);
+            int edges = 0;
+            for(int i=0; i<3; i+=1) {
+                edges += abs(color[i] - (color[i]<.5?0.0:1.0)) < .01 ? 1 : 0;
+            }
+            gl_FragColor = edges < 2 ? color : vec4(1.0,1.0,1.0,1.0);
         }
     </script>
 
     <script>
-        function zorder(p, n) {
-            var v = [];
-            for(var i=0; i<n; i+=1) {
-                v[i] = (p&(1<<i))==0?1:-1;
-            }
-            return v;
-        }
-
         var gl, program, vaocube, vbocube, ebocube, vertex, aspect, position, orientation, size, hyper, color, keys, mouse, look, move, twist;
         function start() {
             gl = document.getElementById('scene').getContext('webgl');
