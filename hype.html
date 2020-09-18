@@ -195,7 +195,7 @@
             
             aspect = gl.getUniformLocation(program, 'aspect');
             position = gl.getUniformLocation(program, 'position');
-            gl.uniform3fv(position, [0.0,0.0,3.0]);
+            gl.uniform3fv(position, [0.0,0.0,-3.0]);
             orientation = gl.getUniformLocation(program, 'orientation');
             gl.uniform4fv(orientation, [0.0,0.0,0.0,1.0]);
             size = gl.getUniformLocation(program, 'size');
