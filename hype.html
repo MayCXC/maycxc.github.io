@@ -88,30 +88,26 @@
         }
 
         mat4 project() {
+            float f = tan(3.14/4.0);
             return mat4(
-                aspect.y/length(aspect),0,0,0,
-                0,aspect.x/length(aspect),0,0,
-                0,0,-1.0,-1.0,
-                0,0,-1.0,0
+                f*aspect.y/aspect.x,0,0,0,
+                0,f,0,0,
+                0,0,(1.0+1000.0)/(1.0-1000.0),-1.0,
+                0,0,2.0*1.0*1000.0/(1.0-1000.0),0
             );
         }
 
         void main() {
-            color = translate(vec3(abs(saturation),abs(saturation),abs(saturation)))
-                * rotatehyper(hyper.x*5.0*saturation, 0, 2.0,
-                  scale(vec3(saturation,saturation,saturation))
-                  * vertex
-                );
+            color = translate(vec3(.5,.5,.5))
+                * scale(vec3(.5,.5,.5))
+                * vertex;
 
             gl_Position = project() // P
                 * scale(vec3(1.0,1.0,1.0)) // V
                 * rotate(orientation)
                 * translate(position)
                 * translate(vec3(0,0,0)) // M
-                * rotatehyper(hyper.x, 0, 2.0,
-                // scale(size) *
-                vertex
-                );
+                * rotatehyper(hyper.x, 0, 2.0, scale(size) * vertex);
         }
     </script>
 
@@ -124,12 +120,9 @@
         varying vec4 color;
         void main() {
             vec4 normal = color;
-            for(int i=0; i<3; i+=1) {
-            }
-            if(mod(length(normal)*length(normal)/2.0, .5) < .125/2.0) {
-                normal[3] = 0.0;
-            }
-        gl_FragColor = normal;
+            int center = 0;
+            normal[3] = length(vec3(.5,.5,.5) - normal.xyz) < .6 ? 0.0 : 1.0;
+            gl_FragColor = normal;
         }
     </script>
 
@@ -288,18 +281,19 @@
         }
 
         function draw() {
-            gl.clearColor(0,0,0,1);
+            gl.clearColor(0,0,0,1.0);
             gl.clearDepth(1.0);
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
             gl.enable(gl.DEPTH_TEST);
-            gl.depthFunc(gl.LEQUAL);
+            gl.depthFunc(gl.LESS);
 
             gl.enable(gl.BLEND);
             gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-//            gl.enable(gl.GL_CULL_FACE);
-//            gl.cullFace(gl.GL_FRONT);
+            //gl.enable(gl.CULL_FACE);
+            //gl.frontFace(gl.CW);
+            //gl.cullFace(gl.BACK);
 
             gl.useProgram(program);
             gl.vertexAttribPointer(vertex, 4, gl.FLOAT, false, 0, 0);
@@ -309,7 +303,7 @@
 
             gl.uniform1f(saturation, .25);
             gl.drawElements(gl.TRIANGLE_STRIP, 14, gl.UNSIGNED_SHORT, 0);
-            gl.uniform1f(saturation, .75);
+            gl.uniform1f(saturation, 1.0);
             gl.drawElements(gl.LINE_STRIP, 14, gl.UNSIGNED_SHORT, 0);
         }
     </script>
