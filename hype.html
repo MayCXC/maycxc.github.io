@@ -16,6 +16,7 @@
 
     <script id="cube" type="x-shader/x-vertex">
         attribute vec4 vertex;
+        varying vec4 color;
         uniform vec2 aspect;
         uniform vec3 position;
         uniform vec4 orientation;
@@ -52,25 +53,27 @@
             return mat4(outer + mat3(scalar*scalar) + 2.0*scalar*skew + skew*skew);
         }
 
-        vec4 rotatehyper(float t, int a, float d, vec4 v) {
+        mat4 rotateplane(float t, int a, int b) {
             mat4 rodriguez = mat4(1.0);
             for(int i=0; i<4; i+=1) {
                 for(int j=0; j<4; j+=1) {
-                    if(i==a && j==a) {
-                        rodriguez[i][j] = cos(t);
-                        rodriguez[3][3] = rodriguez[i][i];
-                        rodriguez[i][3] = sin(t);
-                        if(i == j+1 || i == j+1-3) { // right hand rule? fano plane? no int mod? who knows?
-                            rodriguez[i][3] = -rodriguez[i][3];
-                        }
-                        rodriguez[3][i] = -rodriguez[i][3]; // skew symmetric
-                        break;
+                    if(i == a && j == a || i == b && j == b) {
+                        rodriguez[i][i] = cos(t);
+                    }
+                    else if(i == a && j == b || i == b && j == a) {
+                        rodriguez[i][j] = sin(t);
+                    }
+                    if(i==j+1 || i==j+1-3 || i==j+1-4) { // right hand rule? fano plane? mod three or four? who knows?
+                        rodriguez[i][j] = -rodriguez[i][j];
                     }
                 }
             }
+            return rodriguez;
+        }
 
-            vec4 r = rodriguez * v;
-            r.w = d - r.w;
+        vec4 rotatehyper(float t, int a, float d, vec4 v) {
+            vec4 r = rotateplane(t,a,3) * v;
+            r.w = d - r.w; // bro do you even fifth dimension?
             return r;
         }
 
@@ -87,20 +90,22 @@
             return mat4(
                 aspect.y/length(aspect),0,0,0,
                 0,aspect.x/length(aspect),0,0,
-                0,0,1.0,-1.0,
-                0,0,0.0,1.0
+                0,0,1.0,1.0,
+                0,0,-1.0,0
             );
         }
 
         void main() {
+            color =  translate(vec3(.3,.3,.3)) * scale(vec3(.5,.5,.5)) * rotatehyper(hyper.x * 16.0, 0, 2.0, vertex);
             gl_Position = project() // P
-            // V
-            * scale(vec3(1.0,1.0,1.0))
+            * scale(vec3(1.0,1.0,1.0)) // V
             * rotate(orientation)
             * translate(position)
-            // M
-            * translate(vec3(0,0,0))
-            * rotatehyper(hyper.x, 0, 2.0, scale(size) * vertex); // bro do you even fifth dimension
+            * translate(vec3(0,0,0)) // M
+            * rotatehyper(hyper.x, 0, 2.0,
+              scale(size)
+              * vertex
+            );
         }
     </script>
 
@@ -110,24 +115,13 @@
         #else
         precision mediump float;
         #endif
-        uniform vec4 color;
+        varying vec4 color;
         void main() {
-            gl_FragColor = color;
+            gl_FragColor = vec4(color.xyz, 1.0);
         }
     </script>
 
     <script>
-        /*
-         *     2__________3
-         *     /|        /|
-         *    / |       / |
-         *  6/__|_____7/  |
-         *  |  0|______|_1|
-         *  |  /       |  /
-         *  | /        | /
-         * 4|/________5|/
-         *
-         */
         function zorder(p, n) {
             var v = [];
             for(var i=0; i<n; i+=1) {
@@ -136,7 +130,7 @@
             return v;
         }
 
-        var gl, program, buffer, vertex, aspect, position, orientation, size, hyper, color, keys, mouse, look, move, twist;
+        var gl, program, vaocube, vbocube, ebocube, vertex, aspect, position, orientation, size, hyper, color, keys, mouse, look, move, twist;
         function start() {
             gl = document.getElementById('scene').getContext('webgl');
 
@@ -159,24 +153,43 @@
 
             console.log(gl.getProgramInfoLog(program));
 
-            buffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+            vbocube = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, vbocube);
             var vertices = new Float32Array([
-                -1,-1,-1, 1,-1,-1, -1,1,-1, 1,1,-1,
-                1,1,1, 1,-1,-1, 1,-1,1, -1,-1,1,
-                1,1,1, -1,1,1, -1,1,-1, -1,-1,1,
-                -1,-1,-1
+                -1,-1,-1, +1,-1,-1, -1,+1,-1, +1,+1,-1,
+                -1,-1,+1, +1,-1,+1, -1,+1,+1, +1,+1,+1,
             ]);
             gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+            
+            /*
+            *     6__________7
+            *     /|        /|
+            *    / |       / |
+            *  2/__|_____3/  |
+            *  |  4|______|_5|
+            *  |  /       |  /
+            *  | /        | /
+            * 0|/________1|/
+            *
+            */
+
+            ebocube = gl.createBuffer();
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebocube);
+            var elements = new Uint16Array([
+                0,1,
+                2,3, 7,1, 5,0,
+                4,2, 6,7, 4,5
+            ]);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, elements, gl.STATIC_DRAW);
 
             gl.useProgram(program);
 
             vertex = gl.getAttribLocation(program, 'vertex');
             gl.enableVertexAttribArray(vertex);
-
+            
             aspect = gl.getUniformLocation(program, 'aspect');
             position = gl.getUniformLocation(program, 'position');
-            gl.uniform3fv(position, [0.0,0.0,-1.0]);
+            gl.uniform3fv(position, [0.0,0.0,3.0]);
             orientation = gl.getUniformLocation(program, 'orientation');
             gl.uniform4fv(orientation, [0.0,0.0,0.0,1.0]);
             size = gl.getUniformLocation(program, 'size');
@@ -192,7 +205,7 @@
 
             mouse = [0,0,0,0];
             document.addEventListener('mousemove', (m) => mouse = m.buttons == 0
-                ? [m.movementX*.125 + mouse[0]*.875, m.movementY*.125 + mouse[1]*.875]
+                ? [mouse[0]*.875 - m.movementX*.125, mouse[1]*.875 - m.movementY*.125]
                 : [0,0]
             );
 
@@ -229,9 +242,10 @@
             return q.map(c => c/l);
         }
 
-        var step=1000/60, tick=0, delta=0;
-        function loop(tock) {
-            delta = Math.min(delta+tock-tick, 1000);
+        var step=1000/60, tock=0, delta=0;
+        function loop(tick) {
+            delta = Math.min(delta+tick-tock, 1000);
+            tock = tick;
 
             while(delta>=step) {
                 look = [look,
@@ -242,7 +256,7 @@
                 move = [move, rotate([
                     (keys['KeyA']?.1:0) - (keys['KeyD']?.1:0),
                     (keys['ShiftLeft']?.1:0) - (keys['Space']?.1:0),
-                    (keys['KeyW']?.1:0) - (keys["KeyS"]?.1:0)
+                    (keys['KeyS']?.1:0) - (keys["KeyW"]?.1:0)
                 ], conjugate(look))].reduce((l,r) => l.map((a,i) => a + r[i]));
 
                 twist[0] += keys["KeyT"]?.01:0;
@@ -263,10 +277,8 @@
 
             draw();
             requestAnimationFrame(loop);
-            tick = tock;
         }
 
-        var t = 0.0;
         function draw() {
             gl.clearColor(0,0,0,1);
             gl.clearDepth(1.0);
@@ -278,12 +290,14 @@
             gl.enable(gl.BLEND);
             gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+//            gl.enable(gl.GL_CULL_FACE);
+//            gl.cullFace(gl.GL_FRONT);
+
+            gl.useProgram(program);
             gl.vertexAttribPointer(vertex, 3, gl.FLOAT, false, 0, 0);
             gl.enableVertexAttribArray(vertex);
-            gl.useProgram(program);
-            gl.drawArrays(gl.LINE_STRIP, 0, 13);
-            t += 1;
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebocube);
+            gl.drawElements(gl.TRIANGLE_STRIP, 14, gl.UNSIGNED_SHORT, 0);
         }
     </script>
 </head>
