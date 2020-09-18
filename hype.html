@@ -17,6 +17,7 @@
     <script id="cube" type="x-shader/x-vertex">
         attribute vec4 vertex;
         varying vec4 color;
+        uniform float saturation;
         uniform vec2 aspect;
         uniform vec3 position;
         uniform vec4 orientation;
@@ -90,23 +91,27 @@
             return mat4(
                 aspect.y/length(aspect),0,0,0,
                 0,aspect.x/length(aspect),0,0,
-                0,0,1.0,1.0,
+                0,0,-1.0,-1.0,
                 0,0,-1.0,0
             );
         }
 
         void main() {
-            color = translate(vec3(.25,.25,.25)) * rotatehyper(hyper.x*5.0, 0, 2.0, scale(vec3(.25,.25,.25)) * vertex);
+            color = translate(vec3(abs(saturation),abs(saturation),abs(saturation)))
+                * rotatehyper(hyper.x*5.0*saturation, 0, 2.0,
+                  scale(vec3(saturation,saturation,saturation))
+                  * vertex
+                );
 
             gl_Position = project() // P
-            * scale(vec3(1.0,1.0,1.0)) // V
-            * rotate(orientation)
-            * translate(position)
-            * translate(vec3(0,0,0)) // M
-            * rotatehyper(hyper.x, 0, 2.0,
-            // scale(size) *
-              vertex
-            );
+                * scale(vec3(1.0,1.0,1.0)) // V
+                * rotate(orientation)
+                * translate(position)
+                * translate(vec3(0,0,0)) // M
+                * rotatehyper(hyper.x, 0, 2.0,
+                // scale(size) *
+                vertex
+                );
         }
     </script>
 
@@ -119,19 +124,19 @@
         varying vec4 color;
         void main() {
             vec4 normal = color;
-            int edges = 0;
             for(int i=0; i<3; i+=1) {
-//              edges += abs(normal[i] - (normal[i]<0.5?0.0:1.0)) < .01 ? 1 : 0;
-                if(normal[i] == 0.0) {
-
-                }
             }
-            gl_FragColor = edges < 2 ? normal : vec4(1.0,1.0,1.0,1.0);
+            if(mod(length(normal)*length(normal)/2.0, .5) < .125/2.0) {
+                normal[3] = 0.0;
+            }
+        gl_FragColor = normal;
         }
     </script>
 
     <script>
-        var gl, program, vaocube, vbocube, ebocube, vertex, aspect, position, orientation, size, hyper, color, keys, mouse, look, move, twist;
+        var gl, program, vaocube, vbocube, ebocube, vertex,
+            aspect, position, orientation, size, hyper, color, saturation,
+            keys, mouse, look, move, twist;
         function start() {
             gl = document.getElementById('scene').getContext('webgl');
 
@@ -199,6 +204,8 @@
             gl.uniform3fv(hyper, [0.0,0.0,0.0]);
             color = gl.getUniformLocation(program, 'color');
             gl.uniform4fv(color, [0.3,0.6,0.9,0.3]);
+            saturation = gl.getUniformLocation(program, 'saturation');
+            gl.uniform1f(saturation, .25);
 
             keys = {KeyW: false, KeyA: false, KeyS: false, KeyD: false, Space: false, ShiftLeft: false, KeyT: false};
             document.addEventListener('keydown', (k) => keys[k.code] = true);
@@ -206,7 +213,7 @@
 
             mouse = [0,0,0,0];
             document.addEventListener('mousemove', (m) => mouse = m.buttons == 0
-                ? [mouse[0]*.875 - m.movementX*.125, mouse[1]*.875 - m.movementY*.125]
+                ? [m.movementX*.125 + mouse[0]*.875, m.movementY*.125 + mouse[1]*.875]
                 : [0,0]
             );
 
@@ -257,7 +264,7 @@
                 move = [move, rotate([
                     (keys['KeyA']?.1:0) - (keys['KeyD']?.1:0),
                     (keys['ShiftLeft']?.1:0) - (keys['Space']?.1:0),
-                    (keys['KeyS']?.1:0) - (keys["KeyW"]?.1:0)
+                    (keys["KeyW"]?.1:0) - (keys['KeyS']?.1:0)
                 ], conjugate(look))].reduce((l,r) => l.map((a,i) => a + r[i]));
 
                 twist[0] += keys["KeyT"]?.025:0;
@@ -298,7 +305,12 @@
             gl.vertexAttribPointer(vertex, 4, gl.FLOAT, false, 0, 0);
             gl.enableVertexAttribArray(vertex);
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebocube);
+
+
+            gl.uniform1f(saturation, .25);
             gl.drawElements(gl.TRIANGLE_STRIP, 14, gl.UNSIGNED_SHORT, 0);
+            gl.uniform1f(saturation, .75);
+            gl.drawElements(gl.LINE_STRIP, 14, gl.UNSIGNED_SHORT, 0);
         }
     </script>
 </head>
