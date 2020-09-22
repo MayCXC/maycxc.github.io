@@ -299,8 +299,8 @@
 
                 move = [move, rotate([
                     (keys['KeyA']?.1:0) - (keys['KeyD']?.1:0),
-                    (keys['ShiftLeft']?.1:0) - (keys['Space']?.1:0),
-                    (keys["KeyW"]?.1:0) - (keys['KeyS']?.1:0)
+                    (keys['KeyS']?.1:0) - (keys['KeyW']?.1:0),
+                    (keys["Space"]?.1:0) - (keys['ShiftLeft']?.1:0)
                 ], conjugate(look))].reduce((l,r) => l.map((a,i) => a + r[i]));
 
                 twist += keys["KeyT"]?.025:0;
