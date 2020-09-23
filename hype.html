@@ -241,11 +241,13 @@
             gl.uniform1i(toss, 1);
 
             keys = {KeyW: false, KeyA: false, KeyS: false, KeyD: false, Space: false, ShiftLeft: false, KeyT: false};
-            document.addEventListener('keydown', (k) => keys[k.code] = true);
-            document.addEventListener('keyup', (k) => keys[k.code] = false);
+            document.addEventListener('keydown', k => keys[k.code] = true);
+            document.addEventListener('keyup', k => keys[k.code] = false);
 
             mouse = [0,0,0,0];
-            document.addEventListener('mousemove', (m) => mouse = m.buttons == 0
+            var trap = true;
+            document.addEventListener('click', m => trap ^= m.buttons>>>1 === 0);
+            document.addEventListener('mousemove', m => mouse = !trap
                 ? [m.movementX*.125 + mouse[0]*.875, m.movementY*.125 + mouse[1]*.875]
                 : [0,0]
             );
@@ -305,7 +307,7 @@
                     (keys["Space"]?.1:0) - (keys['ShiftLeft']?.1:0)
                 ], conjugate(look))].reduce((l,r) => l.map((a,i) => a + r[i]));
 
-                twist += keys["KeyT"]?.0125:0;
+                twist += .015625; // keys["KeyT"]?.015625:0;
 
                 delta -= step;
             }
@@ -333,14 +335,17 @@
         ];
 
         horizontal = [
-            [0.0,0,0,0, 1.0,1.0,0.5,0, 0,0,0.5,0, 0,0,0,1.0], // broad saturated
+            [0.5,0,0,0, 0.5,1.0,0.25,0, 0,0,0.75,0, 0,0,0,1.0], // broad saturated
             [0.0,0,0.5,0, 0,0.0,0,0, 0,0,0.5,0, 0,0,0,1.0], // broad chromatic
             [1.0,0,0,0, 0,0.0,0,0, 0,0,0.5,0, 0,0.25,0.25,1.0], // muted
             [1.0,0,0,0, 0,1.0,0,0, 0,0,1.0,0, 0,0,0,1.0],
         ];
 
         function draw() {
-            gl.clearColor(0,0,0,1.0);
+            var r = Math.sin(twist - Math.PI*2.0/3.0) * 0.25;
+            var g = Math.sin(twist) * 0.25;
+            var b = Math.sin(twist + Math.PI*2.0/3.0) * 0.25;
+            gl.clearColor(r,g,b,1.0);
             gl.clearDepth(1.0);
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
