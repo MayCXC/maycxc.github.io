@@ -165,6 +165,8 @@
 
             console.log(gl.getProgramInfoLog(program));
 
+            gl.useProgram(program);
+
             vbocube = gl.createBuffer();
             gl.bindBuffer(gl.ARRAY_BUFFER, vbocube);
             vertices = new Float32Array([
@@ -183,14 +185,13 @@
             ]);
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, elements, gl.STATIC_DRAW);
 
-            gl.useProgram(program);
-
             locations = { 'vertex': gl.getAttribLocation(program, 'vertex') };
             for(let i=0; i<gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS); i+=1) {
                 const name = gl.getActiveUniform(program, i).name;
                 locations[name] = gl.getUniformLocation(program, name);
             }
 
+            gl.vertexAttribPointer(locations.vertex, 4, gl.FLOAT, false, 0, 0);
             gl.enableVertexAttribArray(locations.vertex);
 
             gl.uniform3fv(locations.zoom, [1.0,1.0,1.0]);
@@ -302,7 +303,7 @@
 
         horizontal = [
             [0.5,0,0,0, 0.5,1.0,0.25,0, 0,0,0.75,0, 0,0,0,1.0], // broad saturated
-            [0.0,0,0.1,0, 0,0.0,0.1,0, 0,0,0.8,0, 0,0,0,1.0], // broad chromatic
+            [1.0,0,0.125,0, 0,0.0,0.125,0, 0,0,0.75,0, 0,0,0,1.0], // broad chromatic
             [1.0,0,0,0, 0,0.0,0,0, 0,0,0.5,0, 0,0.25,0.25,1.0], // muted
             [1.0,0,0,0, 0,1.0,0,0, 0,0,1.0,0, 0,0,0,1.0],
         ];
@@ -322,10 +323,6 @@
 //            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 //            gl.depthMask(gl.FALSE);
 //            gl.enable(gl.CULL_FACE);
-
-            gl.vertexAttribPointer(locations.vertex, 4, gl.FLOAT, false, 0, 0);
-            gl.enableVertexAttribArray(locations.vertex);
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebocube);
 
             for(i=0; i<4; i+=1) {
                 gl.uniformMatrix4fv(locations.above, false, horizontal[i]);
