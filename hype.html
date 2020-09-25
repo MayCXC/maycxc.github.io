@@ -319,11 +319,6 @@
             gl.enable(gl.DEPTH_TEST);
             gl.depthFunc(gl.LEQUAL);
 
-//            gl.enable(gl.BLEND);
-//            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-//            gl.depthMask(gl.FALSE);
-//            gl.enable(gl.CULL_FACE);
-
             for(i=0; i<4; i+=1) {
                 gl.uniformMatrix4fv(locations.above, false, horizontal[i]);
                 for(j=0; j<4; j+=1) {
