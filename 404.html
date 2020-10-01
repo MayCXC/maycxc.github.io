@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8"/>
     <title>FOUROHFOUR</title>
     <script type="application/x-javascript">
 /*
@@ -24,7 +25,6 @@ var starcount = 300;
 var starbuffer = [];
 var angle = [0,0,0];
 var ofs = [0,0,0];
-
 var fps = 60;
 
 function resize() {
@@ -88,8 +88,8 @@ function draw() {
 			var xp = Math.round(dot(a,m[0]) * zf / z) + w2;
 			var yp = Math.round(dot(a,m[1]) * zf / z) + h2;
 			if (xp >= 0 && xp < w && yp >= 0 && yp < h) {
-				z = Math.min(32768 / z + 0.1, 6);
-				ctx.fillRect(xp,yp,z,z);
+				var zp = Math.min(32768 / z + 0.1, 6);
+				ctx.fillRect(xp,yp,zp,zp);
 			}
 		}
 	}
