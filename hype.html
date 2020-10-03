@@ -274,7 +274,7 @@
                     (keys["Space"]?.1:0) - (keys['ShiftLeft']?.1:0)
                 ], conjugate(look))].reduce((l,r) => l.map((a,i) => a + r[i]));
 
-                twist += .015625; // keys["KeyT"]?.015625:0;
+                twist += keys["KeyT"]?0:.005;
 
                 delta -= step;
             }
