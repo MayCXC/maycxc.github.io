@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <script type="application/x-javascript">
+            var ctx, w, w2, h, h2, diagonal;
+
+            var left = [0,0,0,1];
+            var right = [0,0,0,1];
+            var mouse = [0,0,0,0,0,0,0,0];
+
+            function identity(d, s) {
+                var m = [];
+                for(var i=0; i<d; i+=1) {
+                    m[i] = [];
+                    for(var j=0; j<d; j+=1) {
+                        m[i][j] = 0;
+                    }
+                    m[i][i] = s;
+                }
+                return m;
+            }
+
+            var five = identity(4,1);
+            var four = identity(4,1);
+
+            function ttt(l, r) {
+                var t = [];
+                for(var i=0; i<Math.min(l.length,r.length); i+=1) {
+                    t[i] = l[i]+r[i];
+                }
+                return t;
+            }
+
+            function ete(l, r) {
+                var m = [];
+                for(var i=0; i<Math.min(l.length,r.length); i+=1) {
+                    m[i] = ttt(l[i],r[i]);
+                }
+                return m;
+            }
+
+            function dot(l, r) {
+                var d = 0.0;
+                for(var i=0; i<Math.min(l.length,r.length); i+=1) {
+                    d += l[i]*r[i];
+                }
+                return d;
+            }
+
+            function out(l, r) {
+                var m = [];
+                for(var i=0; i<l.length; i+=1) {
+                    m[i] = [];
+                    for(var j=0; j<r.length; j+=1) {
+                        m[i][j] = l[i] *r[j];
+                    }
+                }
+                return m;
+            }
+
+            function transform(m, v) {
+                var u = [];
+                for(var i=0; i<m.length; i+=1) {
+                    u[i] = dot(m[i], v);
+                }
+                return u;
+            }
+
+            function transpose(m) {
+                var t = [];
+                for(var i=0; i<Math.max(...(m.map(a => a.length))); i+=1) {
+                    t[i] = [];
+                    for(var j=0; j<m.length; j+=1) {
+                        t[i][j] = m[j][i];
+                    }
+                }
+                return t;
+            }
+
+            function compose(l, r) {
+                var c = [];
+                var t = transpose(r);
+                for(var i=0; i<l.length; i+=1) {
+                    c[i] = [];
+                    for(var j=0; j<t.length; j+=1) {
+                        c[i][j] = dot(l[i],t[j]);
+                    }
+                }
+                return c;
+            }
+
+            function cross(l, r) {
+                return [
+                    l[1]*r[2] - l[2]*r[1],
+                    l[2]*r[0] - l[0]*r[2],
+                    l[0]*r[1] - l[1]*r[0]
+                ];
+            }
+
+            function qcompose(q, p) {
+                var v = q.slice(0,3);
+                var u = p.slice(0,3);
+                return [ v.map(e => e*p[3]), u.map(e => e*q[3]), cross(v,u) ]
+                    .reduce(ttt).concat(q[3]*p[3] - dot(v,u));
+            }
+
+            function qnormalize(q) {
+                var l = Math.hypot(...q);
+                q[0] /= l;
+                q[1] /= l;
+                q[2] /= l;
+                q[3] /= l;
+            }
+
+            function qthree(q) {
+                var id = identity(3,1);
+                var v = q.slice(0,3);
+                var x = id.map(u => cross(u,v));
+                var m = [
+                    out(v,v),
+                    identity(3,q[3]*q[3]),
+                    compose(identity(3,2*q[3]),x),
+                    compose(x,x)
+                ].reduce(ete);
+                for(var i=0; i<3; i+=1) {
+                    m[i][3] = 0;
+                }
+                m[3] = [0,0,0,1];
+                return m;
+            }
+
+            function qpfour(q,p) {
+                return compose(
+                    [   [+q[2],+q[3],-q[1],+q[0]],
+                        [+q[0],+q[1],+q[3],-q[2]],
+                        [+q[1],-q[0],+q[2],+q[3]],
+                        [+q[3],-q[2],-q[0],-q[1]]
+                    ],
+                    [   [+p[2],+p[3],+p[1],-p[0]],
+                        [+p[0],-p[1],+p[3],+p[2]],
+                        [+p[1],+p[0],-p[2],+p[3]],
+                        [+p[3],-p[2],-p[0],-p[1]]
+                    ],
+                );
+            }
+
+            function resize() {
+                var scene = document.getElementById('scene');
+                w = scene.width = window.innerWidth;
+                h = scene.height = window.innerHeight;
+                w2 = w / 2;
+                h2 = h / 2;
+                diagonal = Math.hypot(w,h);
+                ctx = scene.getContext('2d');
+            }
+
+            function init() {
+                resize();
+                document.addEventListener('mousemove', m => {
+                    mouse[0] = m.movementX;
+                    mouse[1] = m.movementY;
+                    mouse[2] = m.pageX;
+                    mouse[3] = m.pageY;
+                });
+                if (!!ctx) {
+                    requestAnimationFrame(loop);
+                }
+            }
+
+            var step=1000/60, tock=0, delta=0;
+            function loop(tick) {
+                delta += Math.max(Math.min(tick-tock,16),0);
+                tock = tick;
+                while(delta>=step) {
+                    delta -= step;
+                }
+
+                five = qpfour(left,right);
+
+                four = [
+                    [diagonal,0,0,0],
+                    [0,diagonal,0,h2],
+                    [0,0,1.0,6.0]
+                ];
+
+                function slide(m, x, y, t) {
+                    m[x] = m[x]*(1.0-t) + m[0]*t;
+                    m[y] = m[y]*(1.0-t) + m[1]*t;
+                    mouse[0] = 0;
+                    mouse[1] = 0;
+                }
+
+                var d = dot([mouse[0], mouse[1]], [mouse[2]-w2, mouse[3]-h2]);
+                if(d<0) slide(mouse,4,5,.125);
+                if(0<d) slide(mouse,6,7,.125);
+
+                function twist(x, y) {
+                    var l = Math.hypot(x, y);
+                    if(0===l) {
+                        return twist(
+                            4*Math.cos((tock/Math.pow(2.0,15))*3.0),
+                            3*Math.sin((tock/Math.pow(2.0,15))*4.0)
+                        );
+                    }
+                    else {
+                        var t = l/1024.0;
+                        var s = Math.sin(t/2);
+                        return [s*y/l, s*-x/l, 0, Math.cos(t/2)];
+                    }
+                    return [0,0,0,1];
+                }
+
+                left = qcompose(twist(mouse[4],mouse[5]), left);
+                right = qcompose(twist(mouse[6],mouse[7]), right);
+
+                qnormalize(left);
+                qnormalize(right);
+
+                draw();
+                requestAnimationFrame(loop);
+            }
+
+            function project(p) {
+                var t = transform(four, p);
+                t = t.slice(0,2).map(d => d/t[2]);
+                t[0] += w2;
+                t[1] += h2;
+                return t;
+            }
+
+            let cursor = 0;
+            const KONAMI_CODE = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
+            var outrun = false;
+            document.addEventListener('keydown', (e) => {
+                if(e.keyCode === KONAMI_CODE[cursor])
+                    cursor += 1;
+                else {
+                    cursor = 0;
+                }
+                if(cursor === KONAMI_CODE.length) {
+                    outrun = true;
+                    tock = 0;
+                }
+            });
+
+            function draw() {
+                ctx.clearRect(0,0,w,h);
+                ctx.globalCompositeOperation = "source-over";
+
+                if(outrun) {
+                    var t = 1.0-(1.0/(1.0+(tock/3600.0)));
+                    ctx.strokeStyle = "rgb("+t*255+","+0+","+t*255+")";
+                    ctx.lineWidth=1;
+
+                    for(var x=-2; x<=2; x+=.8) {
+                        ctx.beginPath();
+                        ctx.moveTo(...project([x,.5,16]));
+                        ctx.lineTo(...project([x,.5,1]));
+                        ctx.stroke();
+                    }
+
+                    ctx.beginPath();
+                    ctx.moveTo(...project([-2,.5,16]));
+                    ctx.lineTo(...project([+2,.5,16]));
+                    ctx.stroke();
+
+                    for(var z=1; z<=16; z+=1) {
+                        var m = z-(tock/1000.0)%1.0;
+                        ctx.beginPath();
+                        ctx.moveTo(...project([-2,.5,m]));
+                        ctx.lineTo(...project([+2,.5,m]));
+                        ctx.stroke();
+                    }
+
+                    ctx.fillStyle = "rgb("+t*160+","+0+","+t*64+")";
+                    ctx.shadowColor = ctx.fillStyle;
+                    ctx.shadowBlur = 16+16*Math.pow(Math.sin(tock/1000.0),2);
+                    ctx.beginPath();
+                    ctx.arc(...project([0,.5,16.25]),diagonal/8.0,Math.PI,0);
+                    ctx.fill();
+
+                    ctx.strokeStyle = "#000000";
+                    ctx.shadowColor = "#FF0000";
+                    ctx.shadowBlur = 4;
+                    for(var y=0; y<3; y+=1) {
+                        ctx.beginPath();
+                        ctx.arc(
+                            w2, diagonal/4.0,
+                            diagonal/8.0 * (1.05 + 3*Math.pow((y/3 + tock/7200.0 )%1.0,.75)),
+                            Math.PI, 0
+                        );
+                        ctx.stroke();
+                    }
+
+                    ctx.beginPath();
+                    ctx.moveTo(...project([-8,.475,16]));
+                    ctx.lineTo(...project([+8,.475,16]));
+                    ctx.stroke();
+
+                    for(var y=0; y<3; y+=1) {
+                        var m = .475-((y*2/3+tock/3600.0)%2.0);
+                        var s = Math.pow((.475-m)/2, 6)*1.75;
+                        ctx.beginPath();
+                        ctx.moveTo(...project([s-2,m,16]));
+                        ctx.lineTo(...project([2-s,m,16]));
+                        ctx.stroke();
+                    }
+
+                    ctx.shadowBlur = 0;
+                    ctx.lineWidth = 1.0+t;
+                }
+
+                ctx.strokeStyle = "#FFFF00";
+
+                ctx.beginPath();
+                [0,1,9,11,10,8,9,13,15,11,3,7,15,14,10,2,6,14,12,8,0,4,12,13,5,7,6,4,5,1,3,2]
+                    .map(i => [0,1,2,3].map(j => (Math.sign(i&(1<<j))<<1)-1))
+                    .map(p => transform(five, p))
+                    .map(p => p.slice(0,3).concat(3-p[3])) // 5d -> 4d
+                    .map(project) // 4d -> 3d -> 2d
+                    .forEach(p => ctx.lineTo(...p));
+                ctx.closePath();
+                ctx.stroke();
+            }
+        </script>
+        <style type="text/css">
+            body {
+                background: black;
+                width: auto;
+                height: auto;
+                margin: 0;
+                overflow: hidden;
+            }
+            canvas {
+                top: 0;
+                position: absolute;
+                display: block;
+            }
+        </style>
+    </head>
+    <body onload="init();" onresize="resize();">
+        <canvas id="scene"></canvas>
+    </body>
+</html>
