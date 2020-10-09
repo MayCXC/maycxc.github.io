@@ -157,7 +157,7 @@
 
             function init() {
                 resize();
-                document.addEventListener('mousemove', m => {
+                document.addEventListener('mousemove touchmove', m => {
                     mouse[0] = m.movementX;
                     mouse[1] = m.movementY;
                     mouse[2] = m.pageX;
