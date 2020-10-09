@@ -282,7 +282,7 @@
                 ctx.globalCompositeOperation = "source-over";
 
                 if(!!outrun) {
-                    var t = 1.0-(1.0/(1.0+(tock/40000.0)));
+                    var t = 1.0-(1.0/(1.0+((tock-outrun)/40000.0)));
                     ctx.strokeStyle = "rgb("+t*255+","+0+","+t*255+")";
                     ctx.lineWidth=1;
 
