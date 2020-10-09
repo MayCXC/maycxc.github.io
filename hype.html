@@ -263,10 +263,11 @@
             tock = tick;
 
             while(delta>=step) {
-                look = [look,
-                    eulerAA(rotate([1,0,0], conjugate(look)), mouse[1]/64),
-                    eulerAA(rotate([0,1,0], conjugate(look)), mouse[0]/64)
-                ].reduce(compose);
+                var h = Math.hypot(mouse);
+                var a = h/64.0;
+                var s = Math.sin(h/a/2);
+                var c = Math.cos(h/a/2);
+                look = compose(look, [mouse[1]*s/h, -mouse[0]*s/h, 0, c]);
 
                 move = [move, rotate([
                     (keys['KeyA']?.1:0) - (keys['KeyD']?.1:0),
