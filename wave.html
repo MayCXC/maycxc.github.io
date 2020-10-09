@@ -1,370 +1,352 @@
 <!DOCTYPE html>
-<html style="height: 100%">
-<head>
-    <meta charset="UTF-8"/>
-    <style>
-        body {
-            width: auto;
-            height: auto;
-            margin: 0;
-            overflow: hidden;
-        }
-        canvas {
-            display: block;
-        }
-    </style>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <script type="application/x-javascript">
+            var ctx, w, w2, h, h2, diagonal;
 
-    <script id="cube" type="x-shader/x-vertex">
-        attribute vec4 vertex;
-        varying vec4 color;
-        uniform vec2 aspect;
-        uniform vec3 zoom;
-        uniform vec4 disorientation;
-        uniform vec3 disposition;
-        uniform vec3 position;
-        uniform vec3 size;
-        uniform float theta;
-        uniform ivec2 plane;
-        uniform int hyper;
+            var left = [0,0,0,1];
+            var right = [0,0,0,1];
+            var mouse = [0,0,0,0,0,0,0,0];
 
-        mat4 translate(vec3 v) {
-            return mat4(
-                1,0,0,0,
-                0,1,0,0,
-                0,0,1,0,
-                v,1
-            );
-        }
+            function identity(d, s) {
+                var m = [];
+                for(var i=0; i<d; i+=1) {
+                    m[i] = [];
+                    for(var j=0; j<d; j+=1) {
+                        m[i][j] = 0;
+                    }
+                    m[i][i] = s;
+                }
+                return m;
+            }
 
-        mat4 rotate(vec4 v) {
-            float scalar = v.w;
-            vec3 vector  = vec3(v);
+            var five = identity(4,1);
+            var four = identity(4,1);
 
-            mat3 identity = mat3(1.0);
-            mat3 skew = mat3(
-                cross(vector, identity[0]),
-                cross(vector, identity[1]),
-                cross(vector, identity[2])
-            );
+            function ttt(l, r) {
+                var t = [];
+                for(var i=0; i<Math.min(l.length,r.length); i+=1) {
+                    t[i] = l[i]+r[i];
+                }
+                return t;
+            }
 
-            mat3 outer = mat3(0.0);
-            for(int i=0; i<3; i+=1) {
-                for(int j=0; j<3; j+=1) {
-                    outer[i][j] =  vector[j] * vector[i];
+            function ete(l, r) {
+                var m = [];
+                for(var i=0; i<Math.min(l.length,r.length); i+=1) {
+                    m[i] = ttt(l[i],r[i]);
+                }
+                return m;
+            }
+
+            function dot(l, r) {
+                var d = 0.0;
+                for(var i=0; i<Math.min(l.length,r.length); i+=1) {
+                    d += l[i]*r[i];
+                }
+                return d;
+            }
+
+            function out(l, r) {
+                var m = [];
+                for(var i=0; i<l.length; i+=1) {
+                    m[i] = [];
+                    for(var j=0; j<r.length; j+=1) {
+                        m[i][j] = l[i] *r[j];
+                    }
+                }
+                return m;
+            }
+
+            function transform(m, v) {
+                var u = [];
+                for(var i=0; i<m.length; i+=1) {
+                    u[i] = dot(m[i], v);
+                }
+                return u;
+            }
+
+            function transpose(m) {
+                var t = [];
+                for(var i=0; i<Math.max(...(m.map(a => a.length))); i+=1) {
+                    t[i] = [];
+                    for(var j=0; j<m.length; j+=1) {
+                        t[i][j] = m[j][i];
+                    }
+                }
+                return t;
+            }
+
+            function compose(l, r) {
+                var c = [];
+                var t = transpose(r);
+                for(var i=0; i<l.length; i+=1) {
+                    c[i] = [];
+                    for(var j=0; j<t.length; j+=1) {
+                        c[i][j] = dot(l[i],t[j]);
+                    }
+                }
+                return c;
+            }
+
+            function cross(l, r) {
+                return [
+                    l[1]*r[2] - l[2]*r[1],
+                    l[2]*r[0] - l[0]*r[2],
+                    l[0]*r[1] - l[1]*r[0]
+                ];
+            }
+
+            function qcompose(q, p) {
+                var v = q.slice(0,3);
+                var u = p.slice(0,3);
+                return [ v.map(e => e*p[3]), u.map(e => e*q[3]), cross(v,u) ]
+                    .reduce(ttt).concat(q[3]*p[3] - dot(v,u));
+            }
+
+            function qnormalize(q) {
+                var l = Math.hypot(...q);
+                q[0] /= l;
+                q[1] /= l;
+                q[2] /= l;
+                q[3] /= l;
+            }
+
+            function qthree(q) {
+                var id = identity(3,1);
+                var v = q.slice(0,3);
+                var x = id.map(u => cross(u,v));
+                var m = [
+                    out(v,v),
+                    identity(3,q[3]*q[3]),
+                    compose(identity(3,2*q[3]),x),
+                    compose(x,x)
+                ].reduce(ete);
+                for(var i=0; i<3; i+=1) {
+                    m[i][3] = 0;
+                }
+                m[3] = [0,0,0,1];
+                return m;
+            }
+
+            function qpfour(q,p) {
+                return compose(
+                    [   [+q[3],-q[2],+q[1],+q[0]],
+                        [+q[2],+q[3],-q[0],+q[1]],
+                        [-q[1],+q[0],+q[3],+q[2]],
+                        [-q[0],-q[1],-q[2],+q[3]]
+                    ],
+                    [   [+p[3],+p[2],-p[1],+p[0]],
+                        [-p[2],+p[3],+p[0],+p[1]],
+                        [+p[1],-p[0],+p[3],+p[2]],
+                        [-p[0],-p[1],-p[2],+p[3]]
+                    ],
+                );
+            }
+
+            function resize() {
+                var scene = document.getElementById('scene');
+                w = scene.width = window.innerWidth;
+                h = scene.height = window.innerHeight;
+                w2 = w / 2;
+                h2 = h / 2;
+                diagonal = Math.hypot(w,h);
+                ctx = scene.getContext('2d');
+            }
+
+            function init() {
+                resize();
+                document.addEventListener('mousemove', m => {
+                    mouse[0] = m.movementX;
+                    mouse[1] = m.movementY;
+                    mouse[2] = m.pageX;
+                    mouse[3] = m.pageY;
+                });
+                if (!!ctx) {
+                    requestAnimationFrame(loop);
                 }
             }
 
-            return mat4(outer + mat3(scalar*scalar) + 2.0*scalar*skew + skew*skew);
-        }
-
-        mat4 rotateplane(float t, int a, int b) {
-            mat4 rodriguez = mat4(1.0);
-            for(int i=0; i<4; i+=1) {
-                for(int j=0; j<4; j+=1) {
-                    if(i == a && j == a || i == b && j == b) {
-                        rodriguez[i][i] = cos(t);
-                    }
-                    else if(i == a && j == b || i == b && j == a) {
-                        rodriguez[i][j] = sin(t);
-                    }
-                    if(i==j+1 || i==j+1-3 || i==j+1-4) { // right hand rule? fano plane? mod three or four? who knows?
-                        rodriguez[i][j] = -rodriguez[i][j];
-                    }
+            var step=1000/60, tock=0, delta=0;
+            function loop(tick) {
+                delta += Math.max(Math.min(tick-tock,16),0);
+                tock = tick;
+                while(delta>=step) {
+                    delta -= step;
                 }
-            }
-            return rodriguez;
-        }
 
-        vec4 rotatehyper(float t, int a, float d, vec4 v) {
-            vec4 r = rotateplane(t,a,3) * v;
-            r.w = d - r.w; // bro do you even fifth dimension?
-            return r;
-        }
+                five = qpfour(left,right);
 
-        mat4 scale(vec3 v) {
-            return mat4(
-                v.x,0,0,0,
-                0,v.y,0,0,
-                0,0,v.z,0,
-                0,0,0,1
-            );
-        }
+                four = [
+                    [diagonal,0,0,0],
+                    [0,diagonal,0,h2],
+                    [0,0,1.0,6.0]
+                ];
 
-        mat4 project() {
-            vec2 a = aspect/length(aspect);
-            float d = 256.0;
-            return mat4(
-                a.y,0,0,0,
-                0,a.x,0,0,
-                0,0,(1.0/d + d)/(1.0/d - d),-1.0,
-                0,0,2.0/(1.0/d - d),0
-            );
-        }
+                function slide(m, x, y, t) {
+                    m[x] = m[x]*(1.0-t) + m[0]*t;
+                    m[y] = m[y]*(1.0-t) + m[1]*t;
+                    mouse[0] = 0;
+                    mouse[1] = 0;
+                }
 
-        void main() {
-            color = rotateplane(0.5*theta, plane.x, plane.y)
-                * rotatehyper(0.5*theta, hyper, 2.0, vertex);
+                var d = dot([mouse[0], mouse[1]], [mouse[2]-w2, mouse[3]-h2]);
+                if(d<0) slide(mouse,4,5,.125);
+                if(0<d) slide(mouse,6,7,.125);
 
-            gl_Position = project() // P
-                * scale(zoom) // V
-                * rotate(disorientation)
-                * translate(disposition)
-                * translate(position) // M
-                * rotateplane(theta, plane.x, plane.y)
-                * rotatehyper(theta, hyper, 2.0, scale(size) * vertex);
-        }
-    </script>
-
-    <script id="color" type="x-shader/x-fragment">
-        #ifdef GL_ES
-        precision highp float;
-        #else
-        precision mediump float;
-        #endif
-        varying vec4 color;
-        uniform bool toss;
-        uniform mat4 beside;
-        uniform mat4 above;
-
-        void main() {
-            if(toss && mod(abs(color.x) + abs(color.y) + abs(color.z), abs(color.w)) < abs(color.w)/2.0) {
-                discard;
-            }
-            vec3 unit = color.xyz/color.w/2.0 + vec3(.5,.5,.5);
-            vec4 turn = above * beside * vec4(unit, 1.0);
-            vec3 hsv = turn.xyz/turn.w;
-            vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-            vec3 p = abs(fract(hsv.xxx + K.xyz) * 6.0 - K.www);
-            vec3 rgb = hsv.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), hsv.y);
-
-            gl_FragColor = vec4(rgb, 1.0);
-        }
-    </script>
-
-    <script>
-        var gl, program, vaocube, vbocube, ebocube, locations, keys, mouse, look, move, twist, vertices, elements;
-        function start() {
-            gl = document.getElementById('scene').getContext('webgl');
-
-            var glcube = gl.createShader(gl.VERTEX_SHADER);
-            gl.shaderSource(glcube, document.getElementById("cube").firstChild.nodeValue);
-            gl.compileShader(glcube);
-
-            var glcolor = gl.createShader(gl.FRAGMENT_SHADER);
-            gl.shaderSource(glcolor, document.getElementById("color").firstChild.nodeValue);
-            gl.compileShader(glcolor);
-
-            program = gl.createProgram();
-            gl.attachShader(program, glcube);
-            gl.attachShader(program, glcolor);
-
-            console.log(gl.getShaderInfoLog(glcube));
-            console.log(gl.getShaderInfoLog(glcolor));
-
-            gl.linkProgram(program);
-
-            console.log(gl.getProgramInfoLog(program));
-
-            gl.useProgram(program);
-
-            vbocube = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, vbocube);
-            vertices = new Float32Array([
-                +1,+1,+1,+1, -1,+1,+1,+1, +1,-1,+1,+1, -1,-1,+1,+1,
-                +1,+1,-1,+1, -1,+1,-1,+1, +1,-1,-1,+1, -1,-1,-1,+1,
-                +1,+1,+1,-1, -1,+1,+1,-1, +1,-1,+1,-1, -1,-1,+1,-1,
-                +1,+1,-1,-1, -1,+1,-1,-1, +1,-1,-1,-1, -1,-1,-1,-1
-            ]);
-            gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-
-            ebocube = gl.createBuffer();
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebocube);
-            elements = new Uint16Array([
-                0,1,2,3,6,7,4,5,1,3,9,11,13,15,5,7,3,11,2,10,6,14,7,15,11,10,9,8,13,12,15,14,10,8,2,0,6,4,14,12,8,0,9,1,13,5,12,4,0,1
-//              0,1,2,3,7,1,5,4,7,6,2,4,0,1
-            ]);
-            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, elements, gl.STATIC_DRAW);
-
-            locations = { 'vertex': gl.getAttribLocation(program, 'vertex') };
-            for(let i=0; i<gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS); i+=1) {
-                const name = gl.getActiveUniform(program, i).name;
-                locations[name] = gl.getUniformLocation(program, name);
-            }
-
-            gl.vertexAttribPointer(locations.vertex, 4, gl.FLOAT, false, 0, 0);
-            gl.enableVertexAttribArray(locations.vertex);
-
-            gl.uniform3fv(locations.zoom, [1.0,1.0,1.0]);
-            gl.uniform4fv(locations.disorientation, [0.0,0.0,0.0,1.0]);
-            gl.uniform3fv(locations.disposition, [6.0,-6.0,0.0]);
-            gl.uniform3fv(locations.position, [0.0,0.0,0.0]);
-            gl.uniform1f(locations.theta, 0.0);
-            gl.uniform2iv(locations.plane, [4,4]);
-            gl.uniform1i(locations.hyper, 0);
-            gl.uniform3fv(locations.size, [1.0,1.0,1.0]);
-            gl.uniform4fv(locations.color, [0.0,0.0,0.0,1.0]);
-            gl.uniformMatrix4fv(locations.beside, false, [1.0,0,0,0, 0,1.0,0,0, 0,0,1.0,0, 0,0,0,1.0]);
-            gl.uniformMatrix4fv(locations.above, false, [1.0,0,0,0, 0,1.0,0,0, 0,0,1.0,0, 0,0,0,1.0]);
-            gl.uniform1i(locations.toss, 1);
-
-            keys = {KeyW: false, KeyA: false, KeyS: false, KeyD: false, Space: false, ShiftLeft: false, KeyT: false};
-            document.addEventListener('keydown', k => keys[k.code] = true);
-            document.addEventListener('keyup', k => keys[k.code] = false);
-
-            mouse = [0,0,0,0];
-            var trap = true;
-            document.addEventListener('click', m => trap ^= m.buttons>>>1 === 0);
-            document.addEventListener('mousemove', m => mouse = !trap
-                ? [m.movementX*.125 + mouse[0]*.875, m.movementY*.125 + mouse[1]*.875]
-                : [0,0]
-            );
-
-            look = gl.getUniform(program, locations.disorientation),
-            move = gl.getUniform(program, locations.disposition),
-            twist = gl.getUniform(program, locations.theta);
-
-            requestAnimationFrame(loop);
-        }
-
-        function eulerAA(v, t) {
-            return [
-                v[0]*Math.sin(t/2),
-                v[1]*Math.sin(t/2),
-                v[2]*Math.sin(t/2),
-                Math.cos(t/2)
-            ];
-        }
-
-        function compose(q, p) {
-            return [
-              + q[0]*p[3] + q[1]*p[2] - q[2]*p[1] + q[3]*p[0],
-              - q[0]*p[2] + q[1]*p[3] + q[2]*p[0] + q[3]*p[1],
-              + q[0]*p[1] - q[1]*p[0] + q[2]*p[3] + q[3]*p[2],
-              - q[0]*p[0] - q[1]*p[1] - q[2]*p[2] + q[3]*p[3]
-            ];
-        }
-
-        function conjugate(q) {
-            return [-q[0], -q[1], -q[2], q[3]];
-        }
-
-        function rotate(v, q) {
-            return compose(compose(q, v.concat(0)), conjugate(q)).slice(0,3);
-        }
-
-        function normalize(q) {
-            var l = Math.sqrt(q.map(c => c*c).reduce((l,r) => l+r));
-            return q.map(c => c/l);
-        }
-
-        var step=1000/60, tock=0, delta=0;
-        function loop(tick) {
-            delta = Math.min(delta+tick-tock, 1000);
-            tock = tick;
-
-            while(delta>=step) {
-                look = [look,
-                    eulerAA(rotate([1,0,0], conjugate(look)), mouse[1]/64),
-                    eulerAA(rotate([0,1,0], conjugate(look)), mouse[0]/64)
-                ].reduce(compose);
-
-                move = [move, rotate([
-                    (keys['KeyA']?.1:0) - (keys['KeyD']?.1:0),
-                    (keys['KeyS']?.1:0) - (keys['KeyW']?.1:0),
-                    (keys["Space"]?.1:0) - (keys['ShiftLeft']?.1:0)
-                ], conjugate(look))].reduce((l,r) => l.map((a,i) => a + r[i]));
-
-                twist += keys["KeyT"]?0:.005;
-
-                delta -= step;
-            }
-            look = normalize(look);
-            mouse = [0,0];
-
-            gl.uniform4fv(locations.disorientation, look);
-            gl.uniform3fv(locations.disposition, move);
-            gl.uniform1f(locations.theta, twist);
-
-            gl.canvas.width = window.innerWidth;
-            gl.canvas.height = window.innerHeight;
-            gl.viewport(0,0, gl.canvas.width,gl.canvas.height);
-            gl.uniform2fv(locations.aspect, [gl.canvas.width,gl.canvas.height]);
-
-            draw();
-            requestAnimationFrame(loop);
-        }
-
-        vertical = [
-            [.1,.5,0,0, .1,0,.2,0, .1,0,.4,0, .1,0.25,0.4,1], // narrow combined
-            [2,.1,.1,0, 2,0.0,.1,0, 2,0,0.0,0, 0,0,.1,1.0], // narrow chromatic
-            [1.0,0,0,0, 0,0.0,0,0, 0,0,0.0,0, 0,1.0,1.0,1.0], // prismatic
-            [1.0,0,0,0, 0,1.0,0,0, 0,0,1.0,0, 0,0,0,1.0],
-        ];
-
-        horizontal = [
-            [0.5,0,0,0, 0.5,1.0,0.25,0, 0,0,0.75,0, 0,0,0,1.0], // broad combined
-            [.5,0,.5,0, .5,0.0,.5,0, 0,0,0.125,0, 0,0,-0.5,.25], // broad chromatic
-            [1.0,0,0,0, 0,0.0,0,0, 0,0,0.5,0, 0,0.25,0.25,1.0], // muted
-            [1.0,0,0,0, 0,1.0,0,0, 0,0,1.0,0, 0,0,0,1.0],
-        ];
-
-        function draw() {
-            var r = Math.pow(Math.sin(twist), 2) * 0.25;
-            var g = Math.pow(Math.sin(twist + Math.PI*2.0/3.0), 2) * 0.25;
-            var b = Math.pow(Math.sin(twist - Math.PI*2.0/3.0), 2) * 0.25;
-            gl.clearColor(r,g,b,1.0);
-            gl.clearDepth(1.0);
-            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-            gl.enable(gl.DEPTH_TEST);
-            gl.depthFunc(gl.LEQUAL);
-
-            for(var i=0; i<horizontal.length; i+=1) {
-                gl.uniformMatrix4fv(locations.above, false, horizontal[i]);
-                for(var j=0; j<vertical.length; j+=1) {
-                    gl.uniformMatrix4fv(locations.beside, false, vertical[j]);
-                    gl.uniform3fv(locations.position, [i*-4.0,j*4.0,9.0]);
-                    if(i === 3 && j === 3) {
-                        gl.uniform2iv(locations.plane, [4,4]);
-                        gl.uniform1i(locations.hyper, 3);
-
-                    }
-                    else if(i === 3) {
-                        gl.uniform2iv(locations.plane, [j%3,(j+1)%3]);
-                        gl.uniform1i(locations.hyper, i);
-                    }
-                    else if(j === 3) {
-                        gl.uniform2iv(locations.plane, [i,i]);
-                        gl.uniform1i(locations.hyper, i);
+                function twist(x, y) {
+                    var l = Math.hypot(x, y);
+                    if(0===l) {
+                        return twist(
+                            4*Math.cos((tock/Math.pow(2.0,15))*3.0),
+                            3*Math.sin((tock/Math.pow(2.0,15))*4.0)
+                        );
                     }
                     else {
-                        gl.uniform2iv(locations.plane, [j%3,(j+1)%3]);
-                        gl.uniform1i(locations.hyper, i);
+                        var t = l/1024.0;
+                        var s = Math.sin(t/2);
+                        return [s*x/l, s*y/l, 0, Math.cos(t/2)];
                     }
-                    gl.uniform1i(locations.toss, 0);
-                    gl.drawElements(gl.LINE_STRIP, elements.length, gl.UNSIGNED_SHORT, 0);
-                    gl.uniform1i(locations.toss, 1);
-                    gl.drawElements(gl.TRIANGLE_STRIP, elements.length, gl.UNSIGNED_SHORT, 0);
+                    return [0,0,0,1];
                 }
+
+                left = qcompose(twist(mouse[4],mouse[5]), left);
+                right = qcompose(twist(mouse[6],mouse[7]), right);
+
+                qnormalize(left);
+                qnormalize(right);
+
+                draw();
+                requestAnimationFrame(loop);
             }
 
-            for(var i=0; i<3; i += 1) {
-                for(var j=0; j<2; j+=1) {
-                    gl.uniformMatrix4fv(locations.above, false, [horizontal, vertical][j][i]);
-                    gl.uniformMatrix4fv(locations.beside, false, [horizontal, vertical][j][3]);
-                    gl.uniform3fv(locations.position, [-i*6.0,j*5.0+3.5,-6.0]);
-                    gl.uniform2iv(locations.plane, [i%3,(i+1)%3]);
-                    gl.uniform1i(locations.hyper, (3+(i+1)*(1-j))%4);
-                    gl.uniform1i(locations.toss, 0);
-                    gl.drawElements(gl.LINE_STRIP, elements.length, gl.UNSIGNED_SHORT, 0);
-                    gl.uniform1i(locations.toss, 1);
-                    gl.drawElements(gl.TRIANGLE_STRIP, elements.length, gl.UNSIGNED_SHORT, 0);
-                }
+            function project(p) {
+                var t = transform(four, p);
+                t = t.slice(0,2).map(d => d/t[2]);
+                t[0] += w2;
+                t[1] += h2;
+                return t;
             }
-        }
-    </script>
-</head>
-<body onload="start();">
-    <canvas id="scene"></canvas>
-</body>
+
+            let cursor = 0;
+            const KONAMI_CODE = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
+            var outrun = location.search.includes("outrun");
+            document.addEventListener('keydown', (e) => {
+                if(e.keyCode === KONAMI_CODE[cursor])
+                    cursor += 1;
+                else {
+                    cursor = 0;
+                }
+                if(cursor === KONAMI_CODE.length) {
+                    outrun = true;
+                    tock = 0;
+                    var music = document.createElement('iframe');
+                    music.type = "text/html";
+                    music.src="https://www.youtube-nocookie.com/embed/_Ci0Kgdpgsw?controls=0&autoplay=1";
+                    music.frameborder="0";
+                    music.allow="autoplay";
+                    music.style="display:none;";
+                    document.body.appendChild(music);
+                }
+            });
+
+            function draw() {
+                ctx.clearRect(0,0,w,h);
+                ctx.globalCompositeOperation = "source-over";
+
+                if(outrun) {
+                    var t = 1.0-(1.0/(1.0+(tock/36000.0)));
+                    ctx.strokeStyle = "rgb("+t*255+","+0+","+t*255+")";
+                    ctx.lineWidth=1;
+
+                    for(var x=-2; x<=2; x+=.8) {
+                        ctx.beginPath();
+                        ctx.moveTo(...project([x,.5,16]));
+                        ctx.lineTo(...project([x,.5,1]));
+                        ctx.stroke();
+                    }
+
+                    ctx.beginPath();
+                    ctx.moveTo(...project([-2,.5,16]));
+                    ctx.lineTo(...project([+2,.5,16]));
+                    ctx.stroke();
+
+                    for(var z=1; z<=16; z+=1) {
+                        var m = z-(tock/1000.0)%1.0;
+                        ctx.beginPath();
+                        ctx.moveTo(...project([-2,.5,m]));
+                        ctx.lineTo(...project([+2,.5,m]));
+                        ctx.stroke();
+                    }
+
+                    ctx.fillStyle = "rgb("+t*160+","+0+","+t*64+")";
+                    ctx.shadowColor = ctx.fillStyle;
+                    ctx.shadowBlur = 16+16*Math.pow(Math.sin(tock/1000.0),2);
+                    ctx.beginPath();
+                    ctx.arc(...project([0,.5,16.25]),diagonal/8.0,Math.PI,0);
+                    ctx.fill();
+
+                    ctx.strokeStyle = "#000000";
+                    ctx.shadowColor = "#FF0000";
+                    ctx.shadowBlur = 4;
+                    for(var y=0; y<3; y+=1) {
+                        ctx.beginPath();
+                        ctx.arc(
+                            ...project([0,.45,16]),
+                            diagonal/8.0 * (1.05 + 3*Math.pow((y/3 + tock/7200.0 )%1.0,.75)),
+                            Math.PI, 0
+                        );
+                        ctx.stroke();
+                    }
+                    for(var y=0; y<3; y+=1) {
+                        var m = .475-((y*2/3+tock/3600.0)%2.0);
+                        var s = Math.pow((.475-m)/2, 6)*1.75;
+                        ctx.beginPath();
+                        ctx.moveTo(...project([s-2,m,16]));
+                        ctx.lineTo(...project([2-s,m,16]));
+                        ctx.stroke();
+                    }
+
+                    ctx.shadowColor = "#FF00FF";
+                    ctx.beginPath();
+                    ctx.moveTo(...project([-8,.475,16]));
+                    ctx.lineTo(...project([+8,.475,16]));
+                    ctx.stroke();
+
+                    ctx.shadowBlur = 0;
+                    ctx.lineWidth = 1.0+t;
+                }
+
+                ctx.strokeStyle = "#FFFF00";
+
+                ctx.beginPath();
+                [0,1,9,11,10,8,9,13,15,11,3,7,15,14,10,2,6,14,12,8,0,4,12,13,5,7,6,4,5,1,3,2]
+                    .map(i => [0,1,2,3].map(j => (Math.sign(i&(1<<j))<<1)-1))
+                    .map(p => transform(five, p))
+                    .map(p => p.slice(0,3).concat(3-p[3])) // 5d -> 4d
+                    .map(project) // 4d -> 3d -> 2d
+                    .forEach(p => ctx.lineTo(...p));
+                ctx.closePath();
+                ctx.stroke();
+            }
+        </script>
+        <style type="text/css">
+            body {
+                background: black;
+                width: auto;
+                height: auto;
+                margin: 0;
+                overflow: hidden;
+            }
+            canvas {
+                top: 0;
+                position: absolute;
+                display: block;
+            }
+        </style>
+    </head>
+    <body onload="init();" onresize="resize();">
+        <canvas id="scene"></canvas>
+    </body>
 </html>
