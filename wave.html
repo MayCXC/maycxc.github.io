@@ -245,8 +245,6 @@
 
             function play() {
                 if(!outrun) {
-                    outrun = true;
-                    tock = 0;
                     var music = document.createElement('iframe');
                     music.type = "text/html";
                     music.src="https://www.youtube-nocookie.com/embed/_Ci0Kgdpgsw?controls=0&autoplay=1";
@@ -254,6 +252,10 @@
                     music.allow="autoplay";
                     music.style="display:none;";
                     document.body.appendChild(music);
+                    music.onload = function() {
+                        outrun = true;
+                        tock = 0;
+                    };
                 }
             }
 
