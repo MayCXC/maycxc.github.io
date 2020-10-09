@@ -229,16 +229,10 @@
                 return t;
             }
 
-            let cursor = 0;
-            const KONAMI_CODE = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
-            var outrun = location.search.includes("outrun");
-            document.addEventListener('keydown', (e) => {
-                if(e.keyCode === KONAMI_CODE[cursor])
-                    cursor += 1;
-                else {
-                    cursor = 0;
-                }
-                if(cursor === KONAMI_CODE.length) {
+            var outrun = false;
+
+            function play() {
+                if(!outrun) {
                     outrun = true;
                     tock = 0;
                     var music = document.createElement('iframe');
@@ -249,6 +243,24 @@
                     music.style="display:none;";
                     document.body.appendChild(music);
                 }
+            }
+
+            if(location.search.includes("outrun")) {
+                document.title = "ｃｌｉｃｋｍｅ";
+                window.onclick = function(){
+                    play();
+                    window.onclick = null;
+                    document.title = "ｔｈａｎｋｙｏｕ";
+                };
+            }
+
+            let cursor = 0;
+            const KONAMI_CODE = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
+
+            document.addEventListener('keydown', (e) => {
+                if(e.keyCode === KONAMI_CODE[cursor]) cursor += 1;
+                else cursor = 0;
+                if(cursor === KONAMI_CODE.length) play();
             });
 
             function draw() {
@@ -256,7 +268,7 @@
                 ctx.globalCompositeOperation = "source-over";
 
                 if(outrun) {
-                    var t = 1.0-(1.0/(1.0+(tock/36000.0)));
+                    var t = 1.0-(1.0/(1.0+(tock/40000.0)));
                     ctx.strokeStyle = "rgb("+t*255+","+0+","+t*255+")";
                     ctx.lineWidth=1;
 
@@ -273,7 +285,7 @@
                     ctx.stroke();
 
                     for(var z=1; z<=16; z+=1) {
-                        var m = z-(tock/1000.0)%1.0;
+                        var m = z-(tock*3/4000.0)%1.0;
                         ctx.beginPath();
                         ctx.moveTo(...project([-2,.5,m]));
                         ctx.lineTo(...project([+2,.5,m]));
@@ -294,13 +306,13 @@
                         ctx.beginPath();
                         ctx.arc(
                             ...project([0,.45,16]),
-                            diagonal/8.0 * (1.05 + 3*Math.pow((y/3 + tock/7200.0 )%1.0,.75)),
+                            diagonal/8.0 * (1.05 + 3*Math.pow((y/3 + tock/4000.0)%1.0,.75)),
                             Math.PI, 0
                         );
                         ctx.stroke();
                     }
                     for(var y=0; y<3; y+=1) {
-                        var m = .475-((y*2/3+tock/3600.0)%2.0);
+                        var m = .475-2*((y*2/3+(tock/4000.0))%1.0);
                         var s = Math.pow((.475-m)/2, 6)*1.75;
                         ctx.beginPath();
                         ctx.moveTo(...project([s-2,m,16]));
