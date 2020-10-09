@@ -192,8 +192,8 @@
 
                 four = [
                     [diagonal,0,0,0],
-                    [0,diagonal,0,h2],
-                    [0,0,1.0,6.0]
+                    [0,diagonal,0,0],
+                    [0,0,1.0,8.0]
                 ];
 
                 function slide(m, x, y, t) {
@@ -207,12 +207,13 @@
                 if(d<0) slide(mouse,4,5,.125);
                 if(0<d) slide(mouse,6,7,.125);
 
-                function twist(x, y) {
+                function twist(x, y, c, s) {
                     var l = Math.hypot(x, y);
                     if(0===l) {
+                        var t = (tock/12000);
                         return twist(
-                            4*Math.cos(tock/Math.pow(2.0,14)),
-                            4*Math.sin(tock/Math.pow(2.0,14))
+                            s*Math.cos(c*t),
+                            c*Math.sin(s*t)
                         );
                     }
                     else {
@@ -223,8 +224,8 @@
                     return [0,0,0,1];
                 }
 
-                left = qcompose(twist(mouse[4],mouse[5]), left);
-                right = qcompose(right, twist(mouse[6],mouse[7]));
+                left = qcompose(twist(mouse[4],mouse[5],2,4), left);
+                right = qcompose(right, twist(mouse[6],mouse[7],4,2));
 
                 qnormalize(left);
                 qnormalize(right);
