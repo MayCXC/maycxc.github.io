@@ -157,7 +157,18 @@
 
             function init() {
                 resize();
-                document.addEventListener('mousemove touchmove', m => {
+                var touch = [0,0];
+                document.addEventListener('touchstart', m => {
+                    touch = m.touches[0];
+                });
+                document.addEventListener('touchmove', m => {
+                    mouse[0] = m.touches[0] - touch[0];
+                    mouse[1] = m.touches[1] - touch[1];
+                    touch = m.touches[0];
+                    mouse[2] = m.touches[0].pageX;
+                    mouse[3] = m.touches[0].pageY;
+                });
+                document.addEventListener('mousemove', m => {
                     mouse[0] = m.movementX;
                     mouse[1] = m.movementY;
                     mouse[2] = m.pageX;
