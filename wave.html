@@ -162,11 +162,12 @@
                     touch = m.touches[0];
                 });
                 document.addEventListener('touchmove', m => {
+                    m.preventDefault();
                     mouse[0] = m.touches[0] - touch[0];
                     mouse[1] = m.touches[1] - touch[1];
                     touch = m.touches[0];
-                    mouse[2] = m.touches[0].pageX;
-                    mouse[3] = m.touches[0].pageY;
+                    mouse[2] = touch.pageX;
+                    mouse[3] = touch.pageY;
                 });
                 document.addEventListener('mousemove', m => {
                     mouse[0] = m.movementX;
@@ -210,8 +211,8 @@
                     var l = Math.hypot(x, y);
                     if(0===l) {
                         return twist(
-                            4*Math.cos((tock/Math.pow(2.0,15))*3.0),
-                            3*Math.sin((tock/Math.pow(2.0,15))*4.0)
+                            4*Math.cos(tock/Math.pow(2.0,14)),
+                            4*Math.sin(tock/Math.pow(2.0,14))
                         );
                     }
                     else {
@@ -223,7 +224,7 @@
                 }
 
                 left = qcompose(twist(mouse[4],mouse[5]), left);
-                right = qcompose(twist(mouse[6],mouse[7]), right);
+                right = qcompose(right, twist(mouse[6],mouse[7]));
 
                 qnormalize(left);
                 qnormalize(right);
