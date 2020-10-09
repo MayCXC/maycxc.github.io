@@ -241,7 +241,7 @@
                 return t;
             }
 
-            var outrun = false;
+            var outrun = 0;
 
             function play() {
                 if(!outrun) {
@@ -253,9 +253,9 @@
                     music.style="display:none;";
                     document.body.appendChild(music);
                     music.onload = function() {
-                        outrun = true;
-                        tock = 0;
-                    };
+                        outrun = performance.now();
+                        tock = outrun;
+                    }
                 }
             }
 
@@ -281,7 +281,7 @@
                 ctx.clearRect(0,0,w,h);
                 ctx.globalCompositeOperation = "source-over";
 
-                if(outrun) {
+                if(!!outrun) {
                     var t = 1.0-(1.0/(1.0+(tock/40000.0)));
                     ctx.strokeStyle = "rgb("+t*255+","+0+","+t*255+")";
                     ctx.lineWidth=1;
