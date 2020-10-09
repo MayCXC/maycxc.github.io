@@ -292,12 +292,6 @@
                         );
                         ctx.stroke();
                     }
-
-                    ctx.beginPath();
-                    ctx.moveTo(...project([-8,.475,16]));
-                    ctx.lineTo(...project([+8,.475,16]));
-                    ctx.stroke();
-
                     for(var y=0; y<3; y+=1) {
                         var m = .475-((y*2/3+tock/3600.0)%2.0);
                         var s = Math.pow((.475-m)/2, 6)*1.75;
@@ -306,6 +300,12 @@
                         ctx.lineTo(...project([2-s,m,16]));
                         ctx.stroke();
                     }
+
+                    ctx.shadowColor = "#FF00FF";
+                    ctx.beginPath();
+                    ctx.moveTo(...project([-8,.475,16]));
+                    ctx.lineTo(...project([+8,.475,16]));
+                    ctx.stroke();
 
                     ctx.shadowBlur = 0;
                     ctx.lineWidth = 1.0+t;
