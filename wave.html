@@ -295,11 +295,6 @@
                         ctx.stroke();
                     }
 
-                    ctx.beginPath();
-                    ctx.moveTo(...project([-2,.5,16]));
-                    ctx.lineTo(...project([+2,.5,16]));
-                    ctx.stroke();
-
                     for(var z=1; z<=16; z+=1) {
                         var m = z-((tock-outrun)*3/4000.0)%1.0;
                         ctx.beginPath();
@@ -309,7 +304,7 @@
                     }
 
                     ctx.save();
-                    ctx.rect(0,0,w,project([0,.45,15])[1]);
+                    ctx.rect(0,0,w,project([0,.5,16])[1]);
                     ctx.clip();
 
                     ctx.fillStyle = "rgb("+t*160+","+0+","+t*64+")";
@@ -344,8 +339,8 @@
 
                     ctx.shadowColor = "#FF00FF";
                     ctx.beginPath();
-                    ctx.moveTo(...project([-8,.475,16]));
-                    ctx.lineTo(...project([+8,.475,16]));
+                    ctx.moveTo(...project([-8,.5,16]));
+                    ctx.lineTo(...project([+8,.5,16]));
                     ctx.stroke();
 
                     ctx.shadowBlur = 0;
