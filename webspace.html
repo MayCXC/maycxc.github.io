@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Keep your bits inside the buffer!</title>
+    <script type="application/x-javascript">
+       /*
+        * -- Puke Inhibitor --
+        * Original was Turbo Pascal from about 1994.
+        * Ported to C and svgalib in 1997.
+        * Ported to Javascript and Canvas in 2009.
+        * Golfed a little and fixed timestep in 2020.
+        */
+
+        var ctx, w, w2, h, h2, zf;
+
+        var starcount = 300;
+        var starbuffer = [];
+        var angle = [0,0,0];
+        var ofs = [0,0,0];
+        var ms = 0;
+        ms = ms.MAX_SAFE_INTEGER;
+        var ms2 = ms/2;
+
+        function resize() {
+            var scene = document.getElementById('scene');
+            w = scene.width = window.innerWidth;
+            h = scene.height = window.innerHeight;
+            w2 = w / 2;
+            h2 = h / 2;
+            zf = Math.hypot(w2, h2) / 2;
+            ctx = scene.getContext('2d');
+        }
+
+        function init() {
+            resize();
+            if (!!ctx) {
+                for (i = 0;i < starcount;i++) {
+                    starbuffer[i] = [
+                        (Math.random() - .5)*65535,
+                        (Math.random() - .5)*65535,
+                        (Math.random() - .5)*65535
+                    ]
+                }
+                requestAnimationFrame(loop);
+            }
+        }
+
+        function dot(l, r) {
+            var d = 0.0;
+            for(var i=0; i<Math.min(l.length,r.length); i+=1) {
+                d += l[i]*r[i];
+            }
+            return d;
+        }
+
+        function ttt(l, r) {
+            var t = [];
+            for(var i=0; i<Math.min(l.length,r.length); i+=1) {
+                t[i] = l[i]+r[i];
+            }
+            return t;
+        }
+
+        var step=1000/60, tock=0, delta=0;
+        function loop(tick) {
+            delta += tick-tock;
+            tock = tick;
+            while(delta>=step) {
+                angle = ttt(angle, [7,5,3].map(a => a*Math.PI/4096.0));
+                ofs = ttt(ofs, [7,5,3].map(a => a*-16.0));
+                delta -= step;
+            }
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        function draw() {
+            ctx.clearRect(0,0,w,h);
+
+            var s = angle.map(Math.sin);
+            var c = angle.map(Math.cos);
+
+            var m = [
+                [c[0]*c[1]                 ,-s[1]     ,-s[0]*c[1]                 ],
+                [s[0]*s[2] + s[1]*c[2]*c[0], c[1]*c[2], s[2]*c[0] - s[0]*s[1]*c[2]],
+                [s[0]*c[2] - s[1]*s[2]*c[0],-s[2]*c[1], c[0]*c[2] + s[0]*s[1]*s[2]]
+            ];
+ 
+            ctx.globalCompositeOperation = "source-over";
+            ctx.fillStyle = '#FFFFFF';
+            for (var i = 0; i < starcount; i+=1) {
+                var a = ttt(starbuffer[i], ofs).map(t => t<<16>>16);
+                var z = dot(a,m[2]) + 32768;
+                if (z > 0) {
+                    var sx = Math.round(dot(a,m[0]) * zf / z) + w2;
+                    var sy = Math.round(dot(a,m[1]) * zf / z) + h2;
+                    if(0 <= sx && sx < w && 0 <= sy && sy < h) {
+                        var sw = sh = 32768 / z;
+                        ctx.fillRect(sx, sy, sw, sh);
+                    }
+                }
+            }
+
+            ctx.font = "404% sans-serif";
+            ctx.textAlign = "center";
+            ctx.globalCompositeOperation = "xor";
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillText("Aaron Paterson", w2, h2*0.7);
+        }
+    </script>
+    <style type="text/css">
+        body {
+            background: black;
+            width: auto;
+            height: auto;
+            margin: 0;
+            overflow: hidden;
+        }
+        ul {
+            position: absolute;
+            color: white;
+            top: 35%;
+            padding-left: 0;
+            padding-right: 0;
+            width: 100%;
+            text-align: center;
+            font-family: sans-serif;
+            mix-blend-mode: exclusion;
+        }
+        li {
+            display: inline;
+            margin-left: 1em;
+            margin-right: 1em;
+        }
+        a[href] {
+            text-decoration: none;
+            color: white;
+        }
+        a[href]:hover {
+            text-decoration: underline;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+    <ul id="links">
+        <li><a href="https://quinnipiac.digication.com/aaron-paterson/">ePortfolio</a></li>
+        <li><a href="https://quinnipiac-csm.symplicity.com/profiles/aaron.paterson">QUCC</a></li>
+        <li><a href="https://bobcatconnect.qu.edu/profile-v2/aaronpaterson/">Bobcat Connect</a></li>
+        <li><a href="https://www.linkedin.com/in/aaron-paterson">LinkedIn</a></li>
+        <li><a href="https://mayhd3.github.io/assets/Resume.pdf">Résumé</a></li>
+        <li><a href="https://github.com/mayhd3">GitHub</a></li>
+    </ul> 
+    <body onload="init();" onresize="resize();">
+        <canvas id="scene"></canvas>
+    </body>
+</html>
