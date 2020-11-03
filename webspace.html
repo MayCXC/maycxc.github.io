@@ -30,7 +30,7 @@
         }
 
         function init() {
-            if(document.referrer === "http://mywebspace.quinnipiac.edu/apaterson/") {
+            if(document.referrer !== "http://mywebspace.quinnipiac.edu/apaterson/") {
                 const removequ = document.getElementsByClassName("qu");
                 while (removequ.length > 0) removequ[0].remove();
             }
