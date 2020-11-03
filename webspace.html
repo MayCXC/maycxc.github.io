@@ -31,7 +31,7 @@
         }
 
         function init() {
-            console.log(document.referer);
+            console.log(document.referrer);
             if(!location.search.includes("qu")) {
                 const removequ = document.getElementsByClassName("qu");
                 while (removequ.length > 0) removequ[0].remove();
