@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- saved from url=(0038)https://mayhd3.github.io/webspace.html -->
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Keep your bits inside the buffer!</title>
     <script type="application/x-javascript">
@@ -31,8 +30,7 @@
         }
 
         function init() {
-            console.log(document.referrer);
-            if(!location.search.includes("qu")) {
+            if(document.referrer === "http://mywebspace.quinnipiac.edu/apaterson/") {
                 const removequ = document.getElementsByClassName("qu");
                 while (removequ.length > 0) removequ[0].remove();
             }
