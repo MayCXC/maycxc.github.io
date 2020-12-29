@@ -5,11 +5,11 @@ categories: Java homework
 tags: jdk8 streams recursion
 ---
 
-We were taught Scala in CSC110, and I quickly fell in love with the language.
+We were taught Scala in CSC110, and I really liked its functional features.
 Now that I am taking introductory Java courses, I need to carefully hide my
-love for Scala from the Object Oriented supremacists that grade me. One of the
-ways I subtly express it is by using Java 8 functional interfaces wherever
-possible, which mostly means replacing all of the iteration I can with Stream
+affinity for FP from the OO supremacists that grade me. One of the more subtle
+ways I can express it is by using Java 8 functional interfaces wherever
+possible, which mostly means replacing all of the for loops I can with Stream
 operations. Today, this quest lead to me explore some new methods of recursion,
 and uncover some feats and shortcomings of Java 8 in the process.
 
