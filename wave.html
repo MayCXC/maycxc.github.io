@@ -180,7 +180,7 @@
                 }
             }
 
-            var step=1000/60, tock=0, delta=0;
+            var step=1000/60>>0, tock=0, delta=0;
             function loop(tick) {
                 delta += Math.max(Math.min(tick-tock,16),0);
                 tock = tick;
