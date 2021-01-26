@@ -1,4 +1,197 @@
----
-layout: home
-author_profile: true
----
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="icon" href="favicon.ico" type="image/x-icon"/>
+        <title>Keep your bits inside the buffer!</title>
+        <script type="application/x-javascript">
+           /*
+            * -- Puke Inhibitor --
+            * Original was Turbo Pascal from about 1994.
+            * Ported to C and svgalib in 1997.
+            * Ported to Javascript and Canvas in 2009.
+            * Golfed a little and fixed timestep in 2020.
+            */
+            var ctx, w, w2, h, h2, zf;
+
+            var starcount = 300;
+            var starbuffer = [];
+            var angle = [0,0,0];
+            var ofs = [0,0,0];
+            var ms = 0;
+            ms = ms.MAX_SAFE_INTEGER;
+            var ms2 = ms/2;
+
+            function resize() {
+                var scene = document.getElementById('scene');
+                w = scene.width = window.innerWidth;
+                h = scene.height = window.innerHeight;
+                w2 = w / 2;
+                h2 = h / 2;
+                zf = Math.hypot(w2, h2) / 2;
+                ctx = scene.getContext('2d');
+            }
+
+            function init() {
+                if(document.referrer === "http://mywebspace.quinnipiac.edu/apaterson/") {
+                    document.getElementById("qu").style.display = "initial";
+                }
+
+                resize();
+                if (!!ctx) {
+                    for (i = 0;i < starcount;i++) {
+                        starbuffer[i] = [
+                            (Math.random() - .5)*65535,
+                            (Math.random() - .5)*65535,
+                            (Math.random() - .5)*65535
+                        ]
+                    }
+                    requestAnimationFrame(loop);
+                }
+            }
+
+            function dot(l, r) {
+                var d = 0.0;
+                for(var i=0; i<Math.min(l.length,r.length); i+=1) {
+                    d += l[i]*r[i];
+                }
+                return d;
+            }
+
+            function ttt(l, r) {
+                var t = [];
+                for(var i=0; i<Math.min(l.length,r.length); i+=1) {
+                    t[i] = l[i]+r[i];
+                }
+                return t;
+            }
+
+            var step=1000/60>>0, tock=0, delta=0;
+            function loop(tick) {
+                delta += tick-tock;
+                tock = tick;
+                while(delta>=step) {
+                    angle = ttt(angle, [7,5,3].map(a => a*Math.PI/4096.0));
+                    ofs = ttt(ofs, [7,5,3].map(a => a*-16.0));
+                    delta -= step;
+                }
+                draw();
+                requestAnimationFrame(loop);
+            }
+
+            function draw() {
+                ctx.clearRect(0,0,w,h);
+
+                var s = angle.map(Math.sin);
+                var c = angle.map(Math.cos);
+
+                var m = [
+                    [c[0]*c[1]                 ,-s[1]     ,-s[0]*c[1]                 ],
+                    [s[0]*s[2] + s[1]*c[2]*c[0], c[1]*c[2], s[2]*c[0] - s[0]*s[1]*c[2]],
+                    [s[0]*c[2] - s[1]*s[2]*c[0],-s[2]*c[1], c[0]*c[2] + s[0]*s[1]*s[2]]
+                ];
+
+                ctx.globalCompositeOperation = "source-over";
+                ctx.fillStyle = '#FFFFFF';
+                for (var i = 0; i < starcount; i+=1) {
+                    var a = ttt(starbuffer[i], ofs).map(t => t<<16>>16);
+                    var z = dot(a,m[2]) + 32768;
+                    if (z > 0) {
+                        var sx = Math.round(dot(a,m[0]) * zf / z) + w2;
+                        var sy = Math.round(dot(a,m[1]) * zf / z) + h2;
+                        if(0 <= sx && sx < w && 0 <= sy && sy < h) {
+                            var sw = sh = 32768 / z;
+                            ctx.fillRect(sx, sy, sw, sh);
+                        }
+                    }
+                }
+            }
+        </script>
+        <style type="text/css">
+            html {
+                height: 100%;
+            }
+            body {
+                height: 100%;
+                background: black;
+                margin: 0;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            canvas {
+                display: block;
+                position: absolute;
+                top: 0;
+            }
+            h1, h3, ul {
+                color: white;
+                padding-left: 0;
+                padding-right: 0;
+                text-align: center;
+                font-family: sans-serif;
+                mix-blend-mode: exclusion;
+            }
+            ul {
+                margin-top: 0;
+            }
+            li {
+                margin-left: .25em;
+                margin-right: .25em;
+                margin-top: .5em;
+                margin-bottom: .5em;
+            }
+            #links li {
+                display: inline;
+            }
+            a[href] {
+                text-decoration: none;
+                color: white;
+            }
+            a[href]:hover {
+                text-decoration: underline;
+            }
+            #qu {
+                display: none;
+            }
+        </style>
+    </head>
+    <body onload="init();" onresize="resize();">
+        <canvas id="scene"></canvas>
+        <h1>Aaron Paterson</h1>
+        <ul id="links">
+            <span id="qu">
+                <li><a href="https://quinnipiac.digication.com/aaron-paterson/">ePortfolio</a></li> ·
+                <li><a href="https://quinnipiac-csm.symplicity.com/profiles/aaron.paterson">QUCC</a></li> ·
+                <li><a href="https://bobcatconnect.qu.edu/profile-v2/aaronpaterson/">Bobcat Connect</a></li> ·
+            </span>
+            <li><a href="https://www.linkedin.com/in/aaron-paterson">LinkedIn</a></li> ·
+            <li><a href="https://mayhd3.github.io/assets/Resume.pdf">Résumé</a></li> ·
+            <li><a href="https://github.com/mayhd3">GitHub</a></li>
+        </ul>
+        <h3>Writing + Code Samples:</h3>
+        <ul id="samples">
+            <li>Algorithm Design and Analysis:
+                <a href="https://mayhd3.github.io/assets/CSC215.pdf">W</a> +
+                <a href="https://gist.github.com/mayhd3/24a3946371657314dd0ebd5fd952c4c5">C</a>
+            </li>
+            <li>Introduction to Software Development:
+                <a href="https://docs.google.com/document/d/1YWphk9gIXiEO-COIHpBs1K6cIJRtt-eLVoAh2KTVko4/edit?usp=sharing">W</a> +
+                <a href="https://github.com/mayhd3/WaveGame2019">C</a>
+            </li>
+            <li>Cryptography:
+                <a href="https://mayhd3.github.io/assets/CSC318.pdf">W</a> +
+                <a href="https://gist.github.com/mayhd3/a2048a10ccb1d72b6ff59d79523b280d">C</a>
+            </li>
+            <li>Operating Systems:
+                <a href="https://mayhd3.github.io/assets/CSC310.pdf">W</a> +
+                <a href="https://github.com/mayhd3/stele/tree/master/CSC310HW1">C</a>
+            </li>
+            <li>Color Theory:
+                <a href="https://mayhd3.github.io/hype.html">C</a> +
+                <a href="https://mayhd3.github.io/wave.html?outrun">C</a>
+            </li>
+        </ul>
+    </body>
+</html>
