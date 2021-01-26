@@ -45,7 +45,7 @@ of the possible moves in our traversal are performed in an arbitrary order.
 Ideally, they would be performed in an order more likely to find a path to
 `EXIT`, or they would be performed at the same time.
 
-|![](/assets/images/glass.gif){: .align-center}|
+|![](/blog/assets/images/glass.gif){: .align-center}|
 |:--:|
 |Our stream recalls one lousy frame at a time, slowly floating up to the base case.|
 
@@ -68,7 +68,7 @@ the encounter order of the time they take to return. In general, longer paths
 take longer to find. As a result, the parallel DFS finds the shortest traversal
 of `map` in most of my tests.
 
-|![](/assets/images/galton.gif){: .align-center}|
+|![](/blog/assets/images/galton.gif){: .align-center}|
 |:--:|
 |The race is on, our streams spread through ForkJoinPool to the base case.|
 
