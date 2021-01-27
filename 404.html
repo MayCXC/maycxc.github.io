@@ -16,87 +16,102 @@
  *
  * Ported to Javascript and Canvas, 2009/08/10.
  *
- * Golfed a little by ajp in 2020.
+ * Refactored and timestep updated by Aaron Paterson in 2020.
  */
+    var ctx, w, w2, h, h2, zf;
 
-var ctx, w, w2, h, h2, zf;
+    var starcount = 300;
+    var starbuffer = [];
+    var angle = [0,0,0];
+    var ofs = [0,0,0];
+    var ms = 0;
+    ms = ms.MAX_SAFE_INTEGER;
+    var ms2 = ms/2;
 
-var starcount = 300;
-var starbuffer = [];
-var angle = [0,0,0];
-var ofs = [0,0,0];
-var fps = 60;
-
-function resize() {
-	var canvas = document.getElementById('canvas');
-	w = canvas.width = window.innerWidth;
-	h = canvas.height = window.innerHeight;
+    function resize() {
+	var scene = document.getElementById('scene');
+	w = scene.width = window.innerWidth;
+	h = scene.height = window.innerHeight;
 	w2 = w / 2;
 	h2 = h / 2;
-	zf = (w + h) / 5;
-	ctx = canvas.getContext('2d');
-}
-
-function init() {
-	resize();
-	if (!!ctx) {
-        for (i = 0;i < starcount;i++) {
-            starbuffer[i] = [
-                Math.round(Math.random()*65535) - 32768,
-                Math.round(Math.random()*65535) - 32768,
-                Math.round(Math.random()*65535) - 32768
-            ]
-        }
-
-        setInterval(draw,1000. / fps);
+	zf = Math.hypot(w2, h2) / 2;
+	ctx = scene.getContext('2d');
     }
-}
 
-function dot(l, r) {
-    var d = 0.0;
-    for(var i=0; i<Math.min(l.length,r.length); i+=1) {
-        d += l[i]*r[i];
-    }
-    return d;
-}
-
-function ttt(l, r) {
-    var t = [];
-    for(var i=0; i<Math.min(l.length,r.length); i+=1) {
-        t[i] = l[i]+r[i];
-    }
-    return t;
-}
-
-function draw() {
-    var s = angle.map(Math.sin);
-    var c = angle.map(Math.cos);
-
-    var m = [
-        [c[0]*c[1]                  , -s[1]     , -s[0]*c[1]                 ],
-        [s[0]*s[2] + s[1]*c[2]*c[0] ,  c[1]*c[2],  s[2]*c[0] - s[0]*s[1]*c[2]],
-        [s[0]*c[2] - s[1]*s[2]*c[0] , -s[2]*c[1],  c[0]*c[2] + s[0]*s[1]*s[2]]
-    ];
-
-	ctx.fillStyle = 'rgb(255,255,255)';
-	ctx.clearRect(0,0,w,h);
-
-	for (var i = 0; i < starcount; i++) {
-        var a = ttt(starbuffer[i], ofs).map(t => t<<16>>16);
-		var z = dot(a,m[2]) + 32768;
-		if (z > 0) {
-			var xp = Math.round(dot(a,m[0]) * zf / z) + w2;
-			var yp = Math.round(dot(a,m[1]) * zf / z) + h2;
-			if (xp >= 0 && xp < w && yp >= 0 && yp < h) {
-				var zp = Math.min(32768 / z + 0.1, 6);
-				ctx.fillRect(xp,yp,zp,zp);
-			}
-		}
+    function init() {
+	if(document.referrer === "http://mywebspace.quinnipiac.edu/apaterson/") {
+	    document.getElementById("qu").style.display = "initial";
 	}
 
-    angle = ttt(angle, [11 / 4096. * Math.PI,13 / 4096. * Math.PI,7 / 4096. * Math.PI]);
-    ofs = ttt(ofs, [-179*2, -101*2, -137*2]);
-}
+	resize();
+	if (!!ctx) {
+	    for (i = 0;i < starcount;i++) {
+		starbuffer[i] = [
+		    (Math.random() - .5)*65535,
+		    (Math.random() - .5)*65535,
+		    (Math.random() - .5)*65535
+		]
+	    }
+	    requestAnimationFrame(loop);
+	}
+    }
+
+    function dot(l, r) {
+	var d = 0.0;
+	for(var i=0; i<Math.min(l.length,r.length); i+=1) {
+	    d += l[i]*r[i];
+	}
+	return d;
+    }
+
+    function ttt(l, r) {
+	var t = [];
+	for(var i=0; i<Math.min(l.length,r.length); i+=1) {
+	    t[i] = l[i]+r[i];
+	}
+	return t;
+    }
+
+    var step=1000/60>>0, tock=0, delta=0;
+    function loop(tick) {
+	delta += tick-tock;
+	tock = tick;
+	while(delta>=step) {
+	    angle = ttt(angle, [7,5,3].map(a => a*Math.PI/4096.0));
+	    ofs = ttt(ofs, [7,5,3].map(a => a*-16.0));
+	    delta -= step;
+	}
+	draw();
+	requestAnimationFrame(loop);
+    }
+
+    function draw() {
+	ctx.clearRect(0,0,w,h);
+
+	var s = angle.map(Math.sin);
+	var c = angle.map(Math.cos);
+
+	var m = [
+	    [c[1]*c[2]                 ,-s[2]     ,-s[1]*c[2]                 ],
+	    [s[1]*s[0] + s[2]*c[0]*c[1], c[2]*c[0], s[0]*c[1] - s[1]*s[2]*c[0]],
+	    [s[1]*c[0] - s[2]*s[0]*c[1],-s[0]*c[2], c[1]*c[0] + s[1]*s[2]*s[0]]
+	];
+
+	ctx.globalCompositeOperation = "source-over";
+	ctx.fillStyle = '#FFFFFF';
+	for (var i = 0; i < starcount; i+=1) {
+	    var a = ttt(starbuffer[i], ofs).map(t => t<<16>>16);
+	    var z = dot(a,m[2]) + 32768;
+	    if (z > 0) {
+		var sx = Math.round(dot(a,m[0]) * zf / z) + w2;
+		var sy = Math.round(dot(a,m[1]) * zf / z) + h2;
+		if(0 <= sx && sx < w && 0 <= sy && sy < h) {
+		    var sw = sh = 32768 / z;
+		    ctx.fillRect(sx, sy, sw, sh);
+		}
+	    }
+	}
+    }
  </script>
  <style type="text/css">
 	html, body { margin: 0; padding: 0; color: #ccc; background: #000; }
