@@ -39,10 +39,6 @@
     }
 
     function init() {
-	if(document.referrer === "http://mywebspace.quinnipiac.edu/apaterson/") {
-	    document.getElementById("qu").style.display = "initial";
-	}
-
 	resize();
 	if (!!ctx) {
 	    for (i = 0;i < starcount;i++) {
@@ -167,6 +163,12 @@
 	@keyframes strider { to { width: 1.26em; margin-right: 0; } }
 
 	canvas { position: absolute; }
+	 
+     	@media only screen and (hover: none) {
+		body {
+	    		font-size: 125% !important;
+		}
+    	}
  </style>
 </head>
 <body onload="init();" onresize="resize();">
