@@ -41,7 +41,7 @@ var starbuffer = [];
 var angle = [0,0,0];
 var ofs = [0,0,0];
 var ms = 0;
-ms = ms.MAX_SAFE_INTEGER;
+var ms = ms.MAX_SAFE_INTEGER;
 var ms2 = ms/2;
 
 function resize() {
@@ -54,7 +54,7 @@ function resize() {
 	ctx = scene.getContext('2d');
 }
 
-function init() {
+function load() {
 	resize();
 	if (!!ctx) {
 		for (i = 0;i < starcount;i++) {
@@ -188,7 +188,7 @@ canvas { position: absolute; }
 }
 		</style>
 	</head>
-	<body onload="init();" onresize="resize();" onclick="play();">
+	<body onload="load();" onresize="resize();" onclick="play();">
 		<div>
 			<h1 class="fourohfour" data-text="404">404</h1>
 			<h4 class="onering" id="strider">Not all those who wander are lost</h4>
