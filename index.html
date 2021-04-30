@@ -33,11 +33,8 @@
             }
 
             function load() {
-                if(document.referrer === "http://mywebspace.quinnipiac.edu/apaterson/") {
-                    document.onload = () => document.getElementById("qu").style.display = "initial";
-                    if(document.readyState === "complete") {
-                        document.onload();
-                    }
+                if(document.referrer === "http://mywebspace.quinnipiac.edu/") {
+                    document.getElementById("qu").style.display = "initial";
                 }
 
                 resize();
