@@ -32,9 +32,12 @@
                 ctx = scene.getContext('2d');
             }
 
-            function init() {
+            function load() {
                 if(document.referrer === "http://mywebspace.quinnipiac.edu/apaterson/") {
-                    document.getElementById("qu").style.display = "initial";
+                    document.onload = () => document.getElementById("qu").style.display = "initial";
+                    if(document.readyState === "complete") {
+                        document.onload();
+                    }
                 }
 
                 resize();
@@ -162,7 +165,7 @@
             }
         </style>
     </head>
-    <body onload="init();" onresize="resize();">
+    <body onload="load();" onresize="resize();">
         <canvas id="scene"></canvas>
         <h1>Aaron Paterson</h1>
         <ul id="links">
