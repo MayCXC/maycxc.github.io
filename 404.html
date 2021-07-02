@@ -165,8 +165,12 @@ div { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
 	80% { clip: rect(10px, 400px, 18px, 0); }
 	100% { clip: rect(40px, 400px, 50px, 0); }
 }
-
-.strider { font-size: 101%; opacity: 0; animation: fadein 2625ms ease-in 2250ms forwards; }
+.strider {
+    	text-align: center;
+	font-size: 101%;
+	opacity: 0;
+	animation: fadein 2625ms ease-in 2250ms forwards;
+}
 .strider:after {
 	position: absolute;
 	overflow:hidden;
