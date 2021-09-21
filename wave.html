@@ -193,7 +193,7 @@
                 four = [
                     [diagonal,0,0,0],
                     [0,diagonal,0,0],
-                    [0,0,1.0,8.0]
+                    [0,0,1.0,-1.0]
                 ];
 
                 function slide(m, x, y, t) {
@@ -235,11 +235,7 @@
             }
 
             function project(p) {
-                var t = transform(four, p);
-                t = t.slice(0,2).map(d => d/t[2]);
-                t[0] += w2;
-                t[1] += h2;
-                return t;
+                return ttt(transform(four, p).slice(0,2).map(d => d/t[2]), [w2, h2]);
             }
 
             var outrun = 0;
