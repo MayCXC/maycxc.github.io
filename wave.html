@@ -235,7 +235,8 @@
             }
 
             function project(p) {
-                return ttt(transform(four, p).slice(0,2).map(d => d/p[2]), [w2, h2]);
+                var t = transform(four, p);
+                return ttt(t.slice(0,2).map(d => d/t[2]), [w2, h2]);
             }
 
             var outrun = 0;
