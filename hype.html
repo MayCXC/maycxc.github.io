@@ -58,26 +58,23 @@
         }
 
         mat4 rotateplane(float t, int a, int b) {
-            mat4 rodriguez = mat4(1.0);
-            for(int i=0; i<4; i+=1) {
-                for(int j=0; j<4; j+=1) {
-                    if(i == a && j == a || i == b && j == b) {
-                        rodriguez[i][i] = cos(t);
-                    }
-                    else if(i == a && j == b || i == b && j == a) {
-                        rodriguez[i][j] = sin(t);
-                    }
-                    if(i==j+1 || i==j+1-3 || i==j+1-4) { // right hand rule? fano plane? mod three or four? who knows?
-                        rodriguez[i][j] = -rodriguez[i][j];
+            mat4 rodrigues = mat4(1.0);
+            for(int i=0; i<4; i++) {
+                for(int j=0; j<4; j++) {
+                    if(i==a && j==b) {
+                        rodrigues[i][i] = cos(t);
+                        rodrigues[i][j] = sin(t);
+                        rodrigues[j][i] = -sin(t); // RHR
+                        rodrigues[j][j] = cos(t);    
                     }
                 }
             }
-            return rodriguez;
+            return rodrigues;
         }
 
         vec4 rotatehyper(float t, int a, float d, vec4 v) {
             vec4 r = rotateplane(t,a,3) * v;
-            r.w = d - r.w; // bro do you even fifth dimension?
+            r.w = d - r.w; // translation is only linear in the firth dimension
             return r;
         }
 
