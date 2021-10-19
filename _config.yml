@@ -42,6 +42,7 @@ comments:
   utterances:
     theme                : github-dark # "github-light" (default), "github-dark"
     issue_term           : # "pathname" (default)
+    label                : "comment"
 staticman:
   allowedFields          : ['name', 'email', 'url', 'message']
   branch                 : "master"
