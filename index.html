@@ -37,9 +37,11 @@
                 if(document.referrer === "http://mywebspace.quinnipiac.edu/") {
                     document.getElementById("qu").style.display = "initial";
                 }
-                let marquee = (text) => () => text = text.substring(1) + text.charAt(0);
-                let setTitle = (title) => () => document.title = "\u00ad" + title() + "\u00ad";
-                setInterval(setTitle(marquee(" ᴋᴇᴇᴘ ʏᴏᴜʀ ʙɪᴛꜱ ɪɴꜱɪᴅᴇ ᴛʜᴇ ʙᴜꜰꜰᴇʀ ᴀᴛ ᴀʟʟ ᴛɪᴍᴇꜱ \u26a0")), 250);
+                const marquee = (text) => () => text = text.substring(1) + text.charAt(0);
+                const setTitle = (title) => () => document.title = "\u00ad" + title() + "\u00ad";
+                const callback = setTitle(marquee(" ᴋᴇᴇᴘ ʏᴏᴜʀ ʙɪᴛꜱ ɪɴꜱɪᴅᴇ ᴛʜᴇ ʙᴜꜰꜰᴇʀ ᴀᴛ ᴀʟʟ ᴛɪᴍᴇꜱ \u26a0"));
+                callback();
+                setInterval(callback, 250);
 
                 resize();
                 if (!!ctx) {
