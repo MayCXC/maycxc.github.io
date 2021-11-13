@@ -4,8 +4,9 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="initial-scale=.75">
         <link rel="icon" href="favicon.ico" type="image/x-icon">
+        <script type="application/javascript" src="favicon.js"></script>
         <title>Keep your bits inside the buffer!</title>
-        <script type="application/x-javascript">
+        <script type="application/javascript">
            /*
             * -- Puke Inhibitor --
             * Original was Turbo Pascal from about 1994.
@@ -74,14 +75,14 @@
 
             var step=1000/60>>0, tock=0, delta=0;
             function loop(tick) {
-                delta += tick-tock;
-                tock = tick;
+                delta = Math.min(delta+tick-tock, 250);
                 while(delta>=step) {
                     angle = ttt(angle, [7,5,3].map(a => a*Math.PI/4096.0));
                     ofs = ttt(ofs, [7,5,3].map(a => a*-16.0));
                     delta -= step;
                 }
                 draw();
+                tock = tick;
                 requestAnimationFrame(loop);
             }
 
