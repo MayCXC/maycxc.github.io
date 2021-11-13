@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <script type="application/x-javascript">
+            let ctx, w, w2, h, h2, zf;
+
+            class Grid {
+                constructor(height,width) {
+                    this.height = height;
+                    this.width = width;
+                    this.head = new Array(width*height);
+//                    for(let i=0; i<this.head.length; i+=1)
+//                        if(Math.random() < .1)
+//                            this.head[i] = Math.random() * 255;
+//                        else
+//                    this.head[i] = 0;
+                    this.head.fill(0);
+                    this.tail = new Array(width*height);
+                    this.tail.fill(0);
+                }
+
+                flip() {
+                    [this.head, this.tail] = [this.tail, this.head];
+                }
+
+                generate(rule) {
+                    for(let i=0; i<this.height; i+=1)
+                        for(let j=0; j<this.width; j+=1)
+                            this.set(i,j,rule(i,j,this));
+                    this.flip();
+                }
+            }
+
+            class CutGrid extends Grid {
+                get(i,j) {
+                    if(0 <= i && i < this.height && 0 <= j && j < this.width)
+                        return this.head[i*this.width + j];
+                    else
+                        return 0;
+                }
+                set(i,j,v) {
+                    if(0 <= i && i < this.height && 0 <= j && j < this.width)
+                        this.tail[i*this.width + j] = v;
+                }
+            }
+
+            class ModGrid extends Grid {
+                get(i,j) { return this.head[(i%this.height)*this.width + (j%this.width)] }
+                set(i,j,v) { this.tail[(i%this.height)*this.width + (j%this.width)] = v; }
+            }
+
+            const grid = new CutGrid(24,48);
+            grid.set(0,1,1);
+            grid.set(1,2,1);
+            grid.set(2,0,1);
+            grid.set(2,1,1);
+            grid.set(2,2,1);
+            grid.flip();
+
+            function resize() {
+                const canvas = document.querySelector('canvas');
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+                w2 = w / 2;
+                h2 = h / 2;
+                zf = Math.hypot(w2, h2) / 2;
+                ctx = canvas.getContext('2d');
+            }
+
+            let step=1000/60>>0, tock=0, delta=0;
+            function draw() {
+                ctx.clearRect(0,0,w,h);
+                for(let y=0; y<grid.height; y+=1)
+                for(let x=0; x<grid.width; x+=1) {
+                    ctx.fillStyle = `rgb(${255*grid.get(y,x)},${255*grid.get(y,x)},${255*grid.get(y,x)})`;
+                    ctx.fillRect(x*32,y*32,32,32);
+                }
+            }
+
+//            const life = (m,v) => x => Math.max(0,Math.min(255, 1/((((x - 2)/m)**2 - 1)/(1/v + 1) + 1) - 1));
+            const life = (m,v) => x => Math.max(0,Math.min(1, 1/((((x - 3)/m)**2 - 1)/(1/v + 1) + 1) - 1));
+            const conv = s => (i,j,g) => {
+                let sum = 0;
+                for(let y=-s; y<=s; y+=1)
+                    for(let x=-s; x<=s; x+=1)
+                        if(!(y==0 && x==0))
+                            sum += g.get(i+y,j+x);
+                return sum;
+            }
+
+//            const gol = (i,j,g) => life(1,1)(conv(1)(i,j,g)/255)*154;
+//              const gol = (i,j,g) => g.get(i,j) + life(1,1)(conv(1)(i,j,g));
+            const gol = (i,j,g) => {
+                let sum = 0;
+                for(let y=-1; y<=1; y+=1)
+                    for(let x=-1; x<=1; x+=1)
+                        if(y != 0 || x != 0) {
+                            sum += g.get(i+y,j+x);
+                        }
+                let delta = 1/( ((sum-3)**2 - 1)/2 + 1 ) - 1;
+                return Math.max(0,Math.min(1,g.get(i,j) + delta/32));
+            };
+
+            function loop(tick) {
+                delta += tick-tock;
+                tock = tick;
+                while(delta>=step) {
+                    grid.generate(gol);
+                    delta -= step;
+                }
+                draw();
+                requestAnimationFrame(loop);
+            }
+
+            function load() {
+                resize();
+                if (!!ctx) {
+                    requestAnimationFrame(loop);
+                }
+            }
+
+            function clicked() {
+//                console.log(gol(1,0,grid));
+                grid.generate(gol);
+            }
+        </script>
+        <style type="text/css">
+            html {
+                height: 100%;
+            }
+            body {
+                height: 100%;
+                background: black;
+                margin: 0;
+                overflow: hidden;
+            }
+            canvas {
+                display: block;
+                position: absolute;
+                top: 0;
+            }
+        </style>
+    </head>
+<body onload="load();" onresize="resize();" onclick="clicked();">
+    <canvas ></canvas>
+</body>
+</html>
