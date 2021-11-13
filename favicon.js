@@ -33,6 +33,7 @@ class Grid {
 }
 
 const fav = document.createElement("canvas");
+fav.style.imageRendering = 'pixelated';
 fav.width = 16;
 fav.height = 16;
 const gol = fav.getContext('2d');
@@ -47,6 +48,7 @@ const rule = (i,j,g) => {
     }
     return sum == 3 || sum == 2 && g.get(i,j);
 }
+
 if(!!gol) {
     let grid = new Grid(5,5);
     grid.set(1,2,1);
@@ -56,15 +58,16 @@ if(!!gol) {
     grid.set(3,3,1);
     grid.flip();
 
-    const fw = fav.width/grid.width;
-    const fh = fav.height/grid.height;
+    const fw = fav.width/grid.width<<0;
+    const fh = fav.height/grid.height<<0;
     const callback =  () => {
         gol.clearRect(0,0,fav.width,fav.height);
-        gol.translate(.5,.5);
+//        gol.translate(.5,.5);
         for(let y=0; y<grid.height; y+=1) {
             for(let x=0; x<grid.width; x+=1) {
                 gol.fillStyle = `rgb(${grid.get(y,x)?255:0},${grid.get(y,x)?255:0},${grid.get(y,x)?255:0})`;
-                gol.fillRect(x*fw,y*fh,fw,fh);
+                const big = x==2 || y==2 ? 1 : 0;
+                gol.fillRect(x*fw + (x>2?1:0),y*fh + (y>2?1:0),fw+big,fh+big);
             }
         }
         gol.resetTransform();
