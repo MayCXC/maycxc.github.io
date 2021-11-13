@@ -62,7 +62,6 @@ if(!!gol) {
     const fh = fav.height/grid.height<<0;
     const callback =  () => {
         gol.clearRect(0,0,fav.width,fav.height);
-//        gol.translate(.5,.5);
         for(let y=0; y<grid.height; y+=1) {
             for(let x=0; x<grid.width; x+=1) {
                 gol.fillStyle = `rgb(${grid.get(y,x)?255:0},${grid.get(y,x)?255:0},${grid.get(y,x)?255:0})`;
@@ -70,7 +69,6 @@ if(!!gol) {
                 gol.fillRect(x*fw + (x>2?1:0),y*fh + (y>2?1:0),fw+big,fh+big);
             }
         }
-        gol.resetTransform();
         document.querySelector("link[rel='icon']").href = fav.toDataURL('image/png');
         grid.generate(rule);
     };
