@@ -35,9 +35,6 @@
             }
 
             function load() {
-                if(document.referrer === "http://mywebspace.quinnipiac.edu/") {
-                    document.getElementById("qu").style.display = "initial";
-                }
                 const marquee = (text) => () => text = text.substring(1) + text.charAt(0);
                 const setTitle = (title) => () => document.title = "\u00ad" + title() + "\u00ad";
                 const callback = setTitle(marquee(" ᴋᴇᴇᴘ ʏᴏᴜʀ ʙɪᴛꜱ ɪɴꜱɪᴅᴇ ᴛʜᴇ ʙᴜꜰꜰᴇʀ ᴀᴛ ᴀʟʟ ᴛɪᴍᴇꜱ \u26a0"));
@@ -149,7 +146,7 @@
                 margin-top: .5em;
                 margin-bottom: .5em;
             }
-            #links > li, #demos > li, #qu > li {
+            #links > li, #demos > li {
                 display: inline;
             }
             a[href] {
@@ -158,9 +155,6 @@
             }
             a[href]:hover {
                 text-decoration: underline;
-            }
-            #qu {
-                display: none;
             }
             @media only screen and (hover: none) {
                 body {
@@ -173,11 +167,6 @@
         <canvas id="scene"></canvas>
         <h1>Aaron Paterson</h1>
         <ul id="links">
-            <span id="qu">
-                <li><a href="https://quinnipiac.digication.com/aaron-paterson/">ePortfolio</a></li> &#183;
-                <li><a href="https://quinnipiac-csm.symplicity.com/profiles/aaron.paterson">QUCC</a></li> &#183;
-                <li><a href="https://bobcatconnect.qu.edu/profile-v2/aaronpaterson/">Bobcat Connect</a></li> &#183;
-            </span>
             <li><a href="https://www.linkedin.com/in/aaron-paterson">LinkedIn</a></li> &#183;
             <li><a href="/work/Resume.pdf">Résumé</a></li> &#183;
             <li><a href="https://github.com/MayCXC">GitHub</a></li>
