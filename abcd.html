@@ -2,6 +2,8 @@
 <head>
   <meta charset="utf-8"/>
   <script type="application/javascript">
+const TAU = 2*Math.PI;
+
 function lattice(i) {
   const l = (i << 1) | 1;
   const d = 1 << (1 << 6) - Math.clz32(l) - 1;
@@ -87,11 +89,11 @@ function matxmat(a1, b1, c1, d1, e1, f1, a2, b2, c2, d2, e2, f2) {
 }
 
 function deg(d) {
-  return d * Math.PI / 180;
+  return d * TAU / 360;
 }
 
 function pla(d) {
-  return d * Math.PI * 2;
+  return d * TAU;
 }
 
 const grid = {
@@ -114,27 +116,44 @@ let bezier = [];
 const poly = {
 	t: grid.t,
 	p: c => {
-  	if(bezier.length > 0) {
-      const points = bezier.map(b=>b.map(lattice));
-      for (const slice of slices(points,4,3)) {
-      	if(slice.length == 4) {
-        	const [[x1,y1],[x2,y2],[x3,y3],[x4,y4]] = slice;
-          c.moveTo(x2,y2);
-          c.arc(x2,y2,Math.pow(2,-5),0,2*Math.PI);
-          c.moveTo(x2,y2);
-          c.lineTo(x1,y1);
-          c.bezierCurveTo(x2,y2,x3,y3,x4,y4);
-          c.lineTo(x3,y3);
-          c.arc(x3,y3,Math.pow(2,-5),0,2*Math.PI);
-          c.moveTo(x4,y4);
-        }
+    const small = Math.pow(2,-5);
+    const points = bezier.map(b=>b.map(lattice));
+    for (const slice of slices(points,4,3)) {
+      if(slice.length == 4) {
+        const [[x1,y1],[x2,y2],[x3,y3],[x4,y4]] = slice;
+        c.moveTo(x2,y2);
+        c.arc(x2,y2,small,0,TAU);
+        c.moveTo(x2,y2);
+        c.lineTo(x1,y1);
+        c.bezierCurveTo(x2,y2,x3,y3,x4,y4);
+        c.lineTo(x3,y3);
+        c.arc(x3,y3,small,0,TAU);
+        c.moveTo(x4,y4);
       }
+      else {
+        for(const s of slice.slice(1,3)) {
+          c.moveTo(...s);
+          c.arc(...s,small,0,TAU);
+        }
+        if(slice.length > 0 && points.length > 3) {
+          const [x,y] = slice.at(0);
+          c.moveTo(x-small,y-small);
+          c.lineTo(x+small,y+small);
+          c.moveTo(x+small,y-small);
+          c.lineTo(x-small,y+small);
+        }
+    	}
+    }
+    if(points.length > 0) {
+    	const [x,y] = points.at(0);
+      c.moveTo(x-small,y-small);
+      c.lineTo(x+small,y+small);
+      c.moveTo(x+small,y-small);
+      c.lineTo(x-small,y+small);
     }
   },
   i: (m, p) => {},
-/*   s: '#454545'
-   */
-   s:'#000000'
+  s: '#454545'
 };
 
 const box = {
