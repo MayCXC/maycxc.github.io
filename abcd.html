@@ -88,12 +88,12 @@ function matxmat(a1, b1, c1, d1, e1, f1, a2, b2, c2, d2, e2, f2) {
   ];
 }
 
-function deg(d) {
-  return d * TAU / 360;
+function pla(p) {
+  return p * TAU;
 }
 
-function pla(d) {
-  return d * TAU;
+function deg(d) {
+  return pla(d) / 360;
 }
 
 const grid = {
