@@ -36,8 +36,8 @@
 
             function load() {
                 const marquee = (text) => () => text = text.substring(1) + text.charAt(0);
-                const setTitle = (title) => () => document.title = "\u00ad" + title() + "\u00ad";
-                const callback = setTitle(marquee(" ᴋᴇᴇᴘ ʏᴏᴜʀ ʙɪᴛꜱ ɪɴꜱɪᴅᴇ ᴛʜᴇ ʙᴜꜰꜰᴇʀ ᴀᴛ ᴀʟʟ ᴛɪᴍᴇꜱ \u26a0"));
+                const setTitle = (title) => () => document.title = '\u00ad' + title() + '\u00ad';
+                const callback = setTitle(marquee(' ᴋᴇᴇᴘ ʏᴏᴜʀ ʙɪᴛꜱ ɪɴꜱɪᴅᴇ ᴛʜᴇ ʙᴜꜰꜰᴇʀ ᴀᴛ ᴀʟʟ ᴛɪᴍᴇꜱ \u26a0'));
                 callback();
                 setInterval(callback, 250);
 
@@ -95,7 +95,7 @@
                     [s[0]*c[2] - s[1]*s[2]*c[0],-s[2]*c[1], c[0]*c[2] + s[0]*s[1]*s[2]]
                 ];
 
-                ctx.globalCompositeOperation = "source-over";
+                ctx.globalCompositeOperation = 'source-over';
                 ctx.fillStyle = '#FFFFFF';
                 for (var i = 0; i < starcount; i+=1) {
                     var a = ttt(starbuffer[i], ofs).map(t => t<<16>>16);
