@@ -45,9 +45,9 @@
                 if (!!ctx) {
                     for (i = 0;i < starcount;i++) {
                         starbuffer[i] = [
-                            (Math.random() - .5)*65535,
-                            (Math.random() - .5)*65535,
-                            (Math.random() - .5)*65535
+                            (Math.random() - .5)*0xFFFF,
+                            (Math.random() - .5)*0xFFFF,
+                            (Math.random() - .5)*0xFFFF
                         ]
                     }
                     requestAnimationFrame(loop);
