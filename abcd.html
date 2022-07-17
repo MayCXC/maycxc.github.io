@@ -6,8 +6,8 @@ const TAU = 2*Math.PI;
 
 function lattice(i) {
   const l = (i << 1) | 1;
-  const d = 1 << (1 << 6) - Math.clz32(l) - 1;
-  return l / d * 2 - 3;
+  const d = 1 << 32 - Math.clz32(l) - 1;
+  return (l << 1) / d - 3;
 }
 
 function ecittal(l,r) {
