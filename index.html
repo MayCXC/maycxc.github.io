@@ -1,19 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="initial-scale=.75">
         <link rel="icon" href="favicon.ico" type="image/x-icon">
-        <script type="application/javascript" src="favicon.js"></script>
+        <script src="favicon.js"></script>
         <title>Keep your bits inside the buffer!</title>
-        <script type="application/javascript">
-           /*
-            * -- Puke Inhibitor --
-            * Original was Turbo Pascal from about 1994.
-            * Ported to C and svgalib in 1997.
-            * Ported to Javascript and Canvas in 2009.
-            * Golfed a little and fixed timestep in 2020.
-            */
+        <script>
             var ctx, w, w2, h, h2, zf;
 
             var starcount = 300;
@@ -36,8 +29,8 @@
 
             function load() {
                 const marquee = (text) => () => text = text.substring(1) + text.charAt(0);
-                const setTitle = (title) => () => document.title = "\u00ad" + title() + "\u00ad";
-                const callback = setTitle(marquee(" ᴋᴇᴇᴘ ʏᴏᴜʀ ʙɪᴛꜱ ɪɴꜱɪᴅᴇ ᴛʜᴇ ʙᴜꜰꜰᴇʀ ᴀᴛ ᴀʟʟ ᴛɪᴍᴇꜱ \u26a0"));
+                const setTitle = (title) => () => document.title = '\u00ad' + title() + '\u00ad';
+                const callback = setTitle(marquee(' ᴋᴇᴇᴘ ʏᴏᴜʀ ʙɪᴛꜱ ɪɴꜱɪᴅᴇ ᴛʜᴇ ʙᴜꜰꜰᴇʀ ᴀᴛ ᴀʟʟ ᴛɪᴍᴇꜱ \u26a0'));
                 callback();
                 setInterval(callback, 250);
 
@@ -45,9 +38,9 @@
                 if (!!ctx) {
                     for (i = 0;i < starcount;i++) {
                         starbuffer[i] = [
-                            (Math.random() - .5)*65535,
-                            (Math.random() - .5)*65535,
-                            (Math.random() - .5)*65535
+                            (Math.random() - .5)*0xFFFF,
+                            (Math.random() - .5)*0xFFFF,
+                            (Math.random() - .5)*0xFFFF
                         ]
                     }
                     requestAnimationFrame(loop);
@@ -95,7 +88,7 @@
                     [s[0]*c[2] - s[1]*s[2]*c[0],-s[2]*c[1], c[0]*c[2] + s[0]*s[1]*s[2]]
                 ];
 
-                ctx.globalCompositeOperation = "source-over";
+                ctx.globalCompositeOperation = 'source-over';
                 ctx.fillStyle = '#FFFFFF';
                 for (var i = 0; i < starcount; i+=1) {
                     var a = ttt(starbuffer[i], ofs).map(t => t<<16>>16);
@@ -111,7 +104,7 @@
                 }
             }
         </script>
-        <style type="text/css">
+        <style>
             html {
                 height: 100%;
             }
@@ -141,8 +134,8 @@
                 margin-top: 0;
             }
             li {
-                margin-left: .25em;
-                margin-right: .25em;
+                margin-left: .125em;
+                margin-right: .125em;
                 margin-top: .5em;
                 margin-bottom: .5em;
             }
@@ -161,26 +154,32 @@
                     font-size: 125% !important;
                 }
             }
+            #badge > li > a {
+                display: inline-block;
+            }
+            #badge > li > a > svg {
+                visibility: hidden;
+                opacity: 0;
+                transition: 1s;
+            }
+            #badge > li > a:hover > svg {
+                visibility: visible;
+                opacity: 1;
+            }
         </style>
     </head>
     <body onload="load();" onresize="resize();">
         <canvas id="scene"></canvas>
         <h1>Aaron Paterson</h1>
         <ul id="links">
-            <li><a href="https://www.linkedin.com/in/aaron-paterson">LinkedIn</a></li> &#183;
-            <li><a href="/work/Resume.pdf">Résumé</a></li> &#183;
             <li><a href="https://github.com/MayCXC">GitHub</a></li>
+            <li>&#183;</li>
+            <li><a href="https://www.linkedin.com/in/aaron-paterson">LinkedIn</a></li>
+            <li>&#183;</li>
+            <li><a href="/work/Resume.pdf">Résumé</a></li>
         </ul>
         <h3>Writing + Code Samples:</h3>
         <ul id="samples">
-            <li>Algorithm Design and Analysis:
-                <a href="/work/CSC215.pdf">W</a> +
-                <a href="https://gist.github.com/MayCXC/24a3946371657314dd0ebd5fd952c4c5">C</a>
-            </li>
-            <li>Introduction to Software Development:
-                <a href="https://docs.google.com/document/d/1YWphk9gIXiEO-COIHpBs1K6cIJRtt-eLVoAh2KTVko4/edit?usp=sharing">W</a> +
-                <a href="https://github.com/MayCXC/WaveGame2019">C</a>
-            </li>
             <li>Cryptography:
                 <a href="/work/CSC318.pdf">W</a> +
                 <a href="https://gist.github.com/MayCXC/a2048a10ccb1d72b6ff59d79523b280d">C</a>
@@ -193,12 +192,76 @@
                 <a href="https://docs.google.com/document/d/1noP7e8CD46nIyjDKExRo1PKAFOnqB1jbJZdbxgKuXUg/edit?usp=sharing">W</a> +
                 <a href="https://colab.research.google.com/github/MayCXC/DIPC/blob/master/topinsulators.ipynb">C</a>       
             </li>
+            <li>Algorithm Design and Analysis:
+                <a href="/work/CSC215.pdf">W</a> +
+                <a href="https://gist.github.com/MayCXC/24a3946371657314dd0ebd5fd952c4c5">C</a>
+            </li>
+            <li>Introduction to Software Development:
+                <a href="https://docs.google.com/document/d/1YWphk9gIXiEO-COIHpBs1K6cIJRtt-eLVoAh2KTVko4/edit?usp=sharing">W</a> +
+                <a href="https://github.com/MayCXC/WaveGame2019">C</a>
+            </li>
         </ul>
         <h3>Canvas Demos:</h3>
         <ul id="demos">
-            <li><a href="/hype.html">1</a></li> &#183;
-            <li><a href="/wave.html?outrun">2</a></li> &#183;
-            <li><a href="/gofl.html">3</a></li>
+            <li><a href="/hype.html">&#8544;</a></li>
+            <li>&#183;</li>
+            <li><a href="/wave.html?outrun">&#8545;</a></li>
+            <li>&#183;</li>
+            <li><a href="/gofl.html">&#8546;</a></li>
+            <li>&#183;</li>
+            <li><a href="/abcd.html">&#8547;</a></li>
+        </ul>
+        <br>
+        <ul id="badge">
+            <li>
+                <a href="https://www.catb.org/hacker-emblem/">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="56" width="56" id="glider_svg">
+                    <rect
+                    style="fill:#ffffff;fill-opacity:1;stroke-width:1;stroke:#999999;stroke-opacity:1"
+                    width="54"
+                    height="54"
+                    x="1"
+                    y="1" />
+                    <rect
+                    style="fill-opacity:0;stroke-width:1;stroke:#999999;stroke-opacity:1"
+                    width="18"
+                    height="54"
+                    x="19"
+                    y="1" />
+                    <rect
+                    style="fill-opacity:0;stroke-width:1;stroke:#999999;stroke-opacity:1"
+                    width="54"
+                    height="18"
+                    x="1"
+                    y="19" />
+                    <circle
+                    style="fill:#000000;fill-opacity:1;stroke-width:0;"
+                    cx="28"
+                    cy="10"
+                    r="7" />
+                    <circle
+                    style="fill:#000000;fill-opacity:1;stroke-width:0;"
+                    cx="46"
+                    cy="28"
+                    r="7" />
+                    <circle
+                    style="fill:#000000;fill-opacity:1;stroke-width:0;"
+                    cx="46"
+                    cy="46"
+                    r="7" />
+                    <circle
+                    style="fill:#000000;fill-opacity:1;stroke-width:0;"
+                    cx="28"
+                    cy="46"
+                    r="7" />
+                    <circle
+                    style="fill:#000000;fill-opacity:1;stroke-width:0;"
+                    cx="10"
+                    cy="46"
+                    r="7" />
+                    </svg>
+                </a>
+            </li>
         </ul>
     </body>
 </html>
