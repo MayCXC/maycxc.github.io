@@ -1,0 +1,101 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>&#xECD6;&#xECC8;&#xECEA;&#xECC1;&#xECEA;&#xECE4;&#xECE3;</title>
+<style>
+@font-face { font-family: Untitled; src: url('untitled.ttf'); } 
+body {
+	display: grid;
+	row-gap: 8px;
+	column-gap: 8px;
+	font-family: Untitled;
+	font-weight: bold;
+	font-size: 2.5em;
+}
+@media only screen and (hover: none) {
+	body {
+		font-size: 125% !important;
+	}
+}
+@media (orientation: landscape) {
+	body {
+		grid-template-columns: 1fr auto;
+		grid-template-rows: auto;
+	}
+}
+@media (orientation: portrait) {
+	body {
+		grid-template-columns: auto;
+		grid-template-rows: 1fr auto;
+	}
+}
+table {
+	display: block;
+	margin: auto;
+}
+textarea {
+	resize: none;
+	font-family: Untitled;
+	font-weight: bold;
+	font-size: 1.0em;
+}
+button {
+	width: 100%;
+	font-family: Untitled;
+	font-weight: bold;
+	font-size: 2.5em;
+}
+</style>
+<script>
+function load() {
+	let paper = document.createElement("textarea");
+	let start = 0;
+	let end = 0;
+	paper.onclick = paper.oninput = () => {
+		start = paper.selectionStart;
+		end = paper.selectionEnd;
+	}
+	let board = document.createElement("table");
+	for(let y=0; y<7; y+=1) {
+		let tr = document.createElement("tr");
+		for(let x=0; x<7; x+=1) {
+			let td = document.createElement("td");
+			let button = document.createElement("button");
+			button.textContent = String.fromCodePoint(0xecbe + 7*y + x);
+			button.onclick = () => {
+				paper.setRangeText(button.textContent, start, end, 'end');
+				paper.onclick();
+			}
+			td.appendChild(button);
+			tr.append(td);
+		}
+		board.append(tr);
+	}
+
+	let tr = document.createElement("tr");
+
+	for(const punctuation of [".",","," ","!","?"]) {
+		let td = document.createElement("td");
+		let button = document.createElement("button");
+		button.textContent = punctuation;
+		button.onclick = () => {
+			paper.setRangeText(button.textContent, start, end, 'end');
+			paper.onclick();
+		}
+		if(punctuation == " ") {
+			button.style.height = "53px";
+			td.colSpan = 3;
+		}
+		td.appendChild(button);
+		tr.append(td);
+	}
+	let comma = document.createElement("button");
+	board.append(tr);
+	document.body.append(paper);
+	document.body.append(board);
+}
+</script>
+</head>
+<body onload="load()">
+</body>
+</html>
