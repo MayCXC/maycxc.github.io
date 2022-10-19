@@ -1,0 +1,182 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>&#xECD6;&#xECC8;&#xECEA;&#xECC1;&#xECEA;&#xECE4;&#xECE3;</title>
+<style>
+@font-face { font-family: Untitled; src: url('untitled.ttf'); } 
+body {
+	display: grid;
+	row-gap: 8px;
+	column-gap: 8px;
+	font-family: Untitled;
+	font-weight: bold;
+	font-size: 2.5em;
+}
+@media only screen and (hover: none) {
+	body {
+		font-size: 125% !important;
+	}
+}
+@media (orientation: landscape) {
+	body {
+		grid-template-columns: 1fr auto;
+		grid-template-rows: 1fr 1fr;
+	}
+	table {
+		grid-column: 2;
+	}
+	textarea {
+		grid-row: 1 / 4;
+	}
+}
+@media (orientation: portrait) {
+	body {
+		grid-template-columns: 1fr 1fr;
+		grid-template-rows: 1fr auto;
+	}
+	table {
+		grid-row: 2;
+	}
+	textarea {
+		grid-column: 1 / 4;
+	}
+}
+table {
+	display: block;
+	margin: auto;
+}
+textarea {
+	resize: none;
+	font-family: Untitled;
+	font-weight: bold;
+	font-size: 1.0em;
+}
+button {
+	width: 100%;
+	font-family: Untitled;
+	font-weight: bold;
+	font-size: 2.5em;
+}
+</style>
+<script>
+function encode(decoded) {
+	return btoa(encodeURIComponent(decoded).replace(/%([0-9A-F]{2})/g,(match, char) => String.fromCharCode('0x' + char)));
+}
+
+function decode(encoded) {
+	return decodeURIComponent(atob(encoded).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+}
+
+function write(textarea, text, selection) {
+	textarea.setRangeText(text, selection.start, selection.end, 'end');
+	selection.start = textarea.selectionStart;
+	selection.end = textarea.selectionEnd;
+	query(textarea.value);
+}
+
+function query(value) {
+	const encoded = encode(value);
+	const params = new URLSearchParams(location.search);	
+	if(encoded != params.get('note')) {
+		params.set('note', encode(value));
+		window.history.replaceState({}, '', `${location.pathname}?${params}`);
+	}
+}
+
+function grid(side, offset, textarea, selection) {
+	let table = document.createElement("table");
+	for(let y=0; y<side; y+=1) {
+		let tr = document.createElement("tr");
+		for(let x=0; x<side; x+=1) {
+			let td = document.createElement("td");
+			let button = document.createElement("button");
+			button.textContent = String.fromCodePoint(offset + side*y + x);
+			button.onclick = () => write(textarea, button.textContent, selection);
+			td.appendChild(button);
+			tr.append(td);
+		}
+		table.append(tr);
+	}
+	return table;
+}
+
+function load() {
+	let paper = document.createElement("textarea");
+	const params = new URLSearchParams(location.search);
+	const note = params.get('note');
+	if(note != null) {
+		paper.setRangeText(decode(note),0,0,'end');
+	}
+	let selection = {
+		start: paper.selectionStart,
+		end: paper.selectionEnd
+	};
+	paper.onclick = paper.oninput = paper.onkeyup = () => {
+		selection.start = paper.selectionStart;
+		selection.end = paper.selectionEnd;
+		query(paper.value);
+	};
+	document.body.append(paper);
+	let board = grid(7, 0xECBE, paper, selection);
+	let space = document.createElement("tr");
+	for(const punctuation of [".",","," ","!","?"]) {
+		let td = document.createElement("td");
+		let button = document.createElement("button");
+		button.textContent = punctuation;
+		button.onclick = () => write(paper, button.textContent, selection);
+		if(punctuation == " ") {
+			button.style.height = "53px";
+			td.colSpan = 3;
+		}
+		td.appendChild(button);
+		space.append(td);
+	}
+	board.append(space);
+	document.body.append(board);
+
+	let numerals = grid(6, 0xEC9A, paper, selection);
+	let operators = grid(5, 0xEC81, paper, selection);
+	let punctuation = grid(4, 0xEC71, paper, selection);
+
+	let pads = [punctuation, operators, numerals];
+	let widths = [4, 5, 6];
+
+	document.body.append(punctuation);
+
+	for(let i=0; i<pads.length; i+=1) {
+		const pad = pads[i];
+		const width = widths[i];
+
+		let up = document.createElement("tr");
+		let above = document.createElement("td");
+		let twist = document.createElement("button");
+		twist.textContent = '\uFE3F';
+		twist.onclick = () => {
+			const prev = ((i - 1 % pads.length) + pads.length) % pads.length;
+			document.body.replaceChild(pads[prev], pads[i]);
+		};
+		above.appendChild(twist);
+		above.colSpan = width;
+		up.append(above);
+
+		let down = document.createElement("tr");
+		let below = document.createElement("td");
+		let turn = document.createElement("button");
+		turn.textContent = '\uFE40'
+		turn.onclick = () => {
+			const next = ((i + 1 % pads.length) + pads.length) % pads.length;
+			document.body.replaceChild(pads[next], pads[i]);
+		};
+		below.appendChild(turn);
+		below.colSpan = width;
+		down.append(below);
+
+		pad.prepend(up);
+		pad.append(down);
+	}
+}
+</script>
+</head>
+<body onload="load()">
+</body>
+</html>
