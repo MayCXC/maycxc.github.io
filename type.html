@@ -1,0 +1,171 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>&#xECD6;&#xECC8;&#xECEA;&#xECC1;&#xECEA;&#xECE4;&#xECE3;</title>
+<style>
+@font-face { font-family: Untitled; src: url('untitled.ttf'); } 
+body {
+	display: grid;
+	row-gap: 8px;
+	column-gap: 8px;
+	font-family: Untitled;
+	font-weight: bold;
+	font-size: 2.5em;
+}
+@media only screen and (hover: none) {
+	body {
+		font-size: 125% !important;
+	}
+}
+@media (orientation: landscape) {
+	body {
+		grid-template-columns: 1fr auto;
+		grid-template-rows: 1fr 1fr;
+	}
+	table {
+		grid-column: 2;
+	}
+	textarea {
+		grid-row: 1 / 4;
+	}
+}
+@media (orientation: portrait) {
+	body {
+		grid-template-columns: 1fr 1fr;
+		grid-template-rows: 1fr auto;
+	}
+	table {
+		grid-row: 2;
+	}
+	textarea {
+		grid-column: 1 / 4;
+	}
+}
+table, div {
+	display: block;
+	margin: 0 auto auto auto;
+}
+form {
+	display: block;
+	margin: 0 auto 8px auto;
+	text-align: center;
+}
+textarea {
+	resize: none;
+	font-family: Untitled;
+	font-weight: bold;
+	font-size: 1.0em;
+}
+button {
+	width: 100%;
+	font-family: Untitled;
+	font-weight: bold;
+	font-size: 2.5em;
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/lz-string@1/libs/lz-string.min.js"></script>
+<script>
+function encode(decoded) {
+	return LZString.compressToEncodedURIComponent(decoded);
+}
+
+function decode(encoded) {
+	return LZString.decompressFromEncodedURIComponent(encoded);
+}
+
+function write(textarea, text, selection) {
+	textarea.setRangeText(text, selection.start, selection.end, 'end');
+	selection.start = textarea.selectionStart;
+	selection.end = textarea.selectionEnd;
+	query(textarea.value);
+}
+
+function query(value) {
+	const encoded = encode(value);
+	const params = new URLSearchParams(location.search);	
+	if(encoded != params.get('note')) {
+		params.set('note', encode(value));
+		window.history.replaceState({}, '', `${location.pathname}?${params}`);
+	}
+}
+
+function grid(side, offset, textarea, selection) {
+	let table = document.createElement("table");
+	for(let x=0; x<side; x+=1) {
+		let tr = document.createElement("tr");
+		for(let y=0; y<side; y+=1) {
+			let td = document.createElement("td");
+			let button = document.createElement("button");
+			button.textContent = String.fromCodePoint(offset + side*y + x);
+			button.onclick = () => write(textarea, button.textContent, selection);
+			td.append(button);
+			tr.append(td);
+		}
+		table.append(tr);
+	}
+	return table;
+}
+
+function load() {
+	let paper = document.createElement("textarea");
+	const params = new URLSearchParams(location.search);
+	const note = params.get('note');
+	if(note != null) {
+		paper.setRangeText(decode(note),0,0,'end');
+	}
+	let selection = {
+		start: paper.selectionStart,
+		end: paper.selectionEnd
+	};
+	paper.onclick = paper.oninput = paper.onkeyup = () => {
+		selection.start = paper.selectionStart;
+		selection.end = paper.selectionEnd;
+		query(paper.value);
+	};
+	document.body.append(paper);
+	let board = grid(7, 0xECBE, paper, selection);
+	let space = document.createElement("tr");
+	for(const punctuation of [".",","," ","!","?"]) {
+		let td = document.createElement("td");
+		let button = document.createElement("button");
+		button.textContent = punctuation;
+		button.onclick = () => write(paper, button.textContent, selection);
+		if(punctuation == " ") {
+			button.style.height = "53px";
+			td.colSpan = 3;
+		}
+		td.append(button);
+		space.append(td);
+	}
+	board.append(space);
+	document.body.append(board);
+
+	let numerals = grid(6, 0xEC9A, paper, selection);
+	let operators = grid(5, 0xEC81, paper, selection);
+	let punctuation = grid(4, 0xEC71, paper, selection);
+
+	let div = document.createElement("div");
+	let form = document.createElement("form");
+	let current = punctuation;
+	for(const pad of [punctuation, operators, numerals]) {
+		let radio = document.createElement("input");
+		radio.type = "radio";
+		radio.name = "pad";
+		if(pad == punctuation) {
+			radio.checked = true;
+		}
+		radio.onchange = () => {
+			div.replaceChild(pad, current);
+			current = pad;
+		};
+		form.append(radio);
+	}
+	div.append(form);
+	div.append(current);
+	document.body.append(div);
+}
+</script>
+</head>
+<body onload="load()">
+</body>
+</html>
