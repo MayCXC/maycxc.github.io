@@ -1,0 +1,250 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title></title>
+<style>
+@font-face { font-family: Untitled; src: url('untitled.ttf'); } 
+body {
+	font-family: Untitled;
+}
+
+.untitled {
+	font-weight: bold;
+	font-size: 2.5em;
+	text-align: center;
+}
+
+table, td, th, tr {
+	border: 1px solid black;
+}
+
+pre {
+	padding: 2px;
+}
+</style>
+<script>
+let tungskrat =`
+U+EC70  (This position shall not be used)
+
+U+EC71  TUNGSKRAT BLANK
+
+U+EC72  TUNGSKRAT DIALOGUE MARKER NARRATOR
+U+EC73  TUNGSKRAT DIALOGUE MARKER SELF
+U+EC74  TUNGSKRAT DIALOGUE MARKER REQUEST
+U+EC75  TUNGSKRAT DIALOGUE MARKER RESPOND
+U+EC76  TUNGSKRAT DIALOGUE MARKER CONVERSATION END
+U+EC77  TUNGSKRAT DIALOGUE MARKER CONVERSATION BEGIN
+U+EC78  TUNGSKRAT DIALOGUE MARKER REPLY
+U+EC79  TUNGSKRAT DIALOGUE MARKER REFLEX
+U+EC7A  TUNGSKRAT PARENTHETICAL SINGLE BEGIN
+U+EC7B  TUNGSKRAT PARENTHETICAL DOUBLE BEGIN
+U+EC7C  TUNGSKRAT PARENTHETICAL BLOCK BEGIN
+U+EC7D  TUNGSKRAT PARENTHETICAL ANGLE BEGIN
+U+EC7E  TUNGSKRAT PARENTHETICAL SINGLE END
+U+EC7F  TUNGSKRAT PARENTHETICAL DOUBLE END
+U+EC80  TUNGSKRAT PARENTHETICAL BLOCK END
+U+EC81  TUNGSKRAT PARENTHETICAL ANGLE END
+
+U+EC82  TUNGSKRAT ABSTRACT OPERATOR
+U+EC83  TUNGSKRAT LOGICAL OPERATOR OR
+U+EC84  TUNGSKRAT LOGICAL OPERATOR AND
+U+EC85  TUNGSKRAT LOGICAL OPERATOR IF
+U+EC86  TUNGSKRAT LOGICAL OPERATOR CONVERSE IF
+U+EC87  TUNGSKRAT MATHEMATICAL OPERATOR ADD
+U+EC88  TUNGSKRAT MATHEMATICAL OPERATOR UNEQUAL
+U+EC89  TUNGSKRAT MATHEMATICAL OPERATOR EQUAL
+U+EC8A  TUNGSKRAT MATHEMATICAL OPERATOR GREATER
+U+EC8B  TUNGSKRAT MATHEMATICAL OPERATOR LESSER
+U+EC8C  TUNGSKRAT MATHEMATICAL OPERATOR MULTIPLY
+U+EC8D  TUNGSKRAT MATHEMATICAL OPERATOR UNCORRELATED
+U+EC8E  TUNGSKRAT MATHEMATICAL OPERATOR CORRELATED
+U+EC8F  TUNGSKRAT MATHEMATICAL OPERATOR GREATER OR EQUAL
+U+EC90  TUNGSKRAT MATHEMATICAL OPERATOR LESSER OR EQUAL
+U+EC91  TUNGSKRAT MATHEMATICAL OPERATOR EXPONENTIATE
+U+EC92  TUNGSKRAT MATHEMATICAL OPERATOR SUBTRACT
+U+EC93  TUNGSKRAT MATHEMATICAL OPERATOR DIVIDE
+U+EC94  TUNGSKRAT MATHEMATICAL OPERATOR ROOT
+U+EC95  TUNGSKRAT MATHEMATICAL OPERATOR LOGARITHM
+U+EC96  TUNGSKRAT MATHEMATICAL OPERATOR CONVERSE EXPONENTIATE
+U+EC97  TUNGSKRAT MATHEMATICAL OPERATOR CONVERSE SUBTRACT
+U+EC98  TUNGSKRAT MATHEMATICAL OPERATOR CONVERSE DIVIDE
+U+EC99  TUNGSKRAT MATHEMATICAL OPERATOR CONVERSE ROOT
+U+EC9A  TUNGSKRAT MATHEMATICAL OPERATOR CONVERSE LOGARITHM
+
+U+EC9B  TUNGSKRAT NUMBER ZERO
+U+EC9C  TUNGSKRAT NUMBER ONE
+U+EC9D  TUNGSKRAT NUMBER TWO
+U+EC9E  TUNGSKRAT NUMBER THREE
+U+EC9F  TUNGSKRAT NUMBER FOUR
+U+ECA0  TUNGSKRAT NUMBER FIVE
+U+ECA1  TUNGSKRAT NUMBER SIX
+U+ECA2  TUNGSKRAT NUMBER SEVEN
+U+ECA3  TUNGSKRAT NUMBER EIGHT
+U+ECA4  TUNGSKRAT NUMBER NINE
+U+ECA5  TUNGSKRAT NUMBER TEN
+U+ECA6  TUNGSKRAT NUMBER ELEVEN
+U+ECA7  TUNGSKRAT NUMBER TWELVE
+U+ECA8  TUNGSKRAT NUMBER THIRTEEN
+U+ECA9  TUNGSKRAT NUMBER FOURTEEN
+U+ECAA  TUNGSKRAT NUMBER FIFTEEN
+U+ECAB  TUNGSKRAT NUMBER SIXTEEN
+U+ECAC  TUNGSKRAT NUMBER SEVENTEEN
+U+ECAD  TUNGSKRAT NUMBER EIGHTEEN
+U+ECAE  TUNGSKRAT NUMBER NINETEEN
+U+ECAF  TUNGSKRAT NUMBER TWENTY
+U+ECB0  TUNGSKRAT NUMBER TWENTY ONE
+U+ECB1  TUNGSKRAT NUMBER TWENTY TWO
+U+ECB2  TUNGSKRAT NUMBER TWENTY THREE
+U+ECB3  TUNGSKRAT NUMBER TWENTY FOUR
+U+ECB4  TUNGSKRAT NUMBER TWENTY FIVE
+U+ECB5  TUNGSKRAT NUMBER TWENTY SIX
+U+ECB6  TUNGSKRAT NUMBER TWENTY SEVEN
+U+ECB7  TUNGSKRAT NUMBER TWENTY EIGHT
+U+ECB8  TUNGSKRAT NUMBER TWENTY NINE
+U+ECB9  TUNGSKRAT NUMBER THIRTY
+U+ECBA  TUNGSKRAT NUMBER THIRTY ONE
+U+ECBB  TUNGSKRAT NUMBER THIRTY TWO
+U+ECBC  TUNGSKRAT NUMBER THIRTY THREE
+U+ECBD  TUNGSKRAT NUMBER THIRTY FOUR
+U+ECBE  TUNGSKRAT NUMBER THIRTY FIVE
+
+U+ECBF  TUNGSKRAT LETTER TSH
+U+ECC0  TUNGSKRAT LETTER DZH
+U+ECC1  TUNGSKRAT LETTER KH
+U+ECC2  TUNGSKRAT LETTER OA
+U+ECC3  TUNGSKRAT LETTER K
+U+ECC4  TUNGSKRAT LETTER UR
+U+ECC5  TUNGSKRAT LETTER RD
+U+ECC6  TUNGSKRAT LETTER YU
+U+ECC7  TUNGSKRAT LETTER Y
+U+ECC8  TUNGSKRAT LETTER GH
+U+ECC9  TUNGSKRAT LETTER NG
+U+ECCA  TUNGSKRAT LETTER G
+U+ECCB  TUNGSKRAT LETTER R
+U+ECCC  TUNGSKRAT LETTER RAI
+U+ECCD  TUNGSKRAT LETTER SH
+U+ECCE  TUNGSKRAT LETTER ZH
+U+ECCF  TUNGSKRAT LETTER IE
+U+ECD0  TUNGSKRAT LETTER IH
+U+ECD1  TUNGSKRAT LETTER EH
+U+ECD2  TUNGSKRAT LETTER D
+U+ECD3  TUNGSKRAT LETTER T
+U+ECD4  TUNGSKRAT LETTER AIE
+U+ECD5  TUNGSKRAT LETTER N
+U+ECD6  TUNGSKRAT LETTER A
+U+ECD7  TUNGSKRAT LETTER UH
+U+ECD8  TUNGSKRAT LETTER EA
+U+ECD9  TUNGSKRAT LETTER L
+U+ECDA  TUNGSKRAT LETTER OW
+U+ECDB  TUNGSKRAT LETTER S
+U+ECDC  TUNGSKRAT LETTER Z
+U+ECDD  TUNGSKRAT LETTER OA
+U+ECDE  TUNGSKRAT LETTER OH
+U+ECDF  TUNGSKRAT LETTER OU
+U+ECE0  TUNGSKRAT LETTER DH
+U+ECE1  TUNGSKRAT LETTER TH
+U+ECE2  TUNGSKRAT LETTER AIR
+U+ECE3  TUNGSKRAT LETTER AIH
+U+ECE4  TUNGSKRAT LETTER B
+U+ECE5  TUNGSKRAT LETTER M
+U+ECE6  TUNGSKRAT LETTER V
+U+ECE7  TUNGSKRAT LETTER W
+U+ECE8  TUNGSKRAT LETTER WI
+U+ECE9  TUNGSKRAT LETTER H
+U+ECEA  TUNGSKRAT LETTER EUH
+U+ECEB  TUNGSKRAT LETTER P
+U+ECEC  TUNGSKRAT LETTER IUH
+U+ECED  TUNGSKRAT LETTER F
+U+ECEE  TUNGSKRAT SYMBOL BREAK
+U+ECEF  TUNGSKRAT SYMBOL JOIN
+`.trim().split("\n\n").map(block => block.split("\n"));
+
+function tabulate(block) {
+	const table = document.createElement("table");
+	for(const row of block) {
+		const [code, description] = row.split("  ");
+		const tr = document.createElement("tr");
+		const lefttd = document.createElement("td");
+		const leftpre = document.createElement("pre");
+		leftpre.textContent = code;
+		lefttd.append(leftpre);
+		tr.append(lefttd);
+		const righttd = document.createElement("td");
+		const rightpre = document.createElement("pre");
+		rightpre.textContent = description;
+		righttd.append(rightpre);
+		tr.append(righttd);
+		table.append(tr);
+	}
+	return table;
+}
+
+function grid(block, size, offset) {
+	const table = document.createElement("table");
+	for(let x=0; x<size; x+=1) {
+		const glyphs = document.createElement("tr");
+		for(let y=0; y<size; y+=1) {
+			const td = document.createElement("td");
+			td.textContent = String.fromCodePoint(offset + y*size + x);
+			td.className = 'untitled';
+			glyphs.append(td);
+		}
+		table.append(glyphs);
+		const codes = document.createElement("tr");
+		for(let y=0; y<size; y+=1) {
+			const td = document.createElement("td");
+			const pre = document.createElement("pre");
+			pre.textContent = (offset + y*size + x).toString(16).toUpperCase();
+			td.append(pre);
+			codes.append(td);
+		}
+		table.append(codes);
+	}
+	return table;
+}
+
+function load() {
+	const [unused, space, punctuation, operators, numbers, letters] = tungskrat;
+
+	document.body.append(tabulate(unused, 1, 0xEC70));
+	document.body.append(document.createElement("br"));
+
+	document.body.append(grid(space, 1, 0xEC71));
+	document.body.append(document.createElement("br"));
+	document.body.append(tabulate(space));
+	document.body.append(document.createElement("br"));
+
+	document.body.append(grid(punctuation, 4, 0xEC72));
+	document.body.append(document.createElement("br"));
+	document.body.append(tabulate(punctuation));
+	document.body.append(document.createElement("br"));
+
+	document.body.append(grid(operators, 5, 0xEC82));
+	document.body.append(document.createElement("br"));
+	document.body.append(tabulate(operators));
+	document.body.append(document.createElement("br"));
+
+	document.body.append(grid(numbers, 6, 0xEC9B));
+	document.body.append(document.createElement("br"));
+	document.body.append(tabulate(numbers));
+	document.body.append(document.createElement("br"));
+
+	document.body.append(grid(letters, 7, 0xECBF));
+	document.body.append(document.createElement("br"));
+	document.body.append(tabulate(letters));
+	document.body.append(document.createElement("br"));
+}
+</script>
+</head>
+<body onload="load();">
+<h1> TUNGSKRAT </h1>
+<h2> Range [EC70, ECEF] </h2>
+<h2> <a href="/type.html"> Editor </a> </h2>
+<p>
+Tungskrat is a constructed script, meant to be used as an approximately phonetic orthography for whatever purposes one may be needed for. It consists of 127 glyphs, including a blank
+space, 16 punctuation marks used for quotation and dialogue notation, 25 mathematical and logical operators, a base 36 positional number system, 47 letters, and 2 additional punctuation
+marks used to denote glottal stops and agglutination. The characters and glyphs in its code range are tabulated and charted below, with no further explanation for the sake of conserving
+creativity:
+</p>
+</body>
+</html>
