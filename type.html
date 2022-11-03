@@ -142,7 +142,7 @@ function load() {
 	middle.colSpan = 3;
 	let space = document.createElement("button");
 	space.textContent = String.fromCodePoint(0xEC71);
-	space.onclick = () => write(paper, button.textContent, selection);
+	space.onclick = () => write(paper, space.textContent, selection);
 	space.style.height = "1em";
 	space.style.width = "100%";
 	middle.append(space);
