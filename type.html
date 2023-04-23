@@ -3,7 +3,10 @@
 <meta charset="UTF-8">
 <title>&#xECD6;&#xECC8;&#xECEA;&#xECC1;&#xECEA;&#xECE4;&#xECE3;</title>
 <style>
-@font-face { font-family: Untitled; src: url('untitled.ttf'); }
+@font-face { font-family: "GS Unicode Graflect"; src: url('gs-unicode-2-0-graflect.ttf'); }
+@font-face { font-family: "Fairfax Graflect"; src: url('Fairfax_Graflect.ttf'); }
+@font-face { font-family: "Fairfax HD Graflect"; src: url('FairfaxHD_Graflect.ttf'); }
+@font-face { font-family: "Untitled"; src: url('untitled.ttf'); }
 html {
 	font-size: 100%;
 }
@@ -11,7 +14,6 @@ body {
 	display: grid;
 	row-gap: 8px;
 	column-gap: 8px;
-	font-family: Untitled;
 }
 @media only screen and (hover: none) {
 	body {
@@ -53,15 +55,16 @@ form {
 }
 textarea {
 	resize: none;
-	font-family: Untitled;
 	font-weight: bold;
 	font-size: 2.5em;
 }
 button {
-	font-family: Untitled;
 	font-weight: bold;
 	font-size: 2.5em;
 	text-align: center;
+}
+.graflect {
+	font-family: Untitled;
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/lz-string@1/libs/lz-string.min.js"></script>
@@ -98,6 +101,7 @@ function grid(side, offset, textarea, selection) {
 		for(let x=0; x<side; x+=1) {
 			let td = document.createElement("td");
 			let button = document.createElement("button");
+			button.classList.add("graflect")
 			button.textContent = String.fromCodePoint(offset + side*x + y);
 			button.onclick = () => write(textarea, button.textContent, selection);
 			button.style.width = "2.5rem";
@@ -112,6 +116,8 @@ function grid(side, offset, textarea, selection) {
 
 function load() {
 	let paper = document.createElement("textarea");
+	paper.classList.add("graflect")
+	
 	const params = new URLSearchParams(location.search);
 	const note = params.get('note');
 	if(note != null) {
@@ -426,7 +432,15 @@ function load() {
 		}
 	};
 
-	for(const setting of [keymap, layouts]) {
+	let families = document.createElement("select");
+	for(const family of ["GS Unicode Graflect", "Fairfax Graflect", "Fairfax HD Graflect", "Untitled"]) {
+		let option = document.createElement("option");
+		option.text = family;
+		families.append(option);
+		families.value = family;
+	}
+	
+	for(const setting of [keymap, layouts, families]) {
 		let tr = document.createElement("tr");
 		let td = document.createElement("td");
 		td.append(setting);
@@ -514,6 +528,14 @@ function load() {
 	div.append(third);
 	div.append(convert);
 	document.body.append(div);
+
+	families.onchange = () => {
+		for(const parent of [paper, board, numbers, operators, punctuation]) {
+			for(const child of parent.querySelectorAll(".graflect")) {
+				child.style.fontFamily = families.value;
+			}
+		}
+	}
 }
 </script>
 </head>
