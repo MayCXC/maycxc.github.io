@@ -178,6 +178,7 @@ function load() {
 	let spacetd = document.createElement("td");
 	spacetd.colSpan = 3;
 	let space = document.createElement("button");
+	space.classList.add("graflect")
 	space.textContent = String.fromCodePoint(0xEC71);
 	space.onclick = () => write(paper, space.textContent, selection);
 	space.style.height = "2.5rem";
@@ -532,7 +533,7 @@ function load() {
 	document.body.append(div);
 
 	families.onchange = () => {
-		for(const parent of [document.body, board, numbers, operators, punctuation]) {
+		for(const parent of [document.body, board, settings, numbers, operators, punctuation]) {
 			for(const child of parent.querySelectorAll(".graflect")) {
 				child.style.fontFamily = families.value;
 			}
