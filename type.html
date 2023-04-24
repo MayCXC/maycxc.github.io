@@ -433,6 +433,8 @@ function load() {
 	};
 
 	let families = document.createElement("select");
+	families.style.width = "100%";
+
 	for(const family of ["GS Unicode Graflect", "Fairfax Graflect", "Fairfax HD Graflect", "Untitled"]) {
 		let option = document.createElement("option");
 		option.text = family;
