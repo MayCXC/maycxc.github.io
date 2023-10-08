@@ -206,7 +206,7 @@ function grid(block, size, offset) {
 function load() {
 	const [unused, space, punctuation, operators, numbers, letters] = graflect;
 
-	document.body.append(tabulate(unused, 1, 0xEC70));
+	document.body.append(tabulate(unused));
 	document.body.append(document.createElement("br"));
 
 	document.body.append(grid(space, 1, 0xEC71));
