@@ -68,7 +68,7 @@
                     }
                 }
 
-                reposq = encodeURIComponent(ownerrepo.map(([owner, repo]) => `repo:${owner}/${repo}`).join("+"));
+                const reposq = ownerrepo.map(([owner, repo]) => encodeURIComponent(`repo:${owner}/${repo}`)).join("+");
 
                 fetch(`https://api.github.com/search/repositories?q=${reposq}&per_page=100`, {method: "GET"})
                     .then((response) => response.json())
@@ -258,10 +258,9 @@
                 <a href="https://github.com/OlegKunitsyn/gnucobol-debug/pull/90" class="gh-pr-created-at">PR #90 (? &#128197;)</a>
             </li>
             <li>
-                (...more
-                <a href="https://github.com/search?q=author%3AMayCXC+-owner%3AMayCXC+is%3Apr+is%3Aopen&type=pullrequests&s=updated&o=desc">open</a>/
-                <a href="https://github.com/search?q=author%3AMayCXC+-owner%3AMayCXC+is%3Apr+is%3Amerged&type=pullrequests&s=updated&o=desc">closed</a>
-                )
+                (more
+                <a href="https://github.com/search?q=author%3AMayCXC+-owner%3AMayCXC+is%3Apr+is%3Aopen&type=pullrequests&s=updated&o=desc">open</a> /
+                <a href="https://github.com/search?q=author%3AMayCXC+-owner%3AMayCXC+is%3Apr+is%3Amerged&type=pullrequests&s=updated&o=desc">closed</a>)
             </li>
         </ul>
 <!--         <h3>Writing + Code Samples:</h3>
