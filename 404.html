@@ -5,11 +5,11 @@
 		<meta name="viewport" content="initial-scale=.75">
 		<title>FOUROHFOUR</title>
 		<script type="application/javascript">
-var playing = false;
+let playing = false;
 function play() {
 	if(!playing) {
 		playing=true;
-		var music = document.createElement('iframe');
+		const music = document.createElement('iframe');
 		music.type="text/html";
 		music.src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/175930637&color=%23ff5500&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false";
 		music.frameborder="0";
@@ -35,18 +35,15 @@ function play() {
  *
  * Refactored and fixed timestep in 2020.
  */
-var ctx, w, w2, h, h2, zf;
+let ctx, w, w2, h, h2, zf;
 
-var starcount = 300;
-var starbuffer = [];
-var angle = [0,0,0];
-var ofs = [0,0,0];
-var ms = 0;
-var ms = ms.MAX_SAFE_INTEGER;
-var ms2 = ms/2;
+const starcount = 300;
+const starbuffer = [];
+let angle = [0,0,0];
+let ofs = [0,0,0];
 
 function resize() {
-	var scene = document.getElementById('canvas');
+	const scene = document.getElementById('canvas');
 	w = scene.width = window.innerWidth;
 	h = scene.height = window.innerHeight;
 	w2 = w / 2;
@@ -59,18 +56,18 @@ function load() {
 	resize();
 	if (!!ctx) {
 		for (i = 0;i < starcount;i++) {
-		starbuffer[i] = [
-			(Math.random() - .5)*0xFFFF,
-			(Math.random() - .5)*0xFFFF,
-			(Math.random() - .5)*0xFFFF
-		]
+			starbuffer[i] = [
+				(Math.random() - .5)*0xFFFF,
+				(Math.random() - .5)*0xFFFF,
+				(Math.random() - .5)*0xFFFF
+			]
 		}
 		requestAnimationFrame(loop);
 	}
 }
 
 function dot(l, r) {
-	var d = 0.0;
+	let d = 0.0;
 	for(var i=0; i<Math.min(l.length,r.length); i+=1) {
 		d += l[i]*r[i];
 	}
@@ -78,14 +75,15 @@ function dot(l, r) {
 }
 
 function ttt(l, r) {
-	var t = [];
+	let t = [];
 	for(var i=0; i<Math.min(l.length,r.length); i+=1) {
 		t[i] = l[i]+r[i];
 	}
 	return t;
 }
 
-var step=1000/60>>0, tock=0, delta=0;
+const step=1000/60>>0;
+let tock=0, delta=0;
 function loop(tick) {
 	delta += tick-tock;
 	tock = tick;
@@ -101,10 +99,10 @@ function loop(tick) {
 function draw() {
 	ctx.clearRect(0,0,w,h);
 
-	var s = angle.map(Math.sin);
-	var c = angle.map(Math.cos);
+	const s = angle.map(Math.sin);
+	const c = angle.map(Math.cos);
 
-	var m = [
+	const m = [
 		[c[1]*c[2]                 ,-s[2]     ,-s[1]*c[2]                 ],
 		[s[1]*s[0] + s[2]*c[0]*c[1], c[2]*c[0], s[0]*c[1] - s[1]*s[2]*c[0]],
 		[s[1]*c[0] - s[2]*s[0]*c[1],-s[0]*c[2], c[1]*c[0] + s[1]*s[2]*s[0]]
@@ -112,14 +110,14 @@ function draw() {
 
 	ctx.globalCompositeOperation = "source-over";
 	ctx.fillStyle = '#FFFFFF';
-	for (var i = 0; i < starcount; i+=1) {
-		var a = ttt(starbuffer[i], ofs).map(t => t<<16>>16);
-		var z = dot(a,m[2]) + 32768;
+	for (let i = 0; i < starcount; i+=1) {
+		const a = ttt(starbuffer[i], ofs).map(t => t<<16>>16);
+		const z = dot(a,m[2]) + 32768;
 		if (z > 0) {
-			var sx = Math.round(dot(a,m[0]) * zf / z) + w2;
-			var sy = Math.round(dot(a,m[1]) * zf / z) + h2;
+			const sx = Math.round(dot(a,m[0]) * zf / z) + w2;
+			const sy = Math.round(dot(a,m[1]) * zf / z) + h2;
 			if(0 <= sx && sx < w && 0 <= sy && sy < h) {
-				var sw = sh = 32768 / z;
+				const sw = sh = 32768 / z;
 				ctx.fillRect(sx, sy, sw, sh);
 			}
 		}
