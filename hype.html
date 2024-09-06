@@ -139,15 +139,15 @@
     </script>
 
     <script>
-        var gl, program, vaocube, vbocube, ebocube, locations, keys, mouse, look, move, twist, vertices, elements;
+        let gl, program, vaocube, vbocube, ebocube, locations, keys, mouse, look, move, twist, vertices, elements;
         function start() {
             gl = document.getElementById('scene').getContext('webgl');
 
-            var glcube = gl.createShader(gl.VERTEX_SHADER);
+            const glcube = gl.createShader(gl.VERTEX_SHADER);
             gl.shaderSource(glcube, document.getElementById("cube").firstChild.nodeValue);
             gl.compileShader(glcube);
 
-            var glcolor = gl.createShader(gl.FRAGMENT_SHADER);
+            const glcolor = gl.createShader(gl.FRAGMENT_SHADER);
             gl.shaderSource(glcolor, document.getElementById("color").firstChild.nodeValue);
             gl.compileShader(glcolor);
 
@@ -209,7 +209,7 @@
             document.addEventListener('keyup', k => keys[k.code] = false);
 
             mouse = [0,0,0,0];
-            var trap = true;
+            let trap = true;
             document.addEventListener('click', m => trap ^= m.buttons>>>1 === 0);
             document.addEventListener('mousemove', m => mouse = !trap
                 ? [m.movementX*.125 + mouse[0]*.875, m.movementY*.125 + mouse[1]*.875]
@@ -250,7 +250,7 @@
         }
 
         function normalize(q) {
-            var l = Math.sqrt(q.map(c => c*c).reduce((l,r) => l+r));
+            const l = Math.sqrt(q.map(c => c*c).reduce((l,r) => l+r));
             return q.map(c => c/l);
         }
 
@@ -306,9 +306,9 @@
         ];
 
         function draw() {
-            var r = Math.pow(Math.sin(twist), 2) * 0.25;
-            var g = Math.pow(Math.sin(twist + Math.PI*2.0/3.0), 2) * 0.25;
-            var b = Math.pow(Math.sin(twist - Math.PI*2.0/3.0), 2) * 0.25;
+            const r = Math.pow(Math.sin(twist), 2) * 0.25;
+            const g = Math.pow(Math.sin(twist + Math.PI*2.0/3.0), 2) * 0.25;
+            const b = Math.pow(Math.sin(twist - Math.PI*2.0/3.0), 2) * 0.25;
             gl.clearColor(r,g,b,1.0);
             gl.clearDepth(1.0);
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -316,9 +316,9 @@
             gl.enable(gl.DEPTH_TEST);
             gl.depthFunc(gl.LEQUAL);
 
-            for(var i=0; i<horizontal.length; i+=1) {
+            for(let i=0; i<horizontal.length; i+=1) {
                 gl.uniformMatrix4fv(locations.above, false, horizontal[i]);
-                for(var j=0; j<vertical.length; j+=1) {
+                for(let j=0; j<vertical.length; j+=1) {
                     gl.uniformMatrix4fv(locations.beside, false, vertical[j]);
                     gl.uniform3fv(locations.position, [i*-4.0,j*4.0,9.0]);
                     if(i === 3 && j === 3) {
@@ -345,8 +345,8 @@
                 }
             }
 
-            for(var i=0; i<3; i += 1) {
-                for(var j=0; j<2; j+=1) {
+            for(let i=0; i<3; i += 1) {
+                for(let j=0; j<2; j+=1) {
                     gl.uniformMatrix4fv(locations.above, false, [horizontal, vertical][j][i]);
                     gl.uniformMatrix4fv(locations.beside, false, [horizontal, vertical][j][3]);
                     gl.uniform3fv(locations.position, [-i*6.0,j*5.0+3.5,-6.0]);
