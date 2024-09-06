@@ -7,18 +7,15 @@
         <script src="favicon.js"></script>
         <title>Keep your bits inside the buffer!</title>
         <script>
-            var ctx, w, w2, h, h2, zf;
+            let ctx, w, w2, h, h2, zf;
 
-            var starcount = 300;
-            var starbuffer = [];
-            var angle = [0,0,0];
-            var ofs = [0,0,0];
-            var ms = 0;
-            var ms = ms.MAX_SAFE_INTEGER;
-            var ms2 = ms/2;
+            const starcount = 300;
+            const starbuffer = [];
+            const angle = [0,0,0];
+            const ofs = [0,0,0];
 
             function resize() {
-                var scene = document.getElementById('scene');
+                const scene = document.getElementById('scene');
                 w = scene.width = window.innerWidth;
                 h = scene.height = window.innerHeight;
                 w2 = w / 2;
@@ -45,25 +42,80 @@
                     }
                     requestAnimationFrame(loop);
                 }
+
+                const contributions = {};
+                for(const pr of document.getElementsByClassName("gh-contribution")) {
+                    const {ghOwner: owner, ghRepo: repo, ghPr: pr} = pr.dataset.ghOwner;
+                    contributions[owner] ??= {}
+                    contributions[owner][repo] ??= {}
+                    contributions[owner][repo][pr] ??= []
+                    const rfss = [];
+                    for(const rfs of pr.getElementsByClassName("gh-repo-forks-stars")) {
+                        rfss.push(rfs);
+                    }
+                    const pcas = [];
+                    for(const pca of pr.getElementsByClassName("gh-pr-created-at")) {
+                        pcas.push(pca);
+                    }
+                    contributions[owner][repo][pr].push({rfss, pcas});
+                }
+
+                // Object.entries(interrogations).flatMap(([owner, repos]) => Object.entries(repos).map(([repo, prs]) => ([owner, repo])));
+                const ownerrepo = [];
+                for(const owner in contributions) {
+                    for(const repo in contributions[owner]) {
+                        ownerrepo.push([owner,repo]);
+                    }
+                }
+
+                reposq = ownerrepo.map(([owner, repo]) => `repo:${owner}/${repo}`).join("+")
+
+                fetch(`https://api.github.com/search/repositories?q=${reposq}&per_page=100`, {method: "GET"})
+                    .then((response) => response.json())
+                    .then((repositories) => {
+                        for(const item of repositories.items) {
+                            for(const pr in contributions[item.owner.login][item.name]) {
+                                for(const {rfss} of contributions[item.owner.login][item.name][pr]) {
+                                    for(const rfs of rfss) {
+                                        rfs.textContent = `(${item["forks_count"]}&#57393;, ${item["stargazers_count"]}&#11088;)`
+                                    }
+                                }
+                            }
+                        }
+                    });
+                
+                fetch(`https://api.github.com/search/issues?q=author:MayCXC+-user:MayCXC+is:pr+is:merged+${reposq}&per_page=100`, {method: "GET"})
+                    .then((response) => response.json())
+                    .then((issues) => {
+                        for(const item of issues.items) {
+                            const [owner, repo] = item["repository_url"].split("/").slice(-2)
+                            for({pcas} of contributions[owner]?.[repo]?.[item.number] ?? {}) {
+                                for(pca of pcas) {
+                                    pca.textContent = `(${item["created_at"]}&#128197;)`
+                                }
+                            }
+                        }
+                    });
             }
 
             function dot(l, r) {
-                var d = 0.0;
-                for(var i=0; i<Math.min(l.length,r.length); i+=1) {
+                let d = 0.0;
+                for(let i=0; i<Math.min(l.length,r.length); i+=1) {
                     d += l[i]*r[i];
                 }
                 return d;
             }
 
             function ttt(l, r) {
-                var t = [];
-                for(var i=0; i<Math.min(l.length,r.length); i+=1) {
+                const t = [];
+                for(let i=0; i<Math.min(l.length,r.length); i+=1) {
                     t[i] = l[i]+r[i];
                 }
                 return t;
             }
 
-            var step=1000/60>>0, tock=0, delta=0;
+            const step=1000/60>>0
+            let tock=0, delta=0;
             function loop(tick) {
                 delta = Math.min(delta+tick-tock, 250);
                 while(delta>=step) {
@@ -79,10 +131,10 @@
             function draw() {
                 ctx.clearRect(0,0,w,h);
 
-                var s = angle.map(Math.sin);
-                var c = angle.map(Math.cos);
+                const s = angle.map(Math.sin);
+                const c = angle.map(Math.cos);
 
-                var m = [
+                const m = [
                     [c[0]*c[1]                 ,-s[1]     ,-s[0]*c[1]                 ],
                     [s[0]*s[2] + s[1]*c[2]*c[0], c[1]*c[2], s[2]*c[0] - s[0]*s[1]*c[2]],
                     [s[0]*c[2] - s[1]*s[2]*c[0],-s[2]*c[1], c[0]*c[2] + s[0]*s[1]*s[2]]
@@ -90,14 +142,14 @@
 
                 ctx.globalCompositeOperation = 'source-over';
                 ctx.fillStyle = '#FFFFFF';
-                for (var i = 0; i < starcount; i+=1) {
-                    var a = ttt(starbuffer[i], ofs).map(t => t<<16>>16);
-                    var z = dot(a,m[2]) + 32768;
+                for (let i = 0; i < starcount; i+=1) {
+                    const a = ttt(starbuffer[i], ofs).map(t => t<<16>>16);
+                    const z = dot(a,m[2]) + 32768;
                     if (z > 0) {
-                        var sx = Math.round(dot(a,m[0]) * zf / z) + w2;
-                        var sy = Math.round(dot(a,m[1]) * zf / z) + h2;
+                        const sx = Math.round(dot(a,m[0]) * zf / z) + w2;
+                        const sy = Math.round(dot(a,m[1]) * zf / z) + h2;
                         if(0 <= sx && sx < w && 0 <= sy && sy < h) {
-                            var sw = sh = 32768 / z;
+                            const sw = sh = 32768 / z;
                             ctx.fillRect(sx, sy, sw, sh);
                         }
                     }
@@ -180,6 +232,12 @@
         </ul>
         <h3>Writing + Code Samples:</h3>
         <ul id="samples">
+            <li class="gh-contribution" data-gh-owner="uber-go" data-gh-repo="zap" data-gh-pr="1460"> uber-go / zap
+                <a href="#" class="gh-repo-forks-stars">(?&#57393;, ?&#11088;)</a> #1460
+                <a href="#" class="gh-pr-created-at">(?&#128197;)</a>:
+                <a href="https://github.com/uber-go/zap/pull/1460">W</a> +
+                <a href="https://github.com/uber-go/zap/pull/1460/files">C</a>
+            </li>
             <li>Cryptography:
                 <a href="/work/CSC318.pdf">W</a> +
                 <a href="https://gist.github.com/MayCXC/a2048a10ccb1d72b6ff59d79523b280d">C</a>
