@@ -3,17 +3,17 @@
     <head>
         <meta charset="utf-8"/>
         <script type="application/javascript">
-            var ctx, w, w2, h, h2, diagonal;
+            let ctx, w, w2, h, h2, diagonal;
 
-            var left = [0,0,0,1];
-            var right = [0,0,0,1];
-            var mouse = [0,0,0,0,0,0,0,0];
+            let left = [0,0,0,1];
+            let right = [0,0,0,1];
+            const mouse = [0,0,0,0,0,0,0,0];
 
             function identity(d, s) {
-                var m = [];
-                for(var i=0; i<d; i+=1) {
+                const m = [];
+                for(let i=0; i<d; i+=1) {
                     m[i] = [];
-                    for(var j=0; j<d; j+=1) {
+                    for(let j=0; j<d; j+=1) {
                         m[i][j] = 0;
                     }
                     m[i][i] = s;
@@ -21,38 +21,38 @@
                 return m;
             }
 
-            var five = identity(4,1);
-            var four = identity(4,1);
+            let five = identity(4,1);
+            let four = identity(4,1);
 
             function ttt(l, r) {
-                var t = [];
-                for(var i=0; i<Math.min(l.length,r.length); i+=1) {
+                const t = [];
+                for(let i=0; i<Math.min(l.length,r.length); i+=1) {
                     t[i] = l[i]+r[i];
                 }
                 return t;
             }
 
             function ete(l, r) {
-                var m = [];
-                for(var i=0; i<Math.min(l.length,r.length); i+=1) {
+                const m = [];
+                for(let i=0; i<Math.min(l.length,r.length); i+=1) {
                     m[i] = ttt(l[i],r[i]);
                 }
                 return m;
             }
 
             function dot(l, r) {
-                var d = 0.0;
-                for(var i=0; i<Math.min(l.length,r.length); i+=1) {
+                const d = 0.0;
+                for(let i=0; i<Math.min(l.length,r.length); i+=1) {
                     d += l[i]*r[i];
                 }
                 return d;
             }
 
             function out(l, r) {
-                var m = [];
-                for(var i=0; i<l.length; i+=1) {
+                const m = [];
+                for(let i=0; i<l.length; i+=1) {
                     m[i] = [];
-                    for(var j=0; j<r.length; j+=1) {
+                    for(let j=0; j<r.length; j+=1) {
                         m[i][j] = l[i] *r[j];
                     }
                 }
@@ -60,18 +60,18 @@
             }
 
             function transform(m, v) {
-                var u = [];
-                for(var i=0; i<m.length; i+=1) {
+                const u = [];
+                for(let i=0; i<m.length; i+=1) {
                     u[i] = dot(m[i], v);
                 }
                 return u;
             }
 
             function transpose(m) {
-                var t = [];
-                for(var i=0; i<Math.max(...(m.map(a => a.length))); i+=1) {
+                const t = [];
+                for(let i=0; i<Math.max(...(m.map(a => a.length))); i+=1) {
                     t[i] = [];
-                    for(var j=0; j<m.length; j+=1) {
+                    for(let j=0; j<m.length; j+=1) {
                         t[i][j] = m[j][i];
                     }
                 }
@@ -79,11 +79,11 @@
             }
 
             function compose(l, r) {
-                var c = [];
-                var t = transpose(r);
-                for(var i=0; i<l.length; i+=1) {
+                const c = [];
+                const t = transpose(r);
+                for(let i=0; i<l.length; i+=1) {
                     c[i] = [];
-                    for(var j=0; j<t.length; j+=1) {
+                    for(let j=0; j<t.length; j+=1) {
                         c[i][j] = dot(l[i],t[j]);
                     }
                 }
@@ -99,14 +99,14 @@
             }
 
             function qcompose(q, p) {
-                var v = q.slice(0,3);
-                var u = p.slice(0,3);
+                const v = q.slice(0,3);
+                const u = p.slice(0,3);
                 return [ v.map(e => e*p[3]), u.map(e => e*q[3]), cross(v,u) ]
                     .reduce(ttt).concat(q[3]*p[3] - dot(v,u));
             }
 
             function qnormalize(q) {
-                var l = Math.hypot(...q);
+                const l = Math.hypot(...q);
                 q[0] /= l;
                 q[1] /= l;
                 q[2] /= l;
@@ -114,16 +114,16 @@
             }
 
             function qthree(q) {
-                var id = identity(3,1);
-                var v = q.slice(0,3);
-                var x = id.map(u => cross(u,v));
-                var m = [
+                const id = identity(3,1);
+                const v = q.slice(0,3);
+                const x = id.map(u => cross(u,v));
+                const m = [
                     out(v,v),
                     identity(3,q[3]*q[3]),
                     compose(identity(3,2*q[3]),x),
                     compose(x,x)
                 ].reduce(ete);
-                for(var i=0; i<3; i+=1) {
+                for(let i=0; i<3; i+=1) {
                     m[i][3] = 0;
                 }
                 m[3] = [0,0,0,1];
@@ -146,7 +146,7 @@
             }
 
             function resize() {
-                var scene = document.getElementById('scene');
+                const scene = document.getElementById('scene');
                 w = scene.width = window.innerWidth;
                 h = scene.height = window.innerHeight;
                 w2 = w / 2;
@@ -157,7 +157,7 @@
 
             function init() {
                 resize();
-                var touch = [0,0];
+                let touch = [0,0];
                 document.addEventListener('touchstart', m => {
                     touch = m.touches[0];
                 });
@@ -180,7 +180,8 @@
                 }
             }
 
-            var step=1000/60>>0, tock=0, delta=0;
+            const step=1000/60>>0;
+            let tock=0, delta=0;
             function loop(tick) {
                 delta += Math.max(Math.min(tick-tock,16),0);
                 tock = tick;
@@ -203,22 +204,22 @@
                     mouse[1] = 0;
                 }
 
-                var d = dot([mouse[0], mouse[1]], [mouse[2]-w2, mouse[3]-h2]);
+                const d = dot([mouse[0], mouse[1]], [mouse[2]-w2, mouse[3]-h2]);
                 if(d<0) slide(mouse,4,5,.125);
                 if(0<d) slide(mouse,6,7,.125);
 
                 function twist(x, y, c, s) {
-                    var l = Math.hypot(x, y);
+                    const l = Math.hypot(x, y);
                     if(0===l) {
-                        var t = (tock/12000);
+                        const t = (tock/12000);
                         return twist(
                             s*Math.cos(c*t),
                             c*Math.sin(s*t)
                         );
                     }
                     else {
-                        var t = l/1024.0;
-                        var s = Math.sin(t/2);
+                        const t = l/1024.0;
+                        const s = Math.sin(t/2);
                         return [s*x/l, s*y/l, 0, Math.cos(t/2)];
                     }
                     return [0,0,0,1];
@@ -235,15 +236,15 @@
             }
 
             function project(p) {
-                var t = transform(four, p);
+                const t = transform(four, p);
                 return ttt(t.slice(0,2).map(d => d/t[2]), [w2, h2]);
             }
 
-            var outrun = 0;
+            let outrun = 0;
 
             function play() {
                 if(!outrun) {
-                    var music = document.createElement('iframe');
+                    const music = document.createElement('iframe');
                     music.type = "text/html";
                     music.src="https://www.youtube-nocookie.com/embed/_Ci0Kgdpgsw?controls=0&autoplay=1";
                     music.frameborder="0";
@@ -280,20 +281,20 @@
                 ctx.globalCompositeOperation = "source-over";
 
                 if(!!outrun) {
-                    var t = 1.0-(1.0/(1.0+((tock-outrun)/40000.0)));
-                    var r = 1.0-Math.min(1.0,(tock-outrun)/40000.0);
+                    const t = 1.0-(1.0/(1.0+((tock-outrun)/40000.0)));
+                    const r = 1.0-Math.min(1.0,(tock-outrun)/40000.0);
                     ctx.strokeStyle = "rgb("+t*255+","+0+","+t*255+")";
                     ctx.lineWidth=1;
 
-                    for(var x=-2; x<=2; x+=.8) {
+                    for(let x=-2; x<=2; x+=.8) {
                         ctx.beginPath();
                         ctx.moveTo(...project([x,.5,16]));
                         ctx.lineTo(...project([x,.5,1]));
                         ctx.stroke();
                     }
 
-                    for(var z=1; z<=16; z+=1) {
-                        var m = z-((tock-outrun)*3/4000.0)%1.0;
+                    for(let z=1; z<=16; z+=1) {
+                        const m = z-((tock-outrun)*3/4000.0)%1.0;
                         ctx.beginPath();
                         ctx.moveTo(...project([-2,.5,m]));
                         ctx.lineTo(...project([+2,.5,m]));
@@ -314,7 +315,7 @@
                     ctx.strokeStyle = "#000000";
                     ctx.shadowColor = "#FF0000";
                     ctx.shadowBlur = 4;
-                    for(var y=0; y<Math.min(3*(tock-outrun)/4000.0,3); y+=1) {
+                    for(let y=0; y<Math.min(3*(tock-outrun)/4000.0,3); y+=1) {
                         ctx.beginPath();
                         ctx.arc(
                             ...project([0,.45+2*r,16]),
@@ -323,9 +324,9 @@
                         );
                         ctx.stroke();
                     }
-                    for(var y=0; y<3; y+=1) {
-                        var m = .475-2*((y*2/3+((tock-outrun)/4000.0))%1.0);
-                        var s = Math.pow((.475-m)/2, 6)*1.75;
+                    for(let y=0; y<3; y+=1) {
+                        const m = .475-2*((y*2/3+((tock-outrun)/4000.0))%1.0);
+                        const s = Math.pow((.475-m)/2, 6)*1.75;
                         ctx.beginPath();
                         ctx.moveTo(...project([s-2,m+2*r,16]));
                         ctx.lineTo(...project([2-s,m+2*r,16]));
