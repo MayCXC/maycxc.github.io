@@ -11,7 +11,7 @@
 
             const starcount = 300;
             const starbuffer = [];
-            const angle = [0,0,0];
+            let angle = [0,0,0];
             const ofs = [0,0,0];
 
             function resize() {
@@ -77,7 +77,7 @@
                             for(const pr in contributions[item.owner.login][item.name]) {
                                 for(const {rfss} of contributions[item.owner.login][item.name][pr]) {
                                     for(const rfs of rfss) {
-                                        rfs.innerHTML = `(${item.name} ${item["forks_count"]}&#128305;, ${item["stargazers_count"]}&#11088;)`;
+                                        rfs.innerHTML = `(${item.name} ${item["forks_count"]} &#128305;, ${item["stargazers_count"]} &#11088;)`;
                                     }
                                 }
                             }
@@ -91,8 +91,8 @@
                             const [owner, repo] = item["repository_url"].split("/").slice(-2);
                             for({pcas} of contributions[owner]?.[repo]?.[item.number] ?? {}) {
                                 for(pca of pcas) {
-                                    const ppca = Date.parse(item["created_at"]).toLocaleDateString(undefined, {year: "numeric", month: "short", day: "numeric"});
-                                    pca.innerHTML = `#${item.number} (${ppca}&#128197;)`;
+                                    const ppca = new Date(Date.parse(item["created_at"])).toLocaleString(undefined, {year: "numeric", month: "short", day: "numeric"});
+                                    pca.innerHTML = `#${item.number} (${ppca} &#128197;)`;
                                 }
                             }
                         }
@@ -235,8 +235,8 @@
         <ul id="prs">
             <li class="gh-contribution" data-gh-owner="uber-go" data-gh-repo="zap" data-gh-pr="1460">
                 <a href="https://github.com/uber-go">uber-go</a> /
-                <a href="https://github.com/uber-go/zap" class="gh-repo-forks-stars">zap (?&#57393;, ?&#11088;)</a>
-                <a href="https://github.com/uber-go/zap/pull/1460" class="gh-pr-created-at">#1460 (?&#128197;)</a>
+                <a href="https://github.com/uber-go/zap" class="gh-repo-forks-stars">zap (? &#57393;, ? &#11088;)</a>
+                <a href="https://github.com/uber-go/zap/pull/1460" class="gh-pr-created-at">#1460 (? &#128197;)</a>
             </li>
         </ul>
         <h3>Writing + Code Samples:</h3>
