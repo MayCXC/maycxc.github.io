@@ -50,11 +50,11 @@
                     contributions[owner][repo] ??= {}
                     contributions[owner][repo][pr] ??= []
                     const rfss = [];
-                    for(const rfs of pr.getElementsByClassName("gh-repo-forks-stars")) {
+                    for(const rfs of contribution.getElementsByClassName("gh-repo-forks-stars")) {
                         rfss.push(rfs);
                     }
                     const pcas = [];
-                    for(const pca of pr.getElementsByClassName("gh-pr-created-at")) {
+                    for(const pca of contribution.getElementsByClassName("gh-pr-created-at")) {
                         pcas.push(pca);
                     }
                     contributions[owner][repo][pr].push({rfss, pcas});
