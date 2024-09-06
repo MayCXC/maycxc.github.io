@@ -254,7 +254,8 @@
             return q.map(c => c/l);
         }
 
-        var step=1000/60>>0, tock=0, delta=0;
+        const step=1000/60>>0;
+        let tock=0, delta=0;
         function loop(tick) {
             delta = Math.min(delta+tick-tock, 1000);
             tock = tick;
