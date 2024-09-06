@@ -77,7 +77,7 @@
                             for(const pr in contributions[item.owner.login][item.name]) {
                                 for(const {rfss} of contributions[item.owner.login][item.name][pr]) {
                                     for(const rfs of rfss) {
-                                        rfs.textContent = `(${item["forks_count"]}&#57393;, ${item["stargazers_count"]}&#11088;)`
+                                        rfs.innerHTML = `(${item.name} ${item["forks_count"]}&#57393;, ${item["stargazers_count"]}&#11088;)`
                                     }
                                 }
                             }
@@ -91,7 +91,7 @@
                             const [owner, repo] = item["repository_url"].split("/").slice(-2)
                             for({pcas} of contributions[owner]?.[repo]?.[item.number] ?? {}) {
                                 for(pca of pcas) {
-                                    pca.textContent = `(${item["created_at"]}&#128197;)`
+                                    pca.innerHTML = `#${item.number} (${item["created_at"]}&#128197;)`
                                 }
                             }
                         }
@@ -230,14 +230,16 @@
             <li>&#183;</li>
             <li><a href="/work/Resume.pdf">Résumé</a></li>
         </ul>
+        <h3>PRs</h3>
+        <ul id="prs">
+            <li class="gh-contribution" data-gh-owner="uber-go" data-gh-repo="zap" data-gh-pr="1460">
+                <a href="https://github.com/uber-go">uber-go</a> /
+                <a href="https://github.com/uber-go/zap" class="gh-repo-forks-stars">zap (?&#57393;, ?&#11088;)</a>
+                <a href="https://github.com/uber-go/zap/pull/1460" class="gh-pr-created-at">#1460 (?&#128197;)</a>
+            </li>
+        </ul>
         <h3>Writing + Code Samples:</h3>
         <ul id="samples">
-            <li class="gh-contribution" data-gh-owner="uber-go" data-gh-repo="zap" data-gh-pr="1460"> uber-go / zap
-                <a href="#" class="gh-repo-forks-stars">(?&#57393;, ?&#11088;)</a> #1460
-                <a href="#" class="gh-pr-created-at">(?&#128197;)</a>:
-                <a href="https://github.com/uber-go/zap/pull/1460">W</a> +
-                <a href="https://github.com/uber-go/zap/pull/1460/files">C</a>
-            </li>
             <li>Cryptography:
                 <a href="/work/CSC318.pdf">W</a> +
                 <a href="https://gist.github.com/MayCXC/a2048a10ccb1d72b6ff59d79523b280d">C</a>
