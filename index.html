@@ -92,7 +92,7 @@
                             for({pcas} of contributions[owner]?.[repo]?.[item.number] ?? {}) {
                                 for(pca of pcas) {
                                     const ppca = Date.parse(item["created_at"]).toLocaleDateString(undefined, {year: "numeric", month: "short", day: "numeric"});
-                                    pca.innerHTML = `#${item.number} (${ppca}&#128197;)`
+                                    pca.innerHTML = `#${item.number} (${ppca}&#128197;)`;
                                 }
                             }
                         }
