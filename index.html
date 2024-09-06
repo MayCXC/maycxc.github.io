@@ -44,8 +44,8 @@
                 }
 
                 const contributions = {};
-                for(const pr of document.getElementsByClassName("gh-contribution")) {
-                    const {ghOwner: owner, ghRepo: repo, ghPr: pr} = pr.dataset.ghOwner;
+                for(const contribution of document.getElementsByClassName("gh-contribution")) {
+                    const {ghOwner: owner, ghRepo: repo, ghPr: pr} = contribution.dataset;
                     contributions[owner] ??= {}
                     contributions[owner][repo] ??= {}
                     contributions[owner][repo][pr] ??= []
