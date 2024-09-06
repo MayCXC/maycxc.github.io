@@ -12,7 +12,7 @@
             const starcount = 300;
             const starbuffer = [];
             let angle = [0,0,0];
-            const ofs = [0,0,0];
+            let ofs = [0,0,0];
 
             function resize() {
                 const scene = document.getElementById('scene');
@@ -77,7 +77,7 @@
                             for(const pr in contributions[item.owner.login][item.name]) {
                                 for(const {rfss} of contributions[item.owner.login][item.name][pr]) {
                                     for(const rfs of rfss) {
-                                        rfs.innerHTML = `${item.name} (${item["forks_count"]} &#128305; ${item["stargazers_count"]} &#11088;)`;
+                                        rfs.innerHTML = `${item.name} (${item["forks_count"]} &#128305; + ${item["stargazers_count"]} &#11088;)`;
                                     }
                                 }
                             }
@@ -235,22 +235,22 @@
         <ul id="prs">
             <li class="gh-contribution" data-gh-owner="uber-go" data-gh-repo="zap" data-gh-pr="1460">
                 <a href="https://github.com/uber-go">uber-go</a> /
-                <a href="https://github.com/uber-go/zap" class="gh-repo-forks-stars">zap (? &#57393; ? &#11088;)</a>
+                <a href="https://github.com/uber-go/zap" class="gh-repo-forks-stars">zap (? &#57393; + ? &#11088;)</a>
                 <a href="https://github.com/uber-go/zap/pull/1460" class="gh-pr-created-at">#1460 (? &#128197;)</a>
             </li>
             <li class="gh-contribution" data-gh-owner="DefinitelyTyped" data-gh-repo="DefinitelyTyped" data-gh-pr="65274">
                 <a href="https://github.com/DefinitelyTyped">DefinitelyTyped</a> /
-                <a href="https://github.com/DefinitelyTyped/DefinitelyTyped" class="gh-repo-forks-stars">DefinitelyTyped (? &#57393; ? &#11088;)</a>
+                <a href="https://github.com/DefinitelyTyped/DefinitelyTyped" class="gh-repo-forks-stars">DefinitelyTyped (? &#57393; + ? &#11088;)</a>
                 <a href="https://github.com/DefinitelyTyped/DefinitelyTyped/pull/65274" class="gh-pr-created-at">#65274 (? &#128197;)</a>
             </li>
-            <li class="gh-contribution" data-gh-owner="DefinitelyTyped" data-gh-repo="DefinitelyTyped" data-gh-pr="2993">
+            <li class="gh-contribution" data-gh-owner="graphql-java" data-gh-repo="graphql-java" data-gh-pr="2993">
                 <a href="https://github.com/graphql-java">graphql-java</a> /
-                <a href="https://github.com/graphql-java/graphql-java" class="gh-repo-forks-stars">graphql-java (? &#57393; ? &#11088;)</a>
+                <a href="https://github.com/graphql-java/graphql-java" class="gh-repo-forks-stars">graphql-java (? &#57393; + ? &#11088;)</a>
                 <a href="https://github.com/graphql-java/graphql-java/pull/2993" class="gh-pr-created-at">#2993 (? &#128197;)</a>
             </li>
-            <li class="gh-contribution" data-gh-owner="DefinitelyTyped" data-gh-repo="DefinitelyTyped" data-gh-pr="90">
+            <li class="gh-contribution" data-gh-owner="OlegKunitsyn" data-gh-repo="gnucobol-debug" data-gh-pr="90">
                 <a href="https://github.com/OlegKunitsyn">OlegKunitsyn</a> /
-                <a href="https://github.com/OlegKunitsyn/gnucobol-debug" class="gh-repo-forks-stars">gnucobol-debug (? &#57393; ? &#11088;)</a>
+                <a href="https://github.com/OlegKunitsyn/gnucobol-debug" class="gh-repo-forks-stars">gnucobol-debug (? &#57393; + ? &#11088;)</a>
                 <a href="https://github.com/OlegKunitsyn/gnucobol-debug/pull/90" class="gh-pr-created-at">#90 (? &#128197;)</a>
             </li>
         </ul>
