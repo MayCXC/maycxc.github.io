@@ -59,7 +59,7 @@ function puke(scene, window) {
                     (Math.random() - .5)*0xFFFF
                 ]
             }
-            requestAnimationFrame(this.loop);
+            requestAnimationFrame(timestamp => this.loop(timestamp));
         }
     },
     loop: function(tick) {
@@ -71,7 +71,7 @@ function puke(scene, window) {
         }
         this.draw();
         tock = tick;
-        requestAnimationFrame(this.loop);
+        requestAnimationFrame(timestamp => this.loop(timestamp));
     },
     transform: function(s, c) {
         return [
