@@ -4,32 +4,6 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta name="viewport" content="initial-scale=.75">
 		<title>FOUROHFOUR</title>
-		<script src="puke.js"></script>
-		<script type="application/javascript">
-			let playing = false;
-			function play() {
-				if(!playing) {
-					playing=true;
-					const music = document.createElement('iframe');
-					music.type="text/html";
-					music.src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/175930637&color=%23ff5500&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false";
-					music.frameborder="0";
-					music.allow="autoplay";
-					music.style="display:none;";
-					document.body.appendChild(music);
-					music.onload = function() {
-						document.getElementById('strider').className = 'strider';
-					}
-				}
-			}
-			const p = puke(document.getElementById('canvas'), window);
-			function load() {
-				p.load();
-			}
-			function resize() {
-				p.resize();
-			}
-		</script>
 		<style type="text/css">
 			html, body { margin: 0; padding: 0; color: #ccc; background: #000; }
 			body { font-family: sans-serif; font-size: 13px; }
@@ -102,6 +76,32 @@
 			<h1 class="fourohfour" data-text="404">404</h1>
 			<h4 class="onering" id="strider">Not all those who wander are lost</h4>
 		</div>
-		<canvas id="canvas">(but you definitely are)</canvas>	
+		<canvas id="canvas">(but you definitely are)</canvas>
+		<script src="puke.js"></script>
+		<script type="application/javascript">
+			let playing = false;
+			function play() {
+				if(!playing) {
+					playing=true;
+					const music = document.createElement('iframe');
+					music.type="text/html";
+					music.src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/175930637&color=%23ff5500&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false";
+					music.frameborder="0";
+					music.allow="autoplay";
+					music.style="display:none;";
+					document.body.appendChild(music);
+					music.onload = function() {
+						document.getElementById('strider').className = 'strider';
+					}
+				}
+			}
+			const p = puke(document.getElementById('canvas'), window);
+			function load() {
+				p.load();
+			}
+			function resize() {
+				p.resize();
+			}
+		</script>
 	</body>
 </html>
