@@ -42,25 +42,25 @@ function puke(scene, window) {
 
   return {
     resize: function() {
-      w = scene.width = window.innerWidth;
-      h = scene.height = window.innerHeight;
-      w2 = w / 2;
-      h2 = h / 2;
-      zf = Math.hypot(w2, h2) / 2;
-      ctx = scene.getContext('2d');
+        w = scene.width = window.innerWidth;
+        h = scene.height = window.innerHeight;
+        w2 = w / 2;
+        h2 = h / 2;
+        zf = Math.hypot(w2, h2) / 2;
+        ctx = scene.getContext('2d');
     },
     load: function() {
-      this.resize();
-      if (!!ctx) {
-          for (i = 0;i < starcount;i++) {
-              starbuffer[i] = [
-                  (Math.random() - .5)*0xFFFF,
-                  (Math.random() - .5)*0xFFFF,
-                  (Math.random() - .5)*0xFFFF
-              ]
-          }
-          requestAnimationFrame(this.loop);
-      }
+        this.resize();
+        if (!!ctx) {
+            for (i = 0;i < starcount;i++) {
+                starbuffer[i] = [
+                    (Math.random() - .5)*0xFFFF,
+                    (Math.random() - .5)*0xFFFF,
+                    (Math.random() - .5)*0xFFFF
+                ]
+            }
+            requestAnimationFrame(this.loop);
+        }
     },
     loop: function(tick) {
         delta = Math.min(delta+tick-tock, 250);
@@ -82,11 +82,11 @@ function puke(scene, window) {
     },
     draw: function() {
         ctx.clearRect(0,0,w,h);
-
+    
         const s = angle.map(Math.sin);
         const c = angle.map(Math.cos);
         const m = this.transform(s,c);
-
+    
         ctx.globalCompositeOperation = 'source-over';
         ctx.fillStyle = '#FFFFFF';
         for (let i = 0; i < starcount; i+=1) {
@@ -101,5 +101,6 @@ function puke(scene, window) {
                 }
             }
         }
-    };
+    }
+  };
 }
