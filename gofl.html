@@ -74,12 +74,15 @@
 
             let step=1000/60>>0, tock=0, delta=0;
             function draw() {
+				const t = 1 / window.devicePixelRatio;
+                ctx.translate(t, t);
                 ctx.clearRect(0,0,w,h);
                 for(let y=0; y<grid.height; y+=1)
                 for(let x=0; x<grid.width; x+=1) {
                     ctx.fillStyle = `rgb(${255*grid.get(y,x)},${255*grid.get(y,x)},${255*grid.get(y,x)})`;
                     ctx.fillRect(x*scale + mh,y*scale + mv,scale,scale);
                 }
+                ctx.translate(-t, -t);
             }
 
             const gol = (i,j,g) => {
