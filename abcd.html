@@ -188,10 +188,13 @@ let click = [false, false, false, false, false];
 function loop(tock) {
   const delta = tock - tick;
   const press = [0, 1, 2, 3, 4].map(b => clack[b] - click[b]);
+  const t = 1 / window.devicePixelRatio;
+  context.translate(t, t);
   context.clearRect(0, 0, context.canvas.width, context.canvas.height);
   advance(delta, point, press, grid.t, grid.p, grid.s, grid.i);
   advance(delta, point, press, box.t, box.p, box.s, box.i);
   advance(delta, point, press, poly.t, poly.p, poly.s, poly.i);
+  context.translate(-t, -t);
   [0, 1, 2, 3, 4].forEach(b => click[b] = clack[b]);
   tick = tock;
   requestAnimationFrame(loop);
