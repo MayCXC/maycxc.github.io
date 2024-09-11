@@ -61,8 +61,6 @@ if(!!gol) {
     const fw = fav.width/grid.width<<0;
     const fh = fav.height/grid.height<<0;
     const callback = () => {
-        const t = 1 / window.devicePixelRatio;
-        gol.translate(t, t);
         gol.clearRect(0,0,fav.width,fav.height);
         for(let y=0; y<grid.height; y+=1) {
             for(let x=0; x<grid.width; x+=1) {
@@ -72,7 +70,6 @@ if(!!gol) {
             }
         }
         document.querySelector("link[rel='icon']").href = fav.toDataURL('image/png');
-        gol.translate(-t, -t);
         grid.generate(rule);
     };
     callback();
