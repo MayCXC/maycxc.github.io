@@ -81,6 +81,8 @@ function puke(scene, window) {
         ];
     },
     draw: function() {
+        const t = 1 / window.devicePixelRatio;
+        ctx.translate(t, t);
         ctx.clearRect(0,0,w,h);
     
         const s = angle.map(Math.sin);
@@ -101,6 +103,7 @@ function puke(scene, window) {
                 }
             }
         }
+        ctx.translate(-t, -t);
     }
   };
 }
