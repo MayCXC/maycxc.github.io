@@ -82,6 +82,9 @@
                             }
                         }
                     });
+
+                document.getElementById("school").onclick = () => document.getElementById("samples").parentElement.classList.toggle("nodisplay");
+                document.getElementById("school").classList.remove("nodisplay");
             }
 
             function resize() {
@@ -153,6 +156,9 @@
                 visibility: visible;
                 opacity: 1;
             }
+            .nodisplay {
+                display: none;
+            }
         </style>
     </head>
     <body onload="load();" onresize="resize();">
@@ -201,33 +207,36 @@
             </li>
             <li class="last">
                 more:
-                <a href="https://github.com/search?q=author%3AMayCXC+-owner%3AMayCXC+is%3Apr+is%3Aopen&type=pullrequests&s=updated&o=desc">open</a> &#183;
-                <a href="https://github.com/search?q=author%3AMayCXC+-owner%3AMayCXC+is%3Apr+is%3Amerged&type=pullrequests&s=updated&o=desc">closed</a>
+                <a href="https://github.com/search?q=author%3AMayCXC+-owner%3AMayCXC+is%3Apr+is%3Aopen&type=pullrequests&s=updated&o=desc">open</a>
+                &#183; <a href="https://github.com/search?q=author%3AMayCXC+-owner%3AMayCXC+is%3Apr+is%3Amerged&type=pullrequests&s=updated&o=desc">closed</a>
+                <span id="school" class="nodisplay">&#183; <a href="#samples" class="nodisplay">school</a></span>
             </li>
         </ul>
-<!--         <h3>Writing + Code Samples:</h3>
-        <ul id="samples">
-            <li>Cryptography:
-                <a href="/work/CSC318.pdf">W</a> +
-                <a href="https://gist.github.com/MayCXC/a2048a10ccb1d72b6ff59d79523b280d">C</a>
-            </li>
-            <li>Operating Systems:
-                <a href="/work/CSC310.pdf">W</a> +
-                <a href="https://github.com/MayCXC/stele/tree/master/CSC310HW1">C</a>
-            </li>
-            <li>Database Programming:
-                <a href="https://docs.google.com/document/d/1noP7e8CD46nIyjDKExRo1PKAFOnqB1jbJZdbxgKuXUg/edit?usp=sharing">W</a> +
-                <a href="https://colab.research.google.com/github/MayCXC/DIPC/blob/master/topinsulators.ipynb">C</a>       
-            </li>
-            <li>Algorithm Design and Analysis:
-                <a href="/work/CSC215.pdf">W</a> +
-                <a href="https://gist.github.com/MayCXC/24a3946371657314dd0ebd5fd952c4c5">C</a>
-            </li>
-            <li>Introduction to Software Development:
-                <a href="https://docs.google.com/document/d/1YWphk9gIXiEO-COIHpBs1K6cIJRtt-eLVoAh2KTVko4/edit?usp=sharing">W</a> +
-                <a href="https://github.com/MayCXC/WaveGame2019">C</a>
-            </li>
-        </ul> -->
+        <div class="nodisplay">
+            <h3 id="samples">Writing + Code Samples:</h3>
+            <ul>
+                <li>Cryptography:
+                    <a href="/work/CSC318.pdf">W</a> +
+                    <a href="https://gist.github.com/MayCXC/a2048a10ccb1d72b6ff59d79523b280d">C</a>
+                </li>
+                <li>Operating Systems:
+                    <a href="/work/CSC310.pdf">W</a> +
+                    <a href="https://github.com/MayCXC/stele/tree/master/CSC310HW1">C</a>
+                </li>
+                <li>Database Programming:
+                    <a href="https://docs.google.com/document/d/1noP7e8CD46nIyjDKExRo1PKAFOnqB1jbJZdbxgKuXUg/edit?usp=sharing">W</a> +
+                    <a href="https://colab.research.google.com/github/MayCXC/DIPC/blob/master/topinsulators.ipynb">C</a>       
+                </li>
+                <li>Algorithm Design and Analysis:
+                    <a href="/work/CSC215.pdf">W</a> +
+                    <a href="https://gist.github.com/MayCXC/24a3946371657314dd0ebd5fd952c4c5">C</a>
+                </li>
+                <li>Introduction to Software Development:
+                    <a href="https://docs.google.com/document/d/1YWphk9gIXiEO-COIHpBs1K6cIJRtt-eLVoAh2KTVko4/edit?usp=sharing">W</a> +
+                    <a href="https://github.com/MayCXC/WaveGame2019">C</a>
+                </li>
+            </ul>
+        </div>
         <h3>Demos:</h3>
         <ul id="demos">
             <li><a href="/hype.html">&#8544;</a></li>
@@ -240,7 +249,7 @@
         </ul>
         <br>
         <ul id="badge">
-            <li>
+            <li class="">
                 <a href="http://www.catb.org/hacker-emblem/">
                     <svg xmlns="http://www.w3.org/2000/svg" height="56" width="56" id="glider_svg">
                     <rect
