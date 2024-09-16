@@ -86,7 +86,7 @@
                 const school = document.getElementById("school");
                 const samples = document.getElementById("samples");
                 school.onclick = () => samples.parentElement.classList.toggle("nodisplay") && false;
-                school.classList.remove("nodisplay");
+                school.parentElement.classList.remove("nodisplay");
             }
 
             function resize() {
@@ -211,7 +211,7 @@
                 more:&nbsp;
                 <a href="https://github.com/search?q=author%3AMayCXC+-owner%3AMayCXC+is%3Apr+is%3Aopen&type=pullrequests&s=updated&o=desc">open</a>
                 &#183; <a href="https://github.com/search?q=author%3AMayCXC+-owner%3AMayCXC+is%3Apr+is%3Amerged&type=pullrequests&s=updated&o=desc">closed</a>
-                <span id="school" class="nodisplay">&#183; <a href="#samples">school</a></span>
+                <span class="nodisplay">&#183; <a id="school" href="#samples">school</a></span>
             </li>
         </ul>
         <div class="nodisplay">
