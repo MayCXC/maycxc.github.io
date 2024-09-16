@@ -112,10 +112,8 @@ const grid = {
 }
 
 const bezier = JSON.parse(
-  decodeURIComponent(
-    new URL(location).searchParams.get("b") ??
-    encodeURIComponent(JSON.stringify([]))
-  )
+  new URL(location).searchParams.get("b") ??
+  JSON.stringify([])
 );
 
 const poly = {
@@ -183,7 +181,7 @@ const box = {
       const [x, y] = matxvec(...inverse(...grid.t()), ...point);
       bezier.push([ecittal(x,0b0111), ecittal(y,0b0111)]);
       const url = new URL(location);
-      url.searchParams.set("b", encodeURIComponent(JSON.stringify(bezier)));
+      url.searchParams.set("b", JSON.stringify(bezier));
       history.pushState({}, "", url);
     }
   },
