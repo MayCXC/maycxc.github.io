@@ -111,10 +111,18 @@ const grid = {
   s: '#2A2A2A'
 }
 
-const bezier = JSON.parse(
-  new URL(location).searchParams.get("b") ??
-  JSON.stringify([])
-);
+let bezier = [];
+	  
+const callback = () => {
+  bezier = JSON.parse(
+    new URL(location).searchParams.get("b") ??
+    JSON.stringify([])
+  );
+};
+
+callback();
+
+window.onpopstate = callback;
 
 const poly = {
 	t: grid.t,
