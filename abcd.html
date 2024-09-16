@@ -111,7 +111,12 @@ const grid = {
   s: '#2A2A2A'
 }
 
-let bezier = [];
+const bezier = JSON.parse(
+  decodeURIComponent(
+    new URL(location).searchParams.get("b") ??
+    encodeURIComponent(JSON.stringify([]))
+  )
+);
 
 const poly = {
 	t: grid.t,
@@ -145,7 +150,7 @@ const poly = {
     	}
     }
     if(points.length > 0) {
-    	const [x,y] = points.at(0);
+      const [x,y] = points.at(0);
       c.moveTo(x-small,y-small);
       c.lineTo(x+small,y+small);
       c.moveTo(x+small,y-small);
@@ -177,6 +182,9 @@ const box = {
     if (press[0] > 0) {
       const [x, y] = matxvec(...inverse(...grid.t()), ...point);
       bezier.push([ecittal(x,0b0111), ecittal(y,0b0111)]);
+      const url = new URL(location);
+      url.searchParams.set("b", encodeURIComponent(JSON.stringify(bezier)));
+      history.pushState({}, "", url);
     }
   },
   s: 'transparent'
