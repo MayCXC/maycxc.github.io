@@ -186,7 +186,7 @@ const box = {
         } */
 
     if (press[0] > 0) {
-      const [x, y] = matxvec(...inverse(...grid.t()), ...point);
+      const [x, y] = matxvec(...inverse(...grid.t()),...point);
       bezier.push([ecittal(x,0b0111), ecittal(y,0b0111)]);
       const url = new URL(location);
       url.searchParams.set("b", JSON.stringify(bezier));
