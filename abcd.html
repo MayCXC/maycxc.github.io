@@ -113,12 +113,7 @@ const grid = {
 
 let bezier = [];
 	  
-const callback = () => {
-  bezier = JSON.parse(
-    new URL(location).searchParams.get("b") ??
-    JSON.stringify([])
-  );
-};
+const callback = () => bezier = JSON.parse(new URL(location).searchParams.get("b") ?? JSON.stringify([]));
 
 callback();
 
