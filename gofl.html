@@ -74,7 +74,7 @@
 
             let step=1000/60>>0, tock=0, delta=0;
             function draw() {
-				const t = 1 / window.devicePixelRatio;
+                const t = (1 / (window?.devicePixelRatio ?? 1)) % 1;
                 ctx.translate(t, t);
                 ctx.clearRect(0,0,w,h);
                 for(let y=0; y<grid.height; y+=1)
