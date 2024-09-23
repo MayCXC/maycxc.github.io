@@ -81,7 +81,7 @@ function puke(scene, window) {
         ];
     },
     draw: function() {
-        const t = 1 / window.devicePixelRatio;
+        const t = 1 / (window?.devicePixelRatio ?? 1);
         ctx.translate(t, t);
         ctx.clearRect(0,0,w,h);
     
