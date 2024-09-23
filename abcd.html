@@ -197,7 +197,7 @@ let click = [false, false, false, false, false];
 function loop(tock) {
   const delta = tock - tick;
   const press = [0, 1, 2, 3, 4].map(b => clack[b] - click[b]);
-  const t = 1 / window.devicePixelRatio;
+  const t = (1 / (window?.devicePixelRatio ?? 1)) % 1;
   context.translate(t, t);
   context.clearRect(0, 0, context.canvas.width, context.canvas.height);
   advance(delta, point, press, grid.t, grid.p, grid.s, grid.i);
