@@ -115,8 +115,8 @@ const grid = {
 let bezier = [];
 	  
 const callback = () => bezier = JSON.parse(
-    LZString.decompressFromUTF16(
-        new URL(location).searchParams.get("b") ?? LZString.compressToUTF16(JSON.stringify([]))
+    LZString.decompressFromEncodedURIComponent(
+        new URL(location).searchParams.get("b") ?? LZString.compressToEncodedURIComponent(JSON.stringify([]))
     )
 );
 
@@ -189,7 +189,7 @@ const box = {
       const [x, y] = matxvec(...inverse(...grid.t()),...point);
       bezier.push([ecittal(x,0b0111), ecittal(y,0b0111)]);
       const url = new URL(location);
-      url.searchParams.set("b", LZString.compressToUTF16(JSON.stringify(bezier)));
+      url.searchParams.set("b", LZString.compressToEncodedURIComponent(JSON.stringify(bezier)));
       history.pushState({}, "", url);
     }
   },
