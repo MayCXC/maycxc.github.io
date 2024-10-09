@@ -1,183 +1,221 @@
 <!DOCTYPE html>
-<head>
-  <meta charset="utf-8"/>
-  <script src="https://cdn.jsdelivr.net/npm/lz-string@1/libs/lz-string.min.js"></script>
-  <script type="application/javascript">
-const TAU = 2*Math.PI;
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-function lattice(i) {
-  const l = (i << 1) | 1;
-  const d = 1 << 32 - Math.clz32(l) - 1;
-  return (l << 1) / d - 3;
-}
+		<script src="./abcd_files/lz-string.min.js"></script>
+		<script type="application/javascript">
+			const TAU = 2 * Math.PI;
 
-function ecittal(l,r) {
-  let line = 0;
-  let dist = 0;
-  for (let i = 1; i <= r; i += 1) {
-    let diff = lattice(i) - l;
-    if (line == 0 || Math.abs(diff) < Math.abs(dist)) {
-      line = i;
-      dist = diff;
-    }
-  }
-  return line;
-}
+			function lattice(i) {
+				const l = (i << 1) | 1;
+				const d = 1 << (32 - Math.clz32(l) - 1);
+				return (l << 1) / d - 3;
+			}
 
-function* slices(a,l,n) {
-	for(let i=0; i<a.length; i+=n) {
-  	yield a.slice(i,i+l);
-  }
-}
+			function ecittal(l, r) {
+				let line = 0;
+				let dist = 0;
+				for (let i = 1; i <= r; i += 1) {
+					let diff = lattice(i) - l;
+					if (line == 0 || Math.abs(diff) < Math.abs(dist)) {
+						line = i;
+						dist = diff;
+					}
+				}
+				return line;
+			}
 
-let context;
+			function* slices(a, l, n) {
+				for (let i = 0; i < a.length; i += n) {
+					yield a.slice(i, i + l);
+				}
+			}
 
-function resize() {
-  context = document.getElementById('canvas').getContext('2d');
-  context.canvas.width = window.innerWidth;
-  context.canvas.height = window.innerHeight;
-  point = [context.canvas.width / 2.0, context.canvas.height / 2.0]
-}
+			let context;
 
-let point = [0.0, 0.0];
-document.addEventListener('mousemove', m => point = [m.x, m.y]);
+			function resize() {
+				context = document.getElementById("canvas").getContext("2d");
+				context.canvas.width = window.innerWidth;
+				context.canvas.height = window.innerHeight;
+				point = [
+					context.canvas.width / 2.0,
+					context.canvas.height / 2.0,
+				];
+			}
 
-let clack = [false, false, false, false, false];
-document.addEventListener('mousedown', m => clack[m.button] = true);
-document.addEventListener('mouseup', m => clack[m.button] = false);
+			let point = [0.0, 0.0];
+			document.addEventListener("mousemove", (m) => (point = [m.x, m.y]));
 
-function advance(delta, point, press, transformation, path, style, interact) {
-  context.save();
-  context.transform(...transformation());
-  context.beginPath();
-  path(context);
-  context.restore();
-  if (context.isPointInPath(...point)) {
-    interact(point, press);
-  }
-  context.strokeStyle = style;
-  context.stroke();
-}
+			let clack = [false, false, false, false, false];
+			document.addEventListener(
+				"mousedown",
+				(m) => (clack[m.button] = true),
+			);
+			document.addEventListener(
+				"mouseup",
+				(m) => (clack[m.button] = false),
+			);
 
-function load() {
-  resize();
-  if (context) {
-    requestAnimationFrame(loop);
-  }
-}
+			function advance(
+				delta,
+				point,
+				press,
+				transformation,
+				path,
+				style,
+				dash,
+				interact,
+			) {
+				context.save();
+				context.transform(...transformation());
+				context.beginPath();
+				path(context);
+				context.restore();
+				if (context.isPointInPath(...point)) {
+					interact(point, press);
+				}
+				context.strokeStyle = style;
+				context.setLineDash(dash);
+				context.stroke();
+			}
 
-function compose(w, h, a, x, y) {
-  const s = Math.sin(a);
-  const c = Math.cos(a);
-  return [w * c, h * s, -w * s, h * c, x, y];
-}
+			function load() {
+				resize();
+				if (context) {
+					requestAnimationFrame(loop);
+				}
+			}
 
-function inverse(a, b, c, d, e, f) {
-  const det = a * d - b * c;
-  const adj = [d, -b, -c, a, c * f - d * e, b * e - a * f];
-  return adj.map(a => a / det);
-}
+			function compose(w, h, a, x, y) {
+				const s = Math.sin(a);
+				const c = Math.cos(a);
+				return [w * c, h * s, -w * s, h * c, x, y];
+			}
 
-function matxvec(a, b, c, d, e, f, x, y) {
-  return [a * x + c * y + e, b * x + d * y + f];
-}
+			function inverse(a, b, c, d, e, f) {
+				const det = a * d - b * c;
+				const adj = [d, -b, -c, a, c * f - d * e, b * e - a * f];
+				return adj.map((a) => a / det);
+			}
 
-function matxmat(a1, b1, c1, d1, e1, f1, a2, b2, c2, d2, e2, f2) {
-  return [
-    a1 * a2 + c1 * b2, b1 * a2 + d1 * b2, a1 * c2 + c1 * d2,
-    b1 * c2 + d1 * d2, a1 * e2 + c1 * f2 + e1, b1 * e2 + d1 * f2 + f1
-  ];
-}
+			function matxvec(a, b, c, d, e, f, x, y) {
+				return [a * x + c * y + e, b * x + d * y + f];
+			}
 
-function pla(p) {
-  return p * TAU;
-}
+			function matxmat(a1, b1, c1, d1, e1, f1, a2, b2, c2, d2, e2, f2) {
+				return [
+					a1 * a2 + c1 * b2,
+					b1 * a2 + d1 * b2,
+					a1 * c2 + c1 * d2,
+					b1 * c2 + d1 * d2,
+					a1 * e2 + c1 * f2 + e1,
+					b1 * e2 + d1 * f2 + f1,
+				];
+			}
 
-function deg(d) {
-  return pla(d) / 360;
-}
+			function pla(p) {
+				return p * TAU;
+			}
 
-const grid = {
-  t: () => compose(100, 100, 0, context.canvas.width >> 1, context.canvas.height >> 1),
-  p: c => {
-    for (let i = 1; i <= 0b0111; i += 1) {
-      const l = lattice(i);
-      c.moveTo(l, -1);
-      c.lineTo(l, +1);
-      c.moveTo(-1, l);
-      c.lineTo(+1, l);
-    }
-  },
-  i: (m, p) => {},
-  s: '#2A2A2A'
-}
+			function deg(d) {
+				return pla(d) / 360;
+			}
 
-let bezier = [];
-	  
-const callback = () => bezier = JSON.parse(
-    LZString.decompressFromEncodedURIComponent(
-        new URL(location).searchParams.get("b") ?? LZString.compressToEncodedURIComponent(JSON.stringify([]))
-    )
-);
+			const grid = {
+				t: () =>
+					compose(
+						100,
+						100,
+						0,
+						context.canvas.width >> 1,
+						context.canvas.height >> 1,
+					),
+				p: (c) => {
+					for (let i = 1; i <= 0b0111; i += 1) {
+						const l = lattice(i);
+						c.moveTo(l, -1);
+						c.lineTo(l, +1);
+						c.moveTo(-1, l);
+						c.lineTo(+1, l);
+					}
+				},
+				i: (m, p) => {},
+				s: "#A2A2A2",
+				d: [5, 5, 5, 5, 5, 0],
+			};
 
-callback();
+			let bezier = [];
 
-window.onpopstate = callback;
+			const callback = () =>
+				(bezier = JSON.parse(
+					LZString.decompressFromEncodedURIComponent(
+						new URL(location).searchParams.get("b") ??
+							LZString.compressToEncodedURIComponent(
+								JSON.stringify([]),
+							),
+					),
+				));
 
-const poly = {
-	t: grid.t,
-	p: c => {
-    const small = Math.pow(2,-5);
-    const points = bezier.map(b=>b.map(lattice));
-    for (const slice of slices(points,4,3)) {
-      if(slice.length == 4) {
-        const [[x1,y1],[x2,y2],[x3,y3],[x4,y4]] = slice;
-        c.moveTo(x2,y2);
-        c.arc(x2,y2,small,0,TAU);
-        c.moveTo(x2,y2);
-        c.lineTo(x1,y1);
-        c.bezierCurveTo(x2,y2,x3,y3,x4,y4);
-        c.lineTo(x3,y3);
-        c.arc(x3,y3,small,0,TAU);
-        c.moveTo(x4,y4);
-      }
-      else {
-        for(const s of slice.slice(1,3)) {
-          c.moveTo(...s);
-          c.arc(...s,small,0,TAU);
-        }
-        if(slice.length > 0 && points.length > 3) {
-          const [x,y] = slice.at(0);
-          c.moveTo(x-small,y-small);
-          c.lineTo(x+small,y+small);
-          c.moveTo(x+small,y-small);
-          c.lineTo(x-small,y+small);
-        }
-    	}
-    }
-    if(points.length > 0) {
-      const [x,y] = points.at(0);
-      c.moveTo(x-small,y-small);
-      c.lineTo(x+small,y+small);
-      c.moveTo(x+small,y-small);
-      c.lineTo(x-small,y+small);
-    }
-  },
-  i: (m, p) => {},
-  s: '#454545'
-};
+			callback();
 
-const box = {
-  t: grid.t,
-  p: c => {
-    c.moveTo(-1, -1);
-    c.lineTo(+1, -1);
-    c.lineTo(+1, +1);
-    c.lineTo(-1, +1);
-    c.lineTo(-1, -1);
-  },
-  i: (point, press) => {
-    /*     if (press[0] > 0) {
+			window.onpopstate = callback;
+
+			const poly = {
+				t: grid.t,
+				p: (c) => {
+					const small = Math.pow(2, -5);
+					const points = bezier.map((b) => b.map(lattice));
+					for (const slice of slices(points, 4, 3)) {
+						if (slice.length == 4) {
+							const [[x1, y1], [x2, y2], [x3, y3], [x4, y4]] =
+								slice;
+							c.moveTo(x2, y2);
+							c.arc(x2, y2, small, 0, TAU);
+							c.moveTo(x2, y2);
+							c.lineTo(x1, y1);
+							c.bezierCurveTo(x2, y2, x3, y3, x4, y4);
+							c.lineTo(x3, y3);
+							c.arc(x3, y3, small, 0, TAU);
+							c.moveTo(x4, y4);
+						} else {
+							for (const s of slice.slice(1, 3)) {
+								c.moveTo(...s);
+								c.arc(...s, small, 0, TAU);
+							}
+							if (slice.length > 0 && points.length > 3) {
+								const [x, y] = slice.at(0);
+								c.moveTo(x - small, y - small);
+								c.lineTo(x + small, y + small);
+								c.moveTo(x + small, y - small);
+								c.lineTo(x - small, y + small);
+							}
+						}
+					}
+					if (points.length > 0) {
+						const [x, y] = points.at(0);
+						c.moveTo(x - small, y - small);
+						c.lineTo(x + small, y + small);
+						c.moveTo(x + small, y - small);
+						c.lineTo(x - small, y + small);
+					}
+				},
+				i: (m, p) => {},
+				s: "#454545",
+				d: [],
+			};
+
+			const box = {
+				t: grid.t,
+				p: (c) => {
+					c.moveTo(-1, -1);
+					c.lineTo(+1, -1);
+					c.lineTo(+1, +1);
+					c.lineTo(-1, +1);
+					c.lineTo(-1, -1);
+				},
+				i: (point, press) => {
+					/*     if (press[0] > 0) {
           console.log('click');
           console.log(matxvec(...inverse(...grid.t()),...point))
         }
@@ -185,37 +223,74 @@ const box = {
           console.log('clack');
         } */
 
-    if (press[0] > 0) {
-      const [x, y] = matxvec(...inverse(...grid.t()),...point);
-      bezier.push([ecittal(x,0b0111), ecittal(y,0b0111)]);
-      const url = new URL(location);
-      url.searchParams.set("b", LZString.compressToEncodedURIComponent(JSON.stringify(bezier)));
-      history.pushState({}, "", url);
-    }
-  },
-  s: 'transparent'
-}
+					if (press[0] > 0) {
+						const [x, y] = matxvec(
+							...inverse(...grid.t()),
+							...point,
+						);
+						bezier.push([ecittal(x, 0b0111), ecittal(y, 0b0111)]);
+						const url = new URL(location);
+						url.searchParams.set(
+							"b",
+							LZString.compressToEncodedURIComponent(
+								JSON.stringify(bezier),
+							),
+						);
+						history.pushState({}, "", url);
+					}
+				},
+				s: "transparent",
+				d: [],
+			};
 
-let tick = 0.0;
-let click = [false, false, false, false, false];
+			let tick = 0.0;
+			let click = [false, false, false, false, false];
 
-function loop(tock) {
-  const delta = tock - tick;
-  const press = [0, 1, 2, 3, 4].map(b => clack[b] - click[b]);
-  const t = (1 / (window?.devicePixelRatio ?? 1)) % 1;
-  context.translate(t, t);
-  context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-  advance(delta, point, press, grid.t, grid.p, grid.s, grid.i);
-  advance(delta, point, press, box.t, box.p, box.s, box.i);
-  advance(delta, point, press, poly.t, poly.p, poly.s, poly.i);
-  context.translate(-t, -t);
-  [0, 1, 2, 3, 4].forEach(b => click[b] = clack[b]);
-  tick = tock;
-  requestAnimationFrame(loop);
-}
-  </script>
-</head>
-<body onload="load()" onresize="resize()" style="margin:0;padding:0;">
-  <canvas id="canvas" style="display:block;"></canvas>
-</body>
+			function loop(tock) {
+				const delta = tock - tick;
+				const press = [0, 1, 2, 3, 4].map((b) => clack[b] - click[b]);
+				const t = (1 / (window?.devicePixelRatio ?? 1)) % 1;
+				context.translate(t, t);
+				context.clearRect(
+					0,
+					0,
+					context.canvas.width,
+					context.canvas.height,
+				);
+				advance(
+					delta,
+					point,
+					press,
+					grid.t,
+					grid.p,
+					grid.s,
+					grid.d,
+					grid.i,
+				);
+				advance(delta, point, press, box.t, box.p, box.s, box.d, box.i);
+				advance(
+					delta,
+					point,
+					press,
+					poly.t,
+					poly.p,
+					poly.s,
+					poly.d,
+					poly.i,
+				);
+				context.translate(-t, -t);
+				[0, 1, 2, 3, 4].forEach((b) => (click[b] = clack[b]));
+				tick = tock;
+				requestAnimationFrame(loop);
+			}
+		</script>
+	</head>
+	<body onload="load()" onresize="resize()" style="margin: 0; padding: 0">
+		<canvas
+			id="canvas"
+			style="display: block"
+			width="1690"
+			height="961"
+		></canvas>
+	</body>
 </html>
