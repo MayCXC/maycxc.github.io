@@ -145,7 +145,7 @@
                 );
             }
 
-            function resize() {
+            window.onresize = function() {
                 const scene = document.getElementById('scene');
                 w = scene.width = window.innerWidth;
                 h = scene.height = window.innerHeight;
@@ -155,8 +155,8 @@
                 ctx = scene.getContext('2d');
             }
 
-            function init() {
-                resize();
+            window.onload = function() {
+                window.onresize();
                 let touch = [0,0];
                 document.addEventListener('touchstart', m => {
                     touch = m.touches[0];
@@ -377,7 +377,7 @@
             }
         </style>
     </head>
-    <body onload="init();" onresize="resize();">
+    <body>
         <canvas id="scene"></canvas>
     </body>
 </html>
