@@ -24,8 +24,14 @@
 			}
 			let p;
 			window.onload = function() {
-				p = puke(document.getElementById('canvas'), window);
+				canvas = document.getElementById('canvas');
+				p = puke(canvas, window);
 				p.load();
+				for(const pathname of ["/404", "/404.html"]) {
+					if(location.pathname === pathname) {
+						canvas.innerHTML = "(and you definitely aren't)";
+					}
+				}
 			}
 			window.onresize = function() {
 				p.resize();
