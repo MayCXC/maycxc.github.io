@@ -118,7 +118,7 @@ function grid(side, offset, textarea, selection) {
 	return table;
 }
 
-function load() {
+window.onload = function() {
 	let paper = document.createElement("textarea");
 	paper.classList.add("graflect")
 	
@@ -546,6 +546,6 @@ function load() {
 }
 </script>
 </head>
-<body onload="load()">
+<body>
 </body>
 </html>
