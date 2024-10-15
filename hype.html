@@ -141,7 +141,7 @@
 
     <script>
         let gl, program, vaocube, vbocube, ebocube, locations, keys, mouse, look, move, twist, vertices, elements;
-        function start() {
+        window.onload = function() {
             gl = document.getElementById('scene').getContext('webgl');
 
             const glcube = gl.createShader(gl.VERTEX_SHADER);
@@ -363,7 +363,7 @@
         }
     </script>
 </head>
-<body onload="start();">
+<body>
     <canvas id="scene"></canvas>
 </body>
 </html>
