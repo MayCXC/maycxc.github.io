@@ -11,7 +11,7 @@
         <script>
             let p;
             
-            function load() {
+            window.onload = function() {
                 const marquee = (text) => () => text = text.substring(1) + text.charAt(0);
                 const setTitle = (title) => () => document.title = '\u00ad' + title() + '\u00ad';
                 const callback = setTitle(marquee(' ᴋᴇᴇᴘ ʏᴏᴜʀ ʙɪᴛꜱ ɪɴꜱɪᴅᴇ ᴛʜᴇ ʙᴜꜰꜰᴇʀ ᴀᴛ ᴀʟʟ ᴛɪᴍᴇꜱ \u26a0'));
@@ -90,7 +90,7 @@
                 school.parentElement.classList.remove("nodisplay");
             }
 
-            function resize() {
+            window.onresize = function() {
                     p.resize();
             }
         </script>
@@ -164,7 +164,7 @@
             }
         </style>
     </head>
-    <body onload="load();" onresize="resize();">
+    <body>
         <canvas id="scene"></canvas>
         <h1>Aaron Paterson</h1>
         <ul id="links">
