@@ -51,7 +51,7 @@
 
             let grid;
 
-            function resize() {
+            window.onresize = function() {
                 const canvas = document.querySelector('canvas');
                 w = canvas.width = window.innerWidth;
                 mh = (w % scale)/2;
@@ -126,12 +126,16 @@
                 requestAnimationFrame(loop);
             }
 
-            function load() {
-                resize();
+            window.onload = function(e) {
+                window.onresize(e);
                 if (!!ctx) {
                     requestAnimationFrame(loop);
                 }
             }
+
+            window.onmousedown = () => down = true;
+            window.onmouseup = () => down = false;
+            window.onmousemove = () => [clientX,clientY] = [event.clientX,event.clientY];
         </script>
         <link href="bb.css" rel="stylesheet" />
         <style type="text/css">
@@ -151,13 +155,7 @@
             }
         </style>
     </head>
-    <body
-      onload="load();"
-      onresize="resize();"
-      onmousedown="down = true;"
-      onmouseup="down = false;"
-      onmousemove="clientX = event.clientX; clientY = event.clientY;"
-    >
+    <body>
         <canvas></canvas>
     </body>
 </html>
