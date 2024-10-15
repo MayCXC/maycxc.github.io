@@ -7,7 +7,7 @@
 		<script src="puke.js"></script>
 		<script type="application/javascript">
 			let playing = false;
-			function play() {
+			window.onclick = function() {
 				if(!playing) {
 					playing=true;
 					const music = document.createElement('iframe');
@@ -23,11 +23,11 @@
 				}
 			}
 			let p;
-			function load() {
+			window.onload = function() {
 				p = puke(document.getElementById('canvas'), window);
 				p.load();
 			}
-			function resize() {
+			window.onresize = function() {
 				p.resize();
 			}
 		</script>
@@ -99,7 +99,7 @@
 			}
 		</style>
 	</head>
-	<body onload="load();" onresize="resize();" onclick="play();">
+	<body>
 		<div>
 			<h1 class="fourohfour" data-text="404">404</h1>
 			<h4 class="onering" id="strider">Not all those who wander are lost</h4>
