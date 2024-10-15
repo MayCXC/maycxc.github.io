@@ -77,13 +77,13 @@ function tabulate(words) {
 	return table;
 }
 
-function load() {
+window.onload = function() {
 	document.body.append(tabulate(friendly));
 	document.body.append(document.createElement("br"));
 }
 </script>
 </head>
-<body onload="load();">
+<body>
 <h1> 1337 Friendly Colors </h1>
 </body>
 </html>
