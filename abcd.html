@@ -34,7 +34,7 @@
 
 			let context;
 
-			function resize() {
+			window.onresize = function() {
 				context = document.getElementById("canvas").getContext("2d");
 				context.canvas.width = window.innerWidth;
 				context.canvas.height = window.innerHeight;
@@ -80,8 +80,8 @@
 				context.stroke();
 			}
 
-			function load() {
-				resize();
+			window.onload = function() {
+				window.resize();
 				if (context) {
 					requestAnimationFrame(loop);
 				}
@@ -285,7 +285,7 @@
 			}
 		</script>
 	</head>
-	<body onload="load()" onresize="resize()" style="margin: 0; padding: 0">
+	<body style="margin: 0; padding: 0">
 		<canvas
 			id="canvas"
 			style="display: block"
