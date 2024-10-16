@@ -146,16 +146,32 @@
 			};
 
 			let bezier = [];
-
-			const callback = () =>
-				(bezier = JSON.parse(
+			const callback = (e) => {
+				bezier = JSON.parse(
 					LZString.decompressFromEncodedURIComponent(
 						new URL(location).searchParams.get("b") ??
 							LZString.compressToEncodedURIComponent(
-								JSON.stringify([]),
+								JSON.stringify([])
 							),
 					),
-				));
+				);
+				const url = new URL(location);
+				if (typeof e === "undefined" && url.searchParams.has("b")) {
+					url.searchParams.delete("b");
+					history.replaceState({}, "", url);
+					const states = [];
+					for (const point of bezier) {
+						states.push(point);
+						url.searchParams.set(
+							"b",
+							LZString.compressToEncodedURIComponent(
+								JSON.stringify(states)
+							)
+						);
+						history.pushState({}, "", url);
+					}
+				}
+			};
 
 			callback();
 
