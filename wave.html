@@ -155,8 +155,8 @@
                 ctx = scene.getContext('2d');
             }
 
-            window.onload = function() {
-                window.onresize();
+            window.onload = function(e) {
+                window.onresize(e);
                 let touch = [0,0];
                 document.addEventListener('touchstart', m => {
                     touch = m.touches[0];
