@@ -80,8 +80,8 @@
 				context.stroke();
 			}
 
-			window.onload = function() {
-				window.onresize();
+			window.onload = function(e) {
+				window.onresize(e);
 				if (context) {
 					requestAnimationFrame(loop);
 				}
