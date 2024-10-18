@@ -82,7 +82,7 @@
 
 			window.onload = function(e) {
 				window.onresize(e);
-				if (context) {
+				if (!!context) {
 					requestAnimationFrame(loop);
 				}
 			}
