@@ -23,18 +23,21 @@
 				}
 			}
 			let p;
-			window.onload = function() {
+
+			window.onresize = function() {
+				p.resize();
+			}
+
+			window.onload = function(e) {
 				canvas = document.getElementById('canvas');
 				p = puke(canvas, window);
 				p.load();
+				window.onresize(e);
 				for(const pathname of ["/404", "/404.html"]) {
 					if(location.pathname === pathname) {
 						canvas.innerHTML = "(and you definitely aren't)";
 					}
 				}
-			}
-			window.onresize = function() {
-				p.resize();
 			}
 		</script>
 		<link href="bb.css" rel="stylesheet" />
