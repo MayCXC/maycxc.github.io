@@ -11,6 +11,10 @@
         <script>
             let p;
             
+            window.onresize = function() {
+                p.resize();
+            }
+            
             window.onload = function() {
                 const marquee = (text) => () => text = text.substring(1) + text.charAt(0);
                 const setTitle = (title) => () => document.title = '\u00ad' + title() + '\u00ad';
@@ -27,6 +31,8 @@
                     ];
                 }
                 p.load();
+                
+                window.onresize(e);
 
                 const contributions = {};
                 for(const contribution of document.getElementsByClassName("gh-contribution")) {
@@ -88,10 +94,6 @@
                 const samples = document.getElementById("samples");
                 school.onclick = () => samples.parentElement.classList.toggle("nodisplay") && false;
                 school.parentElement.classList.remove("nodisplay");
-            }
-
-            window.onresize = function() {
-                    p.resize();
             }
         </script>
         <style>
