@@ -81,8 +81,8 @@
                     .then((issues) => {
                         for(const item of issues.items) {
                             const [owner, repo] = item["repository_url"].split("/").slice(-2);
-                            for({pcas} of contributions[owner]?.[repo]?.[item.number] ?? []) {
-                                for(pca of pcas) {
+                            for(const {pcas} of contributions[owner]?.[repo]?.[item.number] ?? []) {
+                                for(const pca of pcas) {
                                     const ppca = new Date(Date.parse(item["created_at"])).toLocaleString(undefined, {year: "numeric", month: "short", day: "numeric"});
                                     pca.innerHTML = `PR #${item.number} (${ppca} &#128197;)`;
                                 }
