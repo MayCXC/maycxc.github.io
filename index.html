@@ -59,7 +59,8 @@
 
                 const reposq = ownerrepo.map(([owner, repo]) => encodeURIComponent(`repo:${owner}/${repo}`)).join("+");
 
-                fetch(`https://api.github.com/search/repositories?q=${reposq}&per_page=100`, {method: "GET"})
+                // fork:true so forked repos (which the repo search omits by default) return their counts too
+                fetch(`https://api.github.com/search/repositories?q=${reposq}+fork:true&per_page=100`, {method: "GET"})
                     .then((response) => response.json())
                     .then((repositories) => {
                         for(const item of repositories.items) {
@@ -178,6 +179,14 @@
         </ul>
         <h3>Contributions:</h3>
         <ul id="contributions">
+            <li class="gh-contribution" data-gh-owner="orval-labs" data-gh-repo="orval" data-gh-pr="3739">
+                <a href="https://github.com/orval-labs">orval-labs</a> /
+                <a href="https://github.com/orval-labs/orval">orval</a>
+               (<a href="https://github.com/orval-labs/orval/forks?include=active%2Carchived%2Cinactive%2Cnetwork&page=1&period=&sort_by=last_updated" class="gh-repo-forks">? &#128305;</a>,
+                <a href="https://github.com/orval-labs/orval/stargazers" class="gh-repo-stars">? &#11088;</a>):
+                <br>
+                <a href="https://github.com/orval-labs/orval/pull/3739" class="gh-pr-created-at">PR #3739 (? &#128197;)</a>
+            </li>
             <li class="gh-contribution" data-gh-owner="huggingface" data-gh-repo="tokenizers" data-gh-pr="1970">
                 <a href="https://github.com/huggingface">huggingface</a> /
                 <a href="https://github.com/huggingface/tokenizers">tokenizers</a>
