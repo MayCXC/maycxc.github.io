@@ -58,6 +58,45 @@
 
                 const reposq = ownerrepo.map(([owner, repo]) => encodeURIComponent(`repo:${owner}/${repo}`)).join("+");
 
+                // A pull request's date arrives with the search rather than with
+                // the markup, so the order is applied once it answers. Ordering
+                // by hand instead means every addition guesses its own place
+                // against dates nothing on the page knows yet.
+                const ghCreated = (a) => Number(a.dataset.ghCreated ?? 0);
+                const sortContributions = () => {
+                    const list = document.getElementById("contributions");
+                    const items = [...list.getElementsByClassName("gh-contribution")];
+
+                    // Within one repository, its most recent pull request first.
+                    // The anchors keep their places and exchange contents, so
+                    // the separators between them are left alone.
+                    for(const item of items) {
+                        const links = [...item.getElementsByClassName("gh-pr-created-at")];
+                        const order = links
+                            .map((a) => ({html: a.innerHTML, href: a.href, pr: a.dataset.ghPr, created: a.dataset.ghCreated}))
+                            .sort((x, y) => Number(y.created ?? 0) - Number(x.created ?? 0));
+                        links.forEach((a, i) => {
+                            a.innerHTML = order[i].html;
+                            a.href = order[i].href;
+                            a.dataset.ghPr = order[i].pr;
+                            if(order[i].created === undefined) {
+                                delete a.dataset.ghCreated;
+                            } else {
+                                a.dataset.ghCreated = order[i].created;
+                            }
+                        });
+                    }
+
+                    // Repositories by their most recent pull request. Anything
+                    // in the list that is not a contribution stays behind them,
+                    // which is where the trailing links live.
+                    const newest = (item) => Math.max(0, ...[...item.getElementsByClassName("gh-pr-created-at")].map(ghCreated));
+                    const tail = list.querySelector("li:not(.gh-contribution)");
+                    for(const item of items.sort((x, y) => newest(y) - newest(x))) {
+                        list.insertBefore(item, tail);
+                    }
+                };
+
                 // fork:true so forked repos (which the repo search omits by default) return their counts too
                 fetch(`https://api.github.com/search/repositories?q=${reposq}+fork:true&per_page=100`, {method: "GET"})
                     .then((response) => response.json())
@@ -83,11 +122,14 @@
                             const [owner, repo] = item["repository_url"].split("/").slice(-2);
                             for(const {pcas} of contributions[owner]?.[repo]?.[item.number] ?? []) {
                                 for(const pca of pcas) {
-                                    const ppca = new Date(Date.parse(item["created_at"])).toLocaleString(undefined, {year: "numeric", month: "short", day: "numeric"});
+                                    const created = Date.parse(item["created_at"]);
+                                    const ppca = new Date(created).toLocaleString(undefined, {year: "numeric", month: "short", day: "numeric"});
                                     pca.innerHTML = `PR #${item.number} (${ppca} &#128197;)`;
+                                    pca.dataset.ghCreated = created;
                                 }
                             }
                         }
+                        sortContributions();
                     });
 
                 const school = document.getElementById("school");
