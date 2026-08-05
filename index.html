@@ -36,17 +36,16 @@
 
                 const contributions = {};
                 for(const contribution of document.getElementsByClassName("gh-contribution")) {
-                    const {ghOwner: owner, ghRepo: repo, ghPr: pr} = contribution.dataset;
+                    const {ghOwner: owner, ghRepo: repo} = contribution.dataset;
                     contributions[owner] ??= {};
                     contributions[owner][repo] ??= {};
-                    contributions[owner][repo][pr] ??= [];
                     const rfs = contribution.getElementsByClassName("gh-repo-forks");
                     const rss = contribution.getElementsByClassName("gh-repo-stars");
-                    const pcas = [];
                     for(const pca of contribution.getElementsByClassName("gh-pr-created-at")) {
-                        pcas.push(pca);
+                        const {ghPr: pr} = pca.dataset;
+                        contributions[owner][repo][pr] ??= [];
+                        contributions[owner][repo][pr].push({rfs, rss, pcas: [pca]});
                     }
-                    contributions[owner][repo][pr].push({rfs, rss, pcas});
                 }
 
                 // Object.entries(interrogations).flatMap(([owner, repos]) => Object.entries(repos).map(([repo, prs]) => ([owner, repo])));
@@ -179,93 +178,102 @@
         </ul>
         <h3>Contributions:</h3>
         <ul id="contributions">
-            <li class="gh-contribution" data-gh-owner="orval-labs" data-gh-repo="orval" data-gh-pr="3739">
+            <li class="gh-contribution" data-gh-owner="orval-labs" data-gh-repo="orval">
                 <a href="https://github.com/orval-labs">orval-labs</a> /
                 <a href="https://github.com/orval-labs/orval">orval</a>
                (<a href="https://github.com/orval-labs/orval/forks?include=active%2Carchived%2Cinactive%2Cnetwork&page=1&period=&sort_by=last_updated" class="gh-repo-forks">? &#128305;</a>,
                 <a href="https://github.com/orval-labs/orval/stargazers" class="gh-repo-stars">? &#11088;</a>):
                 <br>
-                <a href="https://github.com/orval-labs/orval/pull/3739" class="gh-pr-created-at">PR #3739 (? &#128197;)</a>
+                <a href="https://github.com/orval-labs/orval/pull/3739" class="gh-pr-created-at" data-gh-pr="3739">PR #3739 (? &#128197;)</a>
             </li>
-            <li class="gh-contribution" data-gh-owner="huggingface" data-gh-repo="tokenizers" data-gh-pr="1970">
+            <li class="gh-contribution" data-gh-owner="huggingface" data-gh-repo="tokenizers">
                 <a href="https://github.com/huggingface">huggingface</a> /
                 <a href="https://github.com/huggingface/tokenizers">tokenizers</a>
                (<a href="https://github.com/huggingface/tokenizers/forks?include=active%2Carchived%2Cinactive%2Cnetwork&page=1&period=&sort_by=last_updated" class="gh-repo-forks">? &#128305;</a>,
                 <a href="https://github.com/huggingface/tokenizers/stargazers" class="gh-repo-stars">? &#11088;</a>):
                 <br>
-                <a href="https://github.com/huggingface/tokenizers/pull/1970" class="gh-pr-created-at">PR #1970 (? &#128197;)</a>
-            </li>            
-            <li class="gh-contribution" data-gh-owner="mozilla" data-gh-repo="firefox-devtools-mcp" data-gh-pr="50">
+                <a href="https://github.com/huggingface/tokenizers/pull/1970" class="gh-pr-created-at" data-gh-pr="1970">PR #1970 (? &#128197;)</a>
+            </li>
+            <li class="gh-contribution" data-gh-owner="mozilla" data-gh-repo="firefox-devtools-mcp">
                 <a href="https://github.com/mozilla">mozilla</a> /
                 <a href="https://github.com/mozilla/firefox-devtools-mcp">firefox-devtools-mcp</a>
                (<a href="https://github.com/mozilla/firefox-devtools-mcp/forks?include=active%2Carchived%2Cinactive%2Cnetwork&page=1&period=&sort_by=last_updated" class="gh-repo-forks">? &#128305;</a>,
                 <a href="https://github.com/mozilla/firefox-devtools-mcp/stargazers" class="gh-repo-stars">? &#11088;</a>):
                 <br>
-                <a href="https://github.com/mozilla/firefox-devtools-mcp/pull/50" class="gh-pr-created-at">PR #50 (? &#128197;)</a>
+                <a href="https://github.com/mozilla/firefox-devtools-mcp/pull/50" class="gh-pr-created-at" data-gh-pr="50">PR #50 (? &#128197;)</a>
             </li>
-            <li class="gh-contribution" data-gh-owner="vlasky" data-gh-repo="sqlite-vec" data-gh-pr="6">
+            <li class="gh-contribution" data-gh-owner="kieler" data-gh-repo="elkjs">
+                <a href="https://github.com/kieler">kieler</a> /
+                <a href="https://github.com/kieler/elkjs">elkjs</a>
+               (<a href="https://github.com/kieler/elkjs/forks?include=active%2Carchived%2Cinactive%2Cnetwork&page=1&period=&sort_by=last_updated" class="gh-repo-forks">? &#128305;</a>,
+                <a href="https://github.com/kieler/elkjs/stargazers" class="gh-repo-stars">? &#11088;</a>):
+                <br>
+                <a href="https://github.com/kieler/elkjs/pull/379" class="gh-pr-created-at" data-gh-pr="379">PR #379 (? &#128197;)</a>,
+                <a href="https://github.com/kieler/elkjs/pull/378" class="gh-pr-created-at" data-gh-pr="378">PR #378 (? &#128197;)</a>
+            </li>
+            <li class="gh-contribution" data-gh-owner="vlasky" data-gh-repo="sqlite-vec">
                 <a href="https://github.com/vlasky">vlasky</a> /
                 <a href="https://github.com/vlasky/sqlite-vec">sqlite-vec</a>
                (<a href="https://github.com/vlasky/sqlite-vec/forks?include=active%2Carchived%2Cinactive%2Cnetwork&page=1&period=&sort_by=last_updated" class="gh-repo-forks">? &#128305;</a>,
                 <a href="https://github.com/vlasky/sqlite-vec/stargazers" class="gh-repo-stars">? &#11088;</a>):
                 <br>
-                <a href="https://github.com/vlasky/sqlite-vec/pull/6" class="gh-pr-created-at">PR #6 (? &#128197;)</a>
+                <a href="https://github.com/vlasky/sqlite-vec/pull/6" class="gh-pr-created-at" data-gh-pr="6">PR #6 (? &#128197;)</a>
             </li>
-            <li class="gh-contribution" data-gh-owner="coreos" data-gh-repo="go-systemd" data-gh-pr="497">
+            <li class="gh-contribution" data-gh-owner="coreos" data-gh-repo="go-systemd">
                 <a href="https://github.com/coreos">coreos</a> /
                 <a href="https://github.com/coreos/go-systemd">go-systemd</a>
                (<a href="https://github.com/coreos/go-systemd/forks?include=active%2Carchived%2Cinactive%2Cnetwork&page=1&period=&sort_by=last_updated" class="gh-repo-forks">? &#128305;</a>,
                 <a href="https://github.com/coreos/go-systemd/stargazers" class="gh-repo-stars">? &#11088;</a>):
                 <br>
-                <a href="https://github.com/coreos/go-systemd/pull/497" class="gh-pr-created-at">PR #497 (? &#128197;)</a>
+                <a href="https://github.com/coreos/go-systemd/pull/497" class="gh-pr-created-at" data-gh-pr="497">PR #497 (? &#128197;)</a>
             </li>
-            <li class="gh-contribution" data-gh-owner="puma" data-gh-repo="puma" data-gh-pr="3508">
+            <li class="gh-contribution" data-gh-owner="puma" data-gh-repo="puma">
                 <a href="https://github.com/puma">puma</a> /
                 <a href="https://github.com/puma/puma">puma</a>
                (<a href="https://github.com/puma/puma/forks?include=active%2Carchived%2Cinactive%2Cnetwork&page=1&period=&sort_by=last_updated" class="gh-repo-forks">? &#128305;</a>,
                 <a href="https://github.com/puma/puma/stargazers" class="gh-repo-stars">? &#11088;</a>):
                 <br>
-                <a href="https://github.com/puma/puma/pull/3508" class="gh-pr-created-at">PR #3508 (? &#128197;)</a>
+                <a href="https://github.com/puma/puma/pull/3508" class="gh-pr-created-at" data-gh-pr="3508">PR #3508 (? &#128197;)</a>
             </li>
-            <li class="gh-contribution" data-gh-owner="caddyserver" data-gh-repo="caddy" data-gh-pr="6573">
+            <li class="gh-contribution" data-gh-owner="caddyserver" data-gh-repo="caddy">
                 <a href="https://github.com/caddyserver">caddyserver</a> /
                 <a href="https://github.com/caddyserver/caddy">caddy</a>
                (<a href="https://github.com/caddyserver/caddy/forks?include=active%2Carchived%2Cinactive%2Cnetwork&page=1&period=&sort_by=last_updated" class="gh-repo-forks">? &#128305;</a>,
                 <a href="https://github.com/caddyserver/caddy/stargazers" class="gh-repo-stars">? &#11088;</a>):
                 <br>
-                <a href="https://github.com/caddyserver/caddy/pull/6573" class="gh-pr-created-at">PR #6573 (? &#128197;)</a>
+                <a href="https://github.com/caddyserver/caddy/pull/6573" class="gh-pr-created-at" data-gh-pr="6573">PR #6573 (? &#128197;)</a>
             </li>
-            <li class="gh-contribution" data-gh-owner="uber-go" data-gh-repo="zap" data-gh-pr="1460">
+            <li class="gh-contribution" data-gh-owner="uber-go" data-gh-repo="zap">
                 <a href="https://github.com/uber-go">uber-go</a> /
                 <a href="https://github.com/uber-go/zap">zap</a>
                (<a href="https://github.com/uber-go/zap/forks?include=active%2Carchived%2Cinactive%2Cnetwork&page=1&period=&sort_by=last_updated" class="gh-repo-forks">? &#128305;</a>,
                 <a href="https://github.com/uber-go/zap/stargazers" class="gh-repo-stars">? &#11088;</a>):
                 <br>
-                <a href="https://github.com/uber-go/zap/pull/1460" class="gh-pr-created-at">PR #1460 (? &#128197;)</a>
+                <a href="https://github.com/uber-go/zap/pull/1460" class="gh-pr-created-at" data-gh-pr="1460">PR #1460 (? &#128197;)</a>
             </li>
-            <li class="gh-contribution" data-gh-owner="DefinitelyTyped" data-gh-repo="DefinitelyTyped" data-gh-pr="65274">
+            <li class="gh-contribution" data-gh-owner="DefinitelyTyped" data-gh-repo="DefinitelyTyped">
                 <a href="https://github.com/DefinitelyTyped">DefinitelyTyped</a> /
                 <a href="https://github.com/DefinitelyTyped/DefinitelyTyped">DefinitelyTyped</a>
                (<a href="https://github.com/DefinitelyTyped/DefinitelyTyped/forks?include=active%2Carchived%2Cinactive%2Cnetwork&page=1&period=&sort_by=last_updated" class="gh-repo-forks">? &#128305;</a>,
                 <a href="https://github.com/DefinitelyTyped/DefinitelyTyped/stargazers" class="gh-repo-stars">? &#11088;</a>):
                 <br>
-                <a href="https://github.com/DefinitelyTyped/DefinitelyTyped/pull/65274" class="gh-pr-created-at">PR #65274 (? &#128197;)</a>
+                <a href="https://github.com/DefinitelyTyped/DefinitelyTyped/pull/65274" class="gh-pr-created-at" data-gh-pr="65274">PR #65274 (? &#128197;)</a>
             </li>
-            <li class="gh-contribution" data-gh-owner="graphql-java" data-gh-repo="graphql-java" data-gh-pr="2993">
+            <li class="gh-contribution" data-gh-owner="graphql-java" data-gh-repo="graphql-java">
                 <a href="https://github.com/graphql-java">graphql-java</a> /
                 <a href="https://github.com/graphql-java/graphql-java">graphql-java</a>
                (<a href="https://github.com/graphql-java/graphql-java/forks?include=active%2Carchived%2Cinactive%2Cnetwork&page=1&period=&sort_by=last_updated" class="gh-repo-forks">? &#128305;</a>,
                 <a href="https://github.com/graphql-java/graphql-java/stargazers" class="gh-repo-stars">? &#11088;</a>):
                 <br>
-                <a href="https://github.com/graphql-java/graphql-java/pull/2993" class="gh-pr-created-at">PR #2993 (? &#128197;)</a>
+                <a href="https://github.com/graphql-java/graphql-java/pull/2993" class="gh-pr-created-at" data-gh-pr="2993">PR #2993 (? &#128197;)</a>
             </li>
-            <li class="gh-contribution" data-gh-owner="OlegKunitsyn" data-gh-repo="gnucobol-debug" data-gh-pr="90">
+            <li class="gh-contribution" data-gh-owner="OlegKunitsyn" data-gh-repo="gnucobol-debug">
                 <a href="https://github.com/OlegKunitsyn">OlegKunitsyn</a> /
                 <a href="https://github.com/OlegKunitsyn/gnucobol-debug">gnucobol-debug</a>
                (<a href="https://github.com/OlegKunitsyn/gnucobol-debug/forks?include=active%2Carchived%2Cinactive%2Cnetwork&page=1&period=&sort_by=last_updated" class="gh-repo-forks">? &#128305;</a>,
                 <a href="https://github.com/OlegKunitsyn/gnucobol-debug/stargazers" class="gh-repo-stars">? &#11088;</a>):
                 <br>
-                <a href="https://github.com/OlegKunitsyn/gnucobol-debug/pull/90" class="gh-pr-created-at">PR #90 (? &#128197;)</a>
+                <a href="https://github.com/OlegKunitsyn/gnucobol-debug/pull/90" class="gh-pr-created-at" data-gh-pr="90">PR #90 (? &#128197;)</a>
             </li>
             <li class="last">
                 more:&nbsp;
